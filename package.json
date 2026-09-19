@@ -13,7 +13,8 @@
     "typecheck": "pnpm -r --if-present typecheck",
     "lint": "biome check .",
     "format": "biome format --write .",
-    "import-holdings": "tsx tools/import-holdings/src/main.ts"
+    "import-holdings": "tsx tools/import-holdings/src/main.ts",
+    "collect": "tsx tools/collect/src/main.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",
