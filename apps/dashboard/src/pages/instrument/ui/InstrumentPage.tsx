@@ -6,6 +6,7 @@ import { QuoteHistoryTable } from '../../../widgets/quote-history-table/index.ts
 import { SignalTable } from '../../../widgets/signal-table/index.ts'
 import type { InstrumentPageData } from '../api/get-instrument-page.ts'
 
+/** 銘柄詳細。口座別の保有、この銘柄のアクションとシグナルの履歴、直近 30 件の株価 */
 export function InstrumentPage({ data }: { data: InstrumentPageData }) {
   const { instrument, position, quotes, signals, actions } = data
   const latest = quotes[0]

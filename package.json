@@ -19,7 +19,8 @@
     "detect": "tsx tools/detect/src/main.ts",
     "actions": "tsx tools/actions/src/main.ts",
     "dashboard": "pnpm --filter @trading/dashboard dev",
-    "design:tokens": "pnpm --filter @trading/dashboard design:tokens"
+    "design:tokens": "pnpm --filter @trading/dashboard design:tokens",
+    "screens": "pnpm --filter @trading/dashboard screens"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",

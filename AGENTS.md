@@ -48,6 +48,7 @@ pnpm ワークスペース。Node 22（`.node-version`）。ビルドせず `tsx
 | `.agents/skills/` | | エージェントのスキル（M2 以降）。`.claude/skills` はシンボリックリンク |
 | `docs/design-docs/` | | Design Doc（連番、変更ごとに1本） |
 | `docs/schema.md` | | **現在の全テーブルの ER 図（自動生成）** |
+| `docs/screens.md` | | **現在の画面遷移図（自動生成）** |
 | `docs/execution-plans/` | | 実行計画（進捗に合わせて更新する） |
 | `data/source/` | | 個人データ（gitignore） |
 | `data/trading.db` | | SQLite（gitignore）。`TRADING_DB_PATH` で変更可 |
@@ -98,6 +99,7 @@ pnpm dashboard           # http://127.0.0.1:3000
 - スライスは `index.ts` を公開 API とし、他からはそこだけを import する。`shared` は層の `index.ts` を持たず、`shared/api` / `shared/lib` / `shared/ui` のセグメントごとに `index.ts` を置く
 - サーバー関数（`createServerFn`）は `api` セグメントに置く。画面のデータ取得は `pages/<page>/api`、利用者の操作（書き込み）は `features/<feature>/api`。DB を触るモジュール（`shared/api`、`@trading/domain`、`@trading/db`）は **handler 内で動的 import** し、クライアントバンドルに入れない
 - widgets は自分でデータを取らず props で受け取る
+- 画面（`routes/*.tsx`）や `<Link>` を足したら `pnpm screens` で [docs/screens.md](docs/screens.md) を再生成する（古いままだと `pnpm test` が落ちる）。`<Link to>` には文字列リテラルを書く（変数を渡すと遷移図に載らない）。`pages/<page>/ui/*Page.tsx` の先頭には画面の説明を JSDoc で書く
 - `pnpm --filter @trading/dashboard fsd`（`pnpm lint` に含まれる）で層の逆流・公開 API の迂回を検査する。通らない構成は直す
 
 ### 見た目（DESIGN.md）

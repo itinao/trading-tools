@@ -4,6 +4,7 @@ import { ActionTable } from '../../../widgets/action-table/index.ts'
 import { StaleQuotesBanner } from '../../../widgets/stale-quotes-banner/index.ts'
 import type { ActionsPageData } from '../api/get-actions-page.ts'
 
+/** アクション一覧。未対応 / 対応した / 見送り をタブで切り替え、対応した・見送りにできる。株価が古ければ警告 */
 export function ActionsPage({ data }: { data: ActionsPageData }) {
   return (
     <>

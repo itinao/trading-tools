@@ -12,7 +12,7 @@
 | 0005 | [下落の検知とダッシュボード（M1 出力側）](./0005-detect-and-dashboard.md) — signals / actions、detect・actions ツール、TanStack Start | 実装済み |
 | 0006 | [ダッシュボードを FSD で構成する](./0006-dashboard-fsd.md) — 層と依存方向、routes の扱い、steiger による検査 | 実装済み |
 | 0007 | [デザインシステム（DESIGN.md）の導入](./0007-design-system.md) — Stitch フォーマットの DESIGN.md を正本にし、トークンから CSS 変数を生成 | 実装済み |
-| 0008 | [画面遷移図の自動生成](./0008-screen-map.md) — `docs/screens.md` をルートと `<Link to>` から生成し、テストで鮮度を担保 | 承認 |
+| 0008 | [画面遷移図の自動生成](./0008-screen-map.md) — `docs/screens.md` をルートと `<Link to>` から生成し、テストで鮮度を担保 | 実装済み |
 
 状態: 草案 → 承認 → 実装済み → supersede（後続の番号を記す）
 
