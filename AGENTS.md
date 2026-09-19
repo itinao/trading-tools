@@ -9,7 +9,7 @@
 
 ## 現在のフェーズ
 
-**M0（基盤）完了。次は M1（守りの最小経路）。** M1 に着手する前に Design Doc 0003（入力側）/ 0004（出力側）を書いて承認を得る。
+**M1（守りの最小経路）実装中。** 入力側は [Design Doc 0003](docs/design-docs/0003-holdings-and-quotes.md)（承認）。出力側の 0004 は未着手。
 進捗は [実行計画 0001](docs/execution-plans/0001-initial.md)。
 
 ## 作業を始める前に
