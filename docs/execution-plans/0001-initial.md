@@ -50,7 +50,7 @@ flowchart LR
 
 - pnpm ワークスペース（`tools/`, `apps/`, `packages/`）、TypeScript 設定、lint / test の共通設定
 - `packages/` にデータストア（SQLite）の初期化・マイグレーションと、CLI の共通規約（引数、JSON 入出力、終了コード、ログ）
-- `AGENTS.md`（正本）と `CLAUDE.md`（`@AGENTS.md`）、`.agents/skills/` の置き場
+- `AGENTS.md` を実装フェーズ向けに更新（CLI 規約、日次実行の手順、実装の入り方）。`.agents/skills/` の置き場
 - `data/source/`, `data/` の配置と `.gitignore`
 
 ### スコープ外
