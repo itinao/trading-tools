@@ -15,14 +15,14 @@
 
 ## 2. スコープ / 非スコープ
 
-- スコープ: `DESIGN.md`（リポジトリルート）、トークンから CSS 変数を生成する仕組み、既存3画面への適用、`AGENTS.md` への指示
+- スコープ: `apps/dashboard/DESIGN.md`、トークンから CSS 変数を生成する仕組み、既存3画面への適用、`AGENTS.md` への指示
 - 非スコープ: ダークモード（トークンは1セットのみ）、新しい画面や機能、アイコン、チャート
 
 ## 3. 設計
 
 ### 3.1 DESIGN.md
 
-- 場所: リポジトリルート `DESIGN.md`（フォーマット仕様の既定）
+- 場所: `apps/dashboard/DESIGN.md`。仕様の既定はリポジトリルートだが、それは単一アプリのリポジトリを想定した既定。このモノレポで見た目を持つのはダッシュボードだけなので、アプリのルートに置く。Stitch の CLI もカレントディレクトリで探すため `apps/dashboard` で実行すればよい
 - front matter のトークン名は仕様の慣習（Material 風の `surface` / `on-surface` / `primary` …）に寄せる。このプロジェクト固有の役割色として `gain` / `loss`（損益の符号）、`warn` / `critical`（重大度）を追加する
 - 本文の見出しは仕様で固定された英語（Overview / Colors / Typography / Layout / Elevation & Depth / Shapes / Components / Do's and Don'ts）。**散文は日本語**で書く
 - デザインの方向: 「静かな計器盤」。色は意味があるときだけ、数値は等幅数字で右揃え、影なし
@@ -33,7 +33,7 @@ DESIGN.md の front matter から CSS 変数を **自動生成** し、手書き
 
 | 生成元 | 生成物 | コマンド |
 | --- | --- | --- |
-| `DESIGN.md` の `colors` / `typography` / `rounded` / `spacing` | `apps/dashboard/src/app/tokens.css`（`:root { --color-primary: …; --font-body-md-size: …; }`） | `pnpm design:tokens` |
+| `apps/dashboard/DESIGN.md` の `colors` / `typography` / `rounded` / `spacing` | `apps/dashboard/src/app/tokens.css`（`:root { --color-primary: …; --font-body-md-size: …; }`） | `pnpm design:tokens` |
 
 - `components` はコンポーネントごとの値の組み合わせなので CSS 変数にはせず、`styles.css` に **クラスとして手書き**する。生成物には `{colors.primary}` の参照解決を含めない（CSS 側で `var(--color-primary)` を書く）
 - テスト: 生成結果とコミット済みの `tokens.css` が一致すること。DESIGN.md を変えて再生成を忘れると `pnpm test` が落ちる
@@ -47,12 +47,13 @@ DESIGN.md の front matter から CSS 変数を **自動生成** し、手書き
 
 ### 3.4 エージェントへの指示
 
-`AGENTS.md` に「ダッシュボードの見た目は `DESIGN.md` に従う。新しい UI は Components に定義してから実装する。トークンを増やしたら `pnpm design:tokens`」を追加する。
+`AGENTS.md` に「ダッシュボードの見た目は `apps/dashboard/DESIGN.md` に従う。新しい UI は Components に定義してから実装する。トークンを増やしたら `pnpm design:tokens`」を追加する。
 
 ## 4. 検討した選択肢と決定
 
 | 論点 | 決定 | 却下した選択肢と理由 |
 | --- | --- | --- |
+| DESIGN.md の置き場 | `apps/dashboard/`（アプリのルート） | リポジトリルート: 仕様の既定だが、CLI ツール群には無関係。見た目を持つアプリが増えたらそれぞれのアプリに置く |
 | デザインの正本 | DESIGN.md（Stitch フォーマット） | 独自の Markdown: 構造が決まっている方がエージェントの読み取りが安定する。Figma: テキストでないためエージェントが読めない |
 | CSS の実装 | 素の CSS + 生成した CSS 変数 | Tailwind: トークンを `tailwind.config` に写す工程が増え、正本が2つになる。CSS-in-JS: SSR の設定が増える。画面数が少ないうちは素の CSS で十分 |
 | `components` の扱い | CSS に手書き | 自動生成: `padding: 0 10px` のような複合値や hover の表現を汎用に生成するのは割に合わない |
