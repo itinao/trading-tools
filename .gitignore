@@ -1,9 +1,11 @@
 # 個人データ（証券会社CSVなど）は絶対にコミットしない
-data/source/
+data/source/*
+!data/source/.gitkeep
 *.csv
 
 # ローカルDB
 data/*.db
+data/*.db-*
 data/*.sqlite
 data/*.sqlite3
 

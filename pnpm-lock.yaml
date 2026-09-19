@@ -46,6 +46,15 @@ importers:
         specifier: ^0.31.10
         version: 0.31.10
 
+  tools/db:
+    dependencies:
+      '@trading/cli':
+        specifier: workspace:*
+        version: link:../../packages/cli
+      '@trading/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+
 packages:
 
   '@biomejs/biome@2.5.14':
