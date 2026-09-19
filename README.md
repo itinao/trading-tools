@@ -14,7 +14,7 @@
 | Design Doc 0001（リポジトリ全体） | 承認 |
 | 実行計画 0001（M0〜M5） | 承認 |
 | M0 基盤 | 完了 |
-| M1 守りの最小経路 | 実装中（0003 承認、0004 未着手） |
+| M1 守りの最小経路 | 実装中（0003 実装済み、0004 未着手） |
 
 ## セットアップ
 
@@ -22,6 +22,13 @@
 pnpm install
 pnpm db migrate
 pnpm test
+```
+
+楽天証券の CSV を `data/source/` に置いて取り込む（Git には入らない）:
+
+```bash
+pnpm import-holdings run "data/source/assetbalance(all)_YYYYMMDD_HHMMSS.csv"
+pnpm collect quotes
 ```
 
 ## ドキュメント

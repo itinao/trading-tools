@@ -99,11 +99,11 @@ flowchart LR
 
 ### 完了の定義
 
-- [ ] 実物の楽天証券 CSV を `data/source/` に置き、`import-holdings` で取り込める
-- [ ] `collect` で保有銘柄の株価が保存される（モックでも可）
+- [x] 実物の楽天証券 CSV を `data/source/` に置き、`import-holdings` で取り込める
+- [x] `collect` で保有銘柄の株価が保存される（モックでも可）
 - [ ] 株価を下落させた状態で `detect` を実行すると、該当銘柄のシグナルとアクションが作られる
 - [ ] ダッシュボードにアクションが表示され、対応済みにできる
-- [ ] 同じ日に `collect` / `detect` を2回実行しても、アクションが重複しない
+- [ ] 同じ日に `collect` / `detect` を2回実行しても、アクションが重複しない（`collect` 側は確認済み）
 - [ ] `import-holdings` → `collect` → `detect` を **手動で** 日次実行できる手順が `AGENTS.md` か README にある
 
 ---

@@ -9,7 +9,7 @@
 
 ## 現在のフェーズ
 
-**M1（守りの最小経路）実装中。** 入力側は [Design Doc 0003](docs/design-docs/0003-holdings-and-quotes.md)（承認）。出力側の 0004 は未着手。
+**M1（守りの最小経路）実装中。** 入力側 [Design Doc 0003](docs/design-docs/0003-holdings-and-quotes.md) は実装済み。次は出力側の Design Doc 0004（`detect` と `dashboard`）を書いて承認を得る。
 進捗は [実行計画 0001](docs/execution-plans/0001-initial.md)。
 
 ## 作業を始める前に
@@ -36,7 +36,10 @@ pnpm ワークスペース。Node 22（`.node-version`）。ビルドせず `tsx
 | --- | --- | --- |
 | `packages/cli` | `@trading/cli` | CLI 共通規約の実装（`defineTool`） |
 | `packages/db` | `@trading/db` | SQLite 接続、Drizzle スキーマ、マイグレーション |
+| `packages/market-data` | `@trading/market-data` | `QuoteProvider` と各 Provider（M1 は mock のみ） |
 | `tools/db` | `@trading/tool-db` | `pnpm db migrate` / `pnpm db status` |
+| `tools/import-holdings` | `@trading/tool-import-holdings` | `pnpm import-holdings run <csv>` / `list` |
+| `tools/collect` | `@trading/tool-collect` | `pnpm collect quotes`。M2 で `news` / `disclosures` |
 | `tools/<name>` | `@trading/tool-<name>` | 各ツール（M1 以降） |
 | `apps/dashboard` | | 閲覧用 Web（M1 以降） |
 | `.agents/skills/` | | エージェントのスキル（M2 以降）。`.claude/skills` はシンボリックリンク |
@@ -51,6 +54,18 @@ pnpm db migrate          # DB を作る / マイグレーションを当てる
 pnpm test                # 全パッケージのテスト
 pnpm lint && pnpm typecheck
 ```
+
+## 日次の手順（M1 時点、手動）
+
+```bash
+# 楽天証券の CSV を data/source/ に置いたとき
+pnpm import-holdings run "data/source/assetbalance(all)_YYYYMMDD_HHMMSS.csv"
+
+# 株価の取得（M1 はモック。data/source/mock-quotes.json を編集して値を変えられる）
+pnpm collect quotes
+```
+
+`mock-quotes.json` は初回の `collect quotes` で最新スナップショットの現在値から生成される。
 
 ## ツールの作り方（CLI 規約）
 
