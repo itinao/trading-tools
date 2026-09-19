@@ -9,7 +9,7 @@ import type { ActionStatus } from '@trading/domain'
 const STATUSES: readonly ActionStatus[] = ['open', 'done', 'dismissed']
 
 export const getActionsPage = createServerFn({ method: 'GET' })
-  .inputValidator((status: ActionStatus) => (STATUSES.includes(status) ? status : 'open'))
+  .validator((status: ActionStatus) => (STATUSES.includes(status) ? status : 'open'))
   .handler(async ({ data: status }) => {
     const { db } = await import('./db.ts')
     const { latestQuoteDate, listActions } = await import('@trading/domain')
@@ -27,7 +27,7 @@ export const getActionsPage = createServerFn({ method: 'GET' })
   })
 
 export const resolveAction = createServerFn({ method: 'POST' })
-  .inputValidator((input: { id: number; status: ActionStatus }) => {
+  .validator((input: { id: number; status: ActionStatus }) => {
     if (!Number.isInteger(input.id) || !STATUSES.includes(input.status))
       throw new Error('bad input')
     return input
@@ -76,7 +76,7 @@ export const getHoldingsPage = createServerFn({ method: 'GET' }).handler(async (
 })
 
 export const getInstrumentPage = createServerFn({ method: 'GET' })
-  .inputValidator((id: string) => id)
+  .validator((id: string) => id)
   .handler(async ({ data: id }) => {
     const { db } = await import('./db.ts')
     const { schema } = await import('@trading/db')

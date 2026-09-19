@@ -12,6 +12,7 @@ export const Route = createRootRoute({
     links: [{ rel: 'stylesheet', href: appCss }],
   }),
   component: RootComponent,
+  notFoundComponent: () => <p>ページが見つからない。</p>,
 })
 
 function RootComponent() {
