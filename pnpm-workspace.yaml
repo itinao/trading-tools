@@ -1,0 +1,9 @@
+packages:
+  - packages/*
+  - tools/*
+  - apps/*
+
+# ネイティブビルド（postinstall）を許可する依存
+allowBuilds:
+  esbuild: true
+  better-sqlite3: true
