@@ -42,6 +42,8 @@ describe('db status', () => {
   it('メモリ DB でも動く', async () => {
     const { code, json } = await run(['--db', ':memory:', 'status'])
     expect(code).toBe(0)
-    expect(json.data).toEqual({ path: ':memory:', applied: [], pending: [] })
+    expect(json.data.path).toBe(':memory:')
+    expect(json.data.applied).toEqual([])
+    expect(json.data.pending.length).toBeGreaterThan(0)
   })
 })
