@@ -36,21 +36,34 @@ M1「守りの最小経路」の出力側。0003 で保存した保有と株価�
 pnpm detect run [--as-of YYYY-MM-DD]
 ```
 
-対象は最新スナップショットの保有銘柄（0003 の `holdingTargets` と同じ）。`as_of` の株価（`quotes`）を使い、次の2ルールを評価する。
+対象は最新スナップショットの保有銘柄（0003 の `holdingTargets` と同じ）。`as_of` の株価と `quotes` の履歴を使い、[0001 付録 A](./0001-repository.md#付録-a-シグナルのカタログ2026-09-19-追記) の M1 の4ルールを評価する。ファンダメンタル系は M2 以降（データがまだ無い）。
 
-| ルール | kind | 何を比べるか | 既定の閾値 |
+| kind | 何を比べるか | 既定の閾値 | 履歴が足りないとき |
 | --- | --- | --- | --- |
-| 前日比の下落 | `price_drop_day` | `as_of` の株価 vs 前営業日の株価（`quotes` で `as_of` より前の直近。なければ `previous_close`） | -5% で `warn`、-10% で `critical` |
-| 取得単価比の下落 | `price_drop_cost` | `as_of` の株価 vs 平均取得単価（口座をまたいで数量加重平均） | -10% で `warn`、-20% で `critical` |
+| `price_drop_cost` | `as_of` の株価 vs 平均取得単価（口座横断の数量加重平均） | -10% warn / -20% critical | — |
+| `drawdown_60d` | `as_of` の株価 vs 直近 60 営業日（`quotes` の直近 60 行）の高値 | -15% warn / -25% critical | 20 行未満なら評価しない |
+| `below_ma200` | `as_of` の株価 vs 200 日移動平均。**上から下へ抜けた日**だけ（前日は平均以上、当日は未満） | 抜けたら warn | 200 行未満なら評価しない |
+| `price_drop_day` | `as_of` の株価 vs 前営業日の株価（`quotes` で `as_of` より前の直近。なければ `previous_close`） | -7% warn | 前日の値がなければ評価しない |
 
-- 比較対象の株価がない銘柄（初日など）はルールを評価せず、`skipped` に理由を入れて返す
-- 閾値を超えたら **シグナル** を1つ作る。同じ `(instrument_id, kind, as_of)` があれば上書き（値と重大度を更新）。同じ日に何度実行しても増えない
-- シグナルごとに **ルール生成のアクション** を1つ作る（§3.3）。`(signal_id, origin='rule')` で一意。既にあれば作らず、`status` も触らない（人が対応済みにしたものを未対応に戻さない）
-- 閾値を下回らなくなった日は、その日のシグナルは作らない。過去のシグナルは消さない（事実の記録）
+- 評価しなかった銘柄・ルールは `skipped` に理由を入れて返す
+- 閾値を超えたら **シグナル** を1つ作る。同じ `(instrument_id, kind, as_of)` があれば上書き（値と重大度を更新）。同じ日に何度実行しても増えない。シグナルは「その日、その条件が成立した」記録であり、条件が続く限り毎日作られる（M5 の時系列表示に使う）
+- 閾値を下回らなくなった日は、その日のシグナルは作らない。過去のシグナルは消さない
+
+#### アクションの生成（重複の抑制）
+
+シグナルが毎日作られてもアクションが毎日増えないよう、次の規則で **ルール生成のアクション** を作る。
+
+1. 同じ銘柄・同じ kind の **未対応（`open`）** のアクションがあれば作らない
+2. 直近のアクション（`done` / `dismissed`）より **重大度が上がった** ときは作る
+3. 直近のアクションから **`reissue_after_days`（既定 30 日）** 以上経っていれば作る
+4. それ以外は作らない
+
+これで「取得単価比 -12% が 2 週間続く」は最初の 1 件だけになり、-20% に悪化したときにもう 1 件出る。
+
 - 出力例:
 
 ```json
-{"ok":true,"data":{"asOf":"2026-09-19","evaluated":25,"skipped":[{"code":"1234","reason":"no previous quote"}],"signals":{"created":2,"updated":0},"actions":{"created":2}}}
+{"ok":true,"data":{"asOf":"2026-09-19","evaluated":25,"skipped":[{"code":"1234","kind":"below_ma200","reason":"insufficient history (12 < 200)"}],"signals":{"created":2,"updated":0},"actions":{"created":1,"suppressed":1}}}
 ```
 
 #### 閾値の設定
@@ -59,12 +72,15 @@ pnpm detect run [--as-of YYYY-MM-DD]
 
 ```json
 {
-  "price_drop_day": { "warn": -5, "critical": -10 },
-  "price_drop_cost": { "warn": -10, "critical": -20 }
+  "price_drop_cost": { "warn": -10, "critical": -20 },
+  "drawdown_60d": { "warn": -15, "critical": -25, "window": 60, "minHistory": 20 },
+  "below_ma200": { "window": 200 },
+  "price_drop_day": { "warn": -7 },
+  "reissue_after_days": 30
 }
 ```
 
-M2 でスコアの重みもここに入る。
+M2 でファンダ系の閾値とスコアの重みもここに入る。
 
 ### 3.2 シグナルとアクションのテーブル
 
@@ -73,7 +89,7 @@ erDiagram
     signals {
         integer id PK
         text instrument_id FK "-> instruments"
-        text kind "price_drop_day | price_drop_cost"
+        text kind "0001 付録 A の kind"
         text as_of "YYYY-MM-DD"
         text severity "warn | critical"
         real value "変化率(%)"
@@ -99,16 +115,20 @@ erDiagram
 ```
 
 - 一意制約: `signals (instrument_id, kind, as_of)`、`actions (signal_id, origin)`（`signal_id` が NULL の行は制約の対象外）
-- 索引: `actions (status, created_at desc)`、`signals (instrument_id, as_of desc)`
+- 索引: `actions (status, created_at desc)`、`actions (instrument_id, created_at desc)`、`signals (instrument_id, as_of desc)`
 - **シグナル = 何が起きたか（事実の解釈）、アクション = 何をすべきか**（0001 §9）。M1 のルール生成アクションは「事実の羅列」（0001 の 2-a）で、判断は含めない
 - `status`: `open`（未対応）→ `done`（対応した）/ `dismissed`（見送り）。`done` / `dismissed` から `open` に戻せる（誤操作の取り消し）
 
 ### 3.3 ルール生成アクションの文面
 
+すべて「事実の羅列」で、判断は含めない。末尾に「売る / 持つの判断は人が行う」と明記する。
+
 | kind | title | body |
 | --- | --- | --- |
-| `price_drop_day` | `{銘柄名}: 前日比 {value}%` | 前日の株価、当日の株価、保有数量、評価額の変化を箇条書き。「売る / 持つの判断は人が行う」と明記 |
-| `price_drop_cost` | `{銘柄名}: 取得単価比 {value}%` | 平均取得単価、当日の株価、含み損の額。同上 |
+| `price_drop_cost` | `{銘柄名}: 取得単価比 {value}%` | 平均取得単価、当日の株価、保有数量、含み損の額 |
+| `drawdown_60d` | `{銘柄名}: 直近高値から {value}%` | 高値とその日付、当日の株価、取得単価比 |
+| `below_ma200` | `{銘柄名}: 200 日線を下回った` | 200 日平均、当日の株価、直近 60 日の高値からの下落率 |
+| `price_drop_day` | `{銘柄名}: 前日比 {value}%` | 前日と当日の株価、評価額の変化。「ニュース・開示を確認」と促す |
 
 ### 3.4 `actions` コマンド
 
@@ -160,10 +180,12 @@ flowchart LR
 
 | 論点 | 決定 | 却下した選択肢と理由 |
 | --- | --- | --- |
-| 検知ルールの置き場 | `detect` ツール（コード）+ 閾値だけ設定ファイル | ルール全体を設定ファイルで記述: M1 の2ルールには過剰。M2 でスコアが入るときに再考 |
+| ルールの選定 | 0001 付録 A の M1 分（価格 2 + テクニカル 2） | 前日比だけ: 相場全体の下げ日に一斉に鳴り、じわじわ下がる銘柄を拾えない（壁打ちで指摘）。RSI 等の短期指標: 長期投資の判断に結びつかない |
+| 検知ルールの置き場 | `detect` ツール（コード）+ 閾値だけ設定ファイル | ルール全体を設定ファイルで記述: M1 の4ルールには過剰。M2 でスコアが入るときに再考 |
+| アクションの重複抑制 | 未対応があれば作らない + 重大度上昇 + 30 日で再発行 | シグナルごとに毎日作る: 条件が続く限り毎日増えて見なくなる。1銘柄1件だけ: 悪化したことに気づけない |
 | 前日比の「前日」 | `quotes` の直近前日、なければ `previous_close` | `previous_close` のみ: モックでは省略されることが多い。`quotes` のみ: 初日に何も検知できない |
 | 取得単価の口座またぎ | 数量加重平均 | 口座ごとにシグナル: 同じ銘柄で複数のアクションが出て煩い。口座別は銘柄詳細で見られる |
-| 同日再実行 | シグナルは上書き、アクションは触らない | 両方作り直す: 人が付けた `done` が消える |
+| 同日再実行 | シグナルは上書き、アクションは重複抑制の規則に従う | 両方作り直す: 人が付けた `done` が消える |
 | アクションの状態変更の入口 | CLI とダッシュボードの両方（同じ関数） | ダッシュボードのみ: エージェントが状態を読めない・変えられない |
 | `actions` を独立ツールにする | する | `detect` に同居: 「検知」と「対応の記録」は別の責務。M3 で `advise` が使うのは後者だけ |
 | ダッシュボードの DB アクセス | `@trading/db` を直接 | CLI を子プロセスで呼ぶ: 遅く、画面ごとに JSON を組み立て直すことになる |
@@ -175,11 +197,13 @@ flowchart LR
 | --- | --- | --- |
 | R1 | TanStack Start の API 変化が速い（`createServerFn` の `validator` → `inputValidator` など） | バージョンを固定し、公式の最小構成に寄せる。凝った機能を使わない |
 | R2 | 営業日の扱い。土日に `detect run` すると「前日」が金曜で問題ないが、祝日を挟むと `quotes` に穴ができる | 「`as_of` より前の直近の quote」で比較するので穴は自然に飛ばされる。祝日カレンダーは持たない |
-| R3 | モックで `price_drop_day` を試すには2日分の quote が要る | `collect quotes --as-of` で任意の日付を入れられる（0003）。手順を README に書く |
+| R3 | モックで試すには複数日分の quote が要る（`below_ma200` は 200 日分） | `collect quotes --as-of` で任意の日付を入れられる（0003）。`below_ma200` はテストで検証し、手元では実データが溜まるのを待つ |
+| R4 | 実データが溜まるまで `drawdown_60d` / `below_ma200` は動かない | S1 でヒストリカルデータを一括取得できる Provider を選ぶ（過去 1 年分の日足） |
 | U1 | ダッシュボードの `/holdings` を M1 に含めるか（M1 の完了の定義には不要） | 含める案にしている。要確認 |
 
 ## 要確認
 
-1. 閾値の既定値（前日比 -5% / -10%、取得単価比 -10% / -20%）はこれでよいか
-2. `/holdings`（保有一覧）を M1 に含めてよいか。アクション一覧と銘柄詳細だけなら少し早く終わる
-3. `actions` を独立ツールにする判断でよいか
+1. 4ルールの閾値の既定値はこれでよいか（運用しながら `config/detect.json` で調整する前提）
+2. アクションの重複抑制（未対応があれば作らない / 重大度上昇 / 30 日で再発行）でよいか
+3. `/holdings`（保有一覧）を M1 に含めてよいか
+4. `actions` を独立ツールにする判断でよいか
