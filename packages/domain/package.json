@@ -1,16 +1,17 @@
 {
-  "name": "@trading/tool-collect",
+  "name": "@trading/domain",
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@trading/cli": "workspace:*",
     "@trading/db": "workspace:*",
-    "@trading/market-data": "workspace:*",
-    "drizzle-orm": "^0.45.2",
-    "@trading/domain": "workspace:*"
+    "drizzle-orm": "^0.45.2"
   }
 }

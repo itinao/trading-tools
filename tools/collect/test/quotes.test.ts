@@ -1,10 +1,10 @@
 import { Logger } from '@trading/cli'
 import { type DatabaseHandle, schema } from '@trading/db'
 import { createTestDatabase } from '@trading/db/testing'
+import { holdingTargets } from '@trading/domain'
 import type { QuoteProvider } from '@trading/market-data'
 import { describe, expect, it } from 'vitest'
 import { collectQuotes } from '../src/quotes.ts'
-import { holdingTargets } from '../src/targets.ts'
 
 function seed(handle: DatabaseHandle) {
   const now = '2026-01-01T00:00:00+09:00'
@@ -84,7 +84,7 @@ describe('holdingTargets', () => {
     const handle = createTestDatabase()
     seed(handle)
     expect(
-      holdingTargets(handle)
+      holdingTargets(handle.db)
         .map((t) => t.code)
         .sort(),
     ).toEqual(['1234', '5678'])
@@ -92,7 +92,7 @@ describe('holdingTargets', () => {
   })
   it('スナップショットがなければ空', () => {
     const handle = createTestDatabase()
-    expect(holdingTargets(handle)).toEqual([])
+    expect(holdingTargets(handle.db)).toEqual([])
     handle.close()
   })
 })

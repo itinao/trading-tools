@@ -9,9 +9,9 @@ import {
   UsageError,
 } from '@trading/cli'
 import { type DatabaseHandle, schema } from '@trading/db'
+import { holdingTargets, type Target } from '@trading/domain'
 import { createMockProvider, type QuoteProvider } from '@trading/market-data'
 import { sql } from 'drizzle-orm'
-import { holdingTargets, type Target } from './targets.ts'
 
 export const MOCK_QUOTES_PATH = 'data/source/mock-quotes.json'
 
@@ -55,7 +55,7 @@ export async function collectQuotes(
   const asOf = options.asOf ?? todayJst()
   if (!isIsoDate(asOf)) throw new UsageError(`--as-of は YYYY-MM-DD: ${asOf}`)
 
-  const targets = holdingTargets(handle)
+  const targets = holdingTargets(handle.db)
   if (targets.length === 0) {
     throw new ToolError(
       'no_targets',
