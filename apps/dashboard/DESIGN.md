@@ -16,10 +16,10 @@ colors:
   on-primary: "#FFFFFF"
   primary-container: "#E2ECF6"
   on-primary-container: "#173A5A"
-  gain: "#1B6E3A"
-  gain-container: "#E3F2E7"
-  loss: "#C0392B"
-  loss-container: "#FCE9E6"
+  gain: "#C0392B"
+  gain-container: "#FCE9E6"
+  loss: "#1B6E3A"
+  loss-container: "#E3F2E7"
   warn: "#9A6700"
   warn-container: "#FFF3CD"
   critical: "#B3261E"
@@ -184,7 +184,7 @@ trading-tools のダッシュボードは、毎朝数分だけ開いて「何が
 背景は白ではなく、わずかに青みのある薄い灰（`background`）にし、表やカードの `surface`（白）が浮かび上がるようにする。文字は真っ黒を避け、`on-background` の濃い墨色を使う。
 
 - `primary`（深い紺）は **操作できるもの** の印。リンク、アクティブなナビ・タブ、主ボタン。装飾には使わない
-- `gain` / `loss` は **損益と変化率の符号** 専用。**上昇・含み益は緑、下落・含み損は赤**。赤は `critical` と同じく「悪い」の意味で統一する。コンテナ色（`gain-container` / `loss-container`）は行の強調など面で使うときだけ
+- `gain` / `loss` は **損益と変化率の符号** 専用。利用者が日常的に見る楽天証券のアプリに合わせ、**上昇・含み益は赤、下落・含み損は緑**。損益の赤は「良い」、重大度の赤（`critical`）は「悪い」で意味が異なるため、重大度は必ずバッジ（面つき）で示し、文字色だけの赤と混同させない。コンテナ色（`gain-container` / `loss-container`）は行の強調など面で使うときだけ
 - `warn` / `critical` は **シグナルの重大度** 専用。バッジと重大度セルに使い、本文の文字色には使わない
 - `warn-container` は「株価が古い」バナーにも使う。警告は1画面に1種類の黄色で統一する
 - `on-surface-variant` は補助情報（証券コード、日付、取得元、注記）。本文より一段薄く、それ以上薄くしない（コントラスト比 4.5:1 以上を守る）
@@ -264,7 +264,7 @@ trading-tools のダッシュボードは、毎朝数分だけ開いて「何が
 - Do: 空状態には次にやるコマンドを書く（例: 「`pnpm import-holdings run` で取り込む」）
 - Do: 助言ではなく事実の整理であることを、控えめな注記で毎回示す
 - Don't: 影、グラデーション、アイコンの多用、アニメーション。計器盤に演出はいらない
-- Don't: 上昇・下落の色を入れ替えない。赤は常に「下落・悪い」（`loss` と `critical` で共通）
+- Don't: 上昇・下落の色を欧米式（緑 = 上昇）にしない。楽天証券の慣習（赤 = 上昇）に固定する。重大度の赤は必ずバッジで示し、損益の赤（文字色のみ）と見分けがつくようにする
 - Don't: 警告色を複数使わない。黄色（`warn`）と赤（`critical`）の2段階だけ
 - Don't: 文字を `on-surface-variant` より薄くしない。読めない補助情報は出さない方がよい
 - Don't: 銘柄名を省略・切り詰めない。列幅が足りなければ折り返す
