@@ -2,6 +2,8 @@
 data/source/*
 !data/source/.gitkeep
 *.csv
+# テスト用の架空データは追跡する
+!**/test/fixtures/*.csv
 
 # ローカルDB
 data/*.db

@@ -1,5 +1,6 @@
 export { ToolError, UsageError } from './errors.ts'
 export { Logger, type LogLevel } from './logger.ts'
+export { isIsoDate, nowJst, todayJst } from './time.ts'
 export {
   type CommandDefinition,
   type CommonOptions,

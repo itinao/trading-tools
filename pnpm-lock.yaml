@@ -55,6 +55,18 @@ importers:
         specifier: workspace:*
         version: link:../../packages/db
 
+  tools/import-holdings:
+    dependencies:
+      '@trading/cli':
+        specifier: workspace:*
+        version: link:../../packages/cli
+      '@trading/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      drizzle-orm:
+        specifier: ^0.45.2
+        version: 0.45.2(@types/better-sqlite3@7.6.13)(better-sqlite3@12.11.1)
+
 packages:
 
   '@biomejs/biome@2.5.14':
