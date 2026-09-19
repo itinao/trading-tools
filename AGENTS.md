@@ -5,11 +5,12 @@
 ## このリポジトリは何か
 
 資産運用のツール群。保有銘柄・ウォッチ銘柄の監視をツールに任せ、「検知 → 確認 → アクション」を人が短時間でこなせるようにする。
-全体像は [Design Doc 0001](docs/design-docs/0001-repository.md)。
+全体像は [Design Doc 0001](docs/design-docs/0001-repository.md)、基盤は [Design Doc 0002](docs/design-docs/0002-foundation.md)。
 
 ## 現在のフェーズ
 
-**設計フェーズ。実装は始まっていない。** 実行計画 [0001](docs/execution-plans/0001-initial.md) は承認済み。次は M0 の Design Doc 0002 を書く。
+**M0（基盤）完了。次は M1（守りの最小経路）。** M1 に着手する前に Design Doc 0003（入力側）/ 0004（出力側）を書いて承認を得る。
+進捗は [実行計画 0001](docs/execution-plans/0001-initial.md)。
 
 ## 作業を始める前に
 
@@ -25,18 +26,53 @@
 - **AI に関わる処理はツールの外に置く。** ツールは AI なしで決定的に動く。判定・助言はエージェントのスキルで行い、結果はツールの CLI 経由で書き戻す
 - **データストアは CLI 経由でのみ触る。** SQLite を直接読み書きしない
 - **Design Doc の書き換えルール。** 草案は自由、承認後は漏れの補足のみ可、実装済みは不可（新しい Design Doc で supersede）
-- コミットは依頼があったときだけ
+- コミットは依頼があったときだけ。コミット前に `pnpm lint && pnpm typecheck && pnpm test` を通す
 
-## ファイルの場所
+## ワークスペース
 
-| パス | 内容 |
-| --- | --- |
-| `docs/design-docs/` | Design Doc（連番、変更ごとに1本） |
-| `docs/execution-plans/` | 実行計画（進捗に合わせて更新する） |
-| `.agents/skills/` | エージェントのスキル（`advise` など。M3 以降） |
-| `tools/` `apps/` `packages/` | 実装（M0 以降。構成は Design Doc 0001 §7） |
-| `data/source/` | 個人データ（gitignore） |
-| `data/trading.db` | SQLite（gitignore） |
+pnpm ワークスペース。Node 22（`.node-version`）。ビルドせず `tsx` で実行する。
+
+| パス | パッケージ | 内容 |
+| --- | --- | --- |
+| `packages/cli` | `@trading/cli` | CLI 共通規約の実装（`defineTool`） |
+| `packages/db` | `@trading/db` | SQLite 接続、Drizzle スキーマ、マイグレーション |
+| `tools/db` | `@trading/tool-db` | `pnpm db migrate` / `pnpm db status` |
+| `tools/<name>` | `@trading/tool-<name>` | 各ツール（M1 以降） |
+| `apps/dashboard` | | 閲覧用 Web（M1 以降） |
+| `.agents/skills/` | | エージェントのスキル（M2 以降）。`.claude/skills` はシンボリックリンク |
+| `docs/design-docs/` | | Design Doc（連番、変更ごとに1本） |
+| `docs/execution-plans/` | | 実行計画（進捗に合わせて更新する） |
+| `data/source/` | | 個人データ（gitignore） |
+| `data/trading.db` | | SQLite（gitignore）。`TRADING_DB_PATH` で変更可 |
+
+```bash
+pnpm install
+pnpm db migrate          # DB を作る / マイグレーションを当てる
+pnpm test                # 全パッケージのテスト
+pnpm lint && pnpm typecheck
+```
+
+## ツールの作り方（CLI 規約）
+
+規約の全文は Design Doc 0002 §3.3。要点:
+
+- `tools/<name>/src/tool.ts` に `defineTool({ name, description, commands })` でツールを定義し、`src/main.ts` から `process.exitCode = await tool.run(process.argv.slice(2))`。ルートの `package.json` の `scripts` に `"<name>": "tsx tools/<name>/src/main.ts"` を登録する
+- **stdout は JSON 1つだけ。** ハンドラの戻り値が `{ ok: true, data }` になる。人向けの文字列は `context.logger` で stderr へ
+- 失敗は `ToolError(code, message)` を投げる（終了コード 1）。引数の誤りは `UsageError`（終了コード 2）
+- 共通オプション `--db` / `--dry-run` / `--quiet` / `--verbose` / `--input` は `context.options` に入る。`--dry-run` のときは書き込まず、行う予定を返す
+- DB は `openDatabase(context.dbPath)` で開き、必ず `close()` する（`tools/db/src/tool.ts` の `withDatabase` を参照）
+- 同じ入力で2回実行しても結果が変わらないようにする。何をキーに重複を防ぐかを Design Doc に書く
+- 日付は `YYYY-MM-DD`、時刻は ISO 8601（オフセット付き）、タイムゾーンは `Asia/Tokyo`
+- テストは `tool.run(argv, { stdout, stderr, env })` で stdout を捕まえて JSON を検証する（`tools/db/test/tool.test.ts` を参照）
+
+## スキーマの変え方
+
+1. `packages/db/src/schema/` にテーブルを1ファイル1テーブルで追加し、`index.ts` から re-export する
+2. `pnpm db:generate` で `packages/db/migrations/` に SQL を生成する。**生成された SQL は手で編集しない**
+3. `pnpm db migrate` で適用する
+4. スキーマと生成された SQL・`meta/` を一緒にコミットする
+
+テストでは `createTestDatabase()`（`@trading/db/testing`）でマイグレーション済みのメモリ DB を使う。
 
 ## 用語
 

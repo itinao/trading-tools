@@ -30,7 +30,7 @@ flowchart LR
 
 | # | マイルストーン | 到達点（ひとこと） | 状態 |
 | --- | --- | --- | --- |
-| M0 | 基盤 | エージェントが迷わず着手できる | 実装中 |
+| M0 | 基盤 | エージェントが迷わず着手できる | 完了（2026-09-19） |
 | M1 | 守りの最小経路 | 「検知 → 確認」が一本通る | 未着手 |
 | M2 | ニュース・開示とスコア | 「悪いニュースでスコアが下がる」が動く | 未着手 |
 | M3 | AI助言 | 「何をすべきか」が出る | 未着手 |
@@ -63,11 +63,11 @@ flowchart LR
 
 ### 完了の定義
 
-- [ ] `pnpm install && pnpm build && pnpm test && pnpm lint` が通る
-- [ ] `pnpm db migrate` で `data/trading.db` が作られる（空のスキーマでよい）
-- [ ] CLI 規約に沿ったサンプルコマンドが1つあり、`--json` で JSON を返す
-- [ ] `AGENTS.md` を読んだエージェントが、M1 の Design Doc の場所と実装の入り方を説明できる
-- [ ] `git status` に個人データ・DB が出ない
+- [x] `pnpm install && pnpm test && pnpm lint && pnpm typecheck` が通る（ビルド工程はない。0002 で tsx 直接実行に決定）
+- [x] `pnpm db migrate` で `data/trading.db` が作られる（空のスキーマ）
+- [x] CLI 規約に沿ったコマンドが1つある（`db migrate` / `db status`。stdout は常に JSON、`--json` は不要と 0002 で決定）
+- [x] `AGENTS.md` に M1 の Design Doc の場所と実装の入り方がある
+- [x] `git status` に個人データ・DB が出ない
 
 ---
 
