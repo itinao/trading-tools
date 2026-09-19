@@ -1,0 +1,2 @@
+# CSV フィクスチャは CP932 / CRLF のまま保持する
+*.csv -text
