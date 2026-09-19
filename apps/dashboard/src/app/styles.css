@@ -1,124 +1,277 @@
-:root {
-  --fg: #1f2328;
-  --muted: #6b7280;
-  --border: #e5e7eb;
-  --bg: #ffffff;
-  --warn: #b45309;
-  --critical: #b91c1c;
-  --down: #b91c1c;
-  --up: #047857;
-  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
-  color: var(--fg);
-  background: var(--bg);
-  font-size: 14px;
+/*
+ * DESIGN.md の Components を CSS にしたもの（Design Doc 0007 §3.3）。
+ * 値は tokens.css の変数だけを使う。クラス名は DESIGN.md のコンポーネント名に合わせる。
+ */
+@import "./tokens.css";
+
+/* ---------- base ---------- */
+html {
+  background: var(--color-background);
+  color: var(--color-on-background);
+  font-family: var(--font-body-md-family);
+  font-size: var(--font-body-md-size);
+  font-weight: var(--font-body-md-weight);
+  line-height: var(--font-body-md-line-height);
+  -webkit-font-smoothing: antialiased;
 }
 body {
   margin: 0;
 }
+main {
+  max-width: var(--spacing-content-max-width);
+  padding: var(--spacing-xl) var(--spacing-page-padding) var(--spacing-2xl);
+}
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+code {
+  background: var(--color-surface-container);
+  color: var(--color-on-surface);
+  border-radius: var(--rounded-sm);
+  padding: 0 4px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.92em;
+}
+
+/* ---------- page-title / section-title ---------- */
+h1 {
+  font-size: var(--font-headline-md-size);
+  font-weight: var(--font-headline-md-weight);
+  line-height: var(--font-headline-md-line-height);
+  letter-spacing: var(--font-headline-md-letter-spacing);
+  margin: 0 0 var(--spacing-md);
+}
+h2 {
+  font-size: var(--font-title-sm-size);
+  font-weight: var(--font-title-sm-weight);
+  line-height: var(--font-title-sm-line-height);
+  margin: var(--spacing-xl) 0 var(--spacing-sm);
+}
+
+/* ---------- nav ---------- */
 nav {
   display: flex;
-  gap: 16px;
-  padding: 12px 20px;
-  border-bottom: 1px solid var(--border);
+  gap: var(--spacing-xl);
+  align-items: stretch;
+  height: 48px;
+  padding: 0 var(--spacing-page-padding);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-outline-variant);
 }
 nav a {
-  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-on-surface-variant);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+nav a:hover {
+  color: var(--color-on-surface);
   text-decoration: none;
 }
 nav a.active {
-  color: var(--fg);
-  font-weight: 600;
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
 }
-main {
-  padding: 20px;
-  max-width: 1100px;
-}
-h1 {
-  font-size: 18px;
-  margin: 0 0 12px;
-}
-h2 {
-  font-size: 15px;
-  margin: 24px 0 8px;
-}
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-th,
-td {
-  text-align: left;
-  padding: 6px 8px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: top;
-}
-th {
-  color: var(--muted);
-  font-weight: 500;
-}
-td.num,
-th.num {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-.muted {
-  color: var(--muted);
-}
-.warn {
-  color: var(--warn);
-}
-.critical {
-  color: var(--critical);
-  font-weight: 600;
-}
-.down {
-  color: var(--down);
-}
-.up {
-  color: var(--up);
-}
-.stale {
-  background: #fef3c7;
-  padding: 8px 12px;
-  border-radius: 4px;
-  margin-bottom: 12px;
-}
+
+/* ---------- tab / tab-active ---------- */
 .tabs {
   display: flex;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--color-outline-variant);
 }
 .tabs a {
-  color: var(--muted);
+  color: var(--color-on-surface-variant);
+  padding: 6px 2px;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.tabs a:hover {
+  color: var(--color-on-surface);
   text-decoration: none;
-  padding: 4px 0;
 }
 .tabs a.active {
-  color: var(--fg);
-  border-bottom: 2px solid var(--fg);
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
 }
+
+/* ---------- table ---------- */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--rounded-md);
+  overflow: hidden;
+}
+th {
+  background: var(--color-surface-container);
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-label-sm-size);
+  font-weight: var(--font-label-sm-weight);
+  line-height: var(--font-label-sm-line-height);
+  letter-spacing: var(--font-label-sm-letter-spacing);
+  text-align: left;
+  padding: var(--spacing-cell-padding-y) var(--spacing-cell-padding-x);
+  border-bottom: 1px solid var(--color-outline-variant);
+}
+td {
+  color: var(--color-on-surface);
+  text-align: left;
+  vertical-align: top;
+  padding: var(--spacing-cell-padding-y) var(--spacing-cell-padding-x);
+  border-bottom: 1px solid var(--color-outline-variant);
+}
+tbody tr:last-child td {
+  border-bottom: none;
+}
+tbody tr:hover td {
+  background: var(--color-surface-container);
+}
+th.num,
+td.num {
+  text-align: right;
+  font-weight: var(--font-numeric-md-weight);
+  font-feature-settings: var(--font-numeric-md-feature);
+  white-space: nowrap;
+}
+th.num {
+  font-weight: var(--font-label-sm-weight);
+}
+
+/* ---------- semantic text colors ---------- */
+.muted {
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-label-sm-size);
+  line-height: var(--font-label-sm-line-height);
+}
+.gain {
+  color: var(--color-gain);
+}
+.loss {
+  color: var(--color-loss);
+}
+
+/* ---------- badge ---------- */
+.badge {
+  display: inline-block;
+  font-size: var(--font-label-sm-size);
+  font-weight: var(--font-label-sm-weight);
+  line-height: var(--font-label-sm-line-height);
+  letter-spacing: var(--font-label-sm-letter-spacing);
+  border-radius: var(--rounded-full);
+  padding: 1px 8px;
+  white-space: nowrap;
+}
+.badge-warn {
+  background: var(--color-warn-container);
+  color: var(--color-warn);
+}
+.badge-critical {
+  background: var(--color-critical-container);
+  color: var(--color-critical);
+  font-weight: 600;
+}
+.badge-neutral {
+  background: var(--color-surface-container);
+  color: var(--color-on-surface-variant);
+}
+
+/* ---------- button ---------- */
 button {
-  font: inherit;
-  padding: 4px 10px;
-  border: 1px solid var(--border);
-  background: #fff;
-  border-radius: 4px;
+  font-family: inherit;
+  font-size: var(--font-label-sm-size);
+  font-weight: var(--font-label-sm-weight);
+  line-height: var(--font-label-sm-line-height);
+  height: 28px;
+  padding: 0 10px;
+  border-radius: var(--rounded);
+  border: 1px solid var(--color-outline);
+  background: var(--color-surface);
+  color: var(--color-on-surface);
   cursor: pointer;
 }
 button:hover {
-  background: #f3f4f6;
+  background: var(--color-surface-container);
 }
+button:active {
+  border-color: var(--color-primary);
+}
+button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+button.primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+button.primary:hover {
+  background: var(--color-on-primary-container);
+}
+.actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  white-space: nowrap;
+}
+
+/* ---------- banner-stale ---------- */
+.banner-stale {
+  background: var(--color-warn-container);
+  color: var(--color-on-surface);
+  border-radius: var(--rounded-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* ---------- detail-body ---------- */
 details summary {
   cursor: pointer;
+  list-style: none;
 }
-pre.body {
+details summary::-webkit-details-marker {
+  display: none;
+}
+details summary::before {
+  content: "▸";
+  display: inline-block;
+  width: 1em;
+  color: var(--color-on-surface-variant);
+}
+details[open] summary::before {
+  content: "▾";
+}
+.detail-body {
+  background: var(--color-surface-container);
+  color: var(--color-on-surface-variant);
+  border-radius: var(--rounded);
+  padding: var(--spacing-md);
+  margin: var(--spacing-sm) 0 0;
   white-space: pre-wrap;
-  margin: 6px 0 0;
   font: inherit;
-  color: var(--muted);
+}
+
+/* ---------- misc ---------- */
+.summary {
+  color: var(--color-on-surface-variant);
+  margin: 0 0 var(--spacing-lg);
 }
 .note {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 16px;
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-label-sm-size);
+  line-height: var(--font-label-sm-line-height);
+  margin-top: var(--spacing-lg);
+}
+.empty {
+  color: var(--color-on-surface-variant);
+  padding: var(--spacing-lg);
+  background: var(--color-surface);
+  border: 1px dashed var(--color-outline);
+  border-radius: var(--rounded-md);
 }

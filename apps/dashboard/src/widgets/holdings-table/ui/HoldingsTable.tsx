@@ -24,7 +24,11 @@ export function HoldingsTable({
   latestQuoteDate: string | null
 }) {
   if (rows.length === 0)
-    return <p className="muted">保有がない。`pnpm import-holdings run` で取り込む。</p>
+    return (
+      <p className="empty">
+        保有がない。<code>pnpm import-holdings run</code> で取り込む。
+      </p>
+    )
   return (
     <table>
       <thead>

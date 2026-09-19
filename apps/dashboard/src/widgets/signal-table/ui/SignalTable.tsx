@@ -10,7 +10,7 @@ export interface SignalRow {
 }
 
 export function SignalTable({ signals }: { signals: SignalRow[] }) {
-  if (signals.length === 0) return <p className="muted">なし</p>
+  if (signals.length === 0) return <p className="empty">なし</p>
   return (
     <table>
       <thead>
@@ -26,7 +26,9 @@ export function SignalTable({ signals }: { signals: SignalRow[] }) {
           <tr key={s.id}>
             <td>{s.asOf}</td>
             <td>{kindLabel(s.kind)}</td>
-            <td className={s.severity}>{s.severity}</td>
+            <td>
+              <span className={`badge badge-${s.severity}`}>{s.severity}</span>
+            </td>
             <PctCell value={s.value} />
           </tr>
         ))}

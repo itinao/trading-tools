@@ -15,7 +15,7 @@ export function InstrumentPage({ data }: { data: InstrumentPageData }) {
       <h1>
         {instrument.name} <span className="muted">{instrument.code}</span>
       </h1>
-      <p className="muted">
+      <p className="summary">
         株価: {price(latest?.price)}（{latest?.asOf ?? '-'}）
         {costChange != null && (
           <>
@@ -59,7 +59,7 @@ export function InstrumentPage({ data }: { data: InstrumentPageData }) {
           </tbody>
         </table>
       ) : (
-        <p className="muted">最新スナップショットに保有がない。</p>
+        <p className="empty">最新スナップショットに保有がない。</p>
       )}
 
       <h2>アクション</h2>

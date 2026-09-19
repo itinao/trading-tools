@@ -5,5 +5,5 @@
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "types": ["node", "vite/client"]
   },
-  "include": ["src", "vite.config.ts"]
+  "include": ["src", "test", "scripts", "vite.config.ts", "steiger.config.ts", "vitest.config.ts"]
 }

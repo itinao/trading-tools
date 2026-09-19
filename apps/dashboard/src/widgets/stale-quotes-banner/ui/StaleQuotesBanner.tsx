@@ -8,9 +8,9 @@ export function StaleQuotesBanner({
 }) {
   if (latestQuoteDate != null && latestQuoteDate >= today) return null
   return (
-    <div className="stale">
-      株価の最終取得日: {latestQuoteDate ?? 'なし'}（今日は {today}）。`pnpm collect quotes` と
-      `pnpm detect run` を実行すると更新される。
+    <div className="banner-stale">
+      株価の最終取得日: {latestQuoteDate ?? 'なし'}（今日は {today}）。
+      <code>pnpm collect quotes</code> と <code>pnpm detect run</code> を実行すると更新される。
     </div>
   )
 }

@@ -12,7 +12,7 @@ export function ActionBody({
     <>
       <details>
         <summary>{title}</summary>
-        <pre className="body">{body}</pre>
+        <pre className="detail-body">{body}</pre>
       </details>
       {note && <div className="muted">メモ: {note}</div>}
     </>

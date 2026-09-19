@@ -8,7 +8,7 @@ export function HoldingsPage({ data }: { data: HoldingsPageData }) {
   return (
     <>
       <h1>保有</h1>
-      <p className="muted">
+      <p className="summary">
         スナップショット: {dateOnly(data.snapshotAsOf)} / 株価: {data.latestQuoteDate ?? 'なし'} /
         評価額 {yen(total)} 円 / 損益 <span className={pctClass(pnl)}>{yen(pnl)} 円</span>
       </p>

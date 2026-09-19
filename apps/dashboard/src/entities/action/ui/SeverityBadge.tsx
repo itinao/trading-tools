@@ -1,4 +1,4 @@
-/** 重大度（warn / critical）。シグナル由来でなければ origin（ai / manual）を出す */
+/** 重大度（warn / critical）はバッジ（面つき）で示す。シグナル由来でなければ origin（ai / manual）を neutral で出す */
 export function SeverityBadge({
   severity,
   fallback,
@@ -6,5 +6,6 @@ export function SeverityBadge({
   severity: string | null
   fallback: string
 }) {
-  return <span className={severity ?? ''}>{severity ?? fallback}</span>
+  const kind = severity === 'warn' || severity === 'critical' ? severity : 'neutral'
+  return <span className={`badge badge-${kind}`}>{severity ?? fallback}</span>
 }

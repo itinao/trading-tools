@@ -13,14 +13,14 @@ export function ResolveButtons({ id, status }: { id: number; status: string }) {
   }
   if (status === 'open') {
     return (
-      <>
+      <div className="actions">
         <button type="button" onClick={() => change('done')}>
           対応した
-        </button>{' '}
+        </button>
         <button type="button" onClick={() => change('dismissed')}>
           見送り
         </button>
-      </>
+      </div>
     )
   }
   return (

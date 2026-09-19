@@ -10,7 +10,7 @@ export interface QuoteRow extends QuotePoint {
 
 /** 新しい順に並んだ株価の表。前日比は次の行（前日）と比べる */
 export function QuoteHistoryTable({ quotes }: { quotes: QuoteRow[] }) {
-  if (quotes.length === 0) return <p className="muted">なし</p>
+  if (quotes.length === 0) return <p className="empty">なし</p>
   return (
     <table>
       <thead>

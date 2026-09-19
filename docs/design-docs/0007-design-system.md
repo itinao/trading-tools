@@ -2,7 +2,7 @@
 
 | | |
 | --- | --- |
-| 状態 | 承認（2026-09-20） |
+| 状態 | 実装済み（2026-09-20） |
 | 作成日 | 2026-09-20 |
 | 元になる Design Doc | [0006](./0006-dashboard-fsd.md)（ダッシュボードの構成） |
 | 参考 | [google-labs-code/design.md](https://github.com/google-labs-code/design.md)（DESIGN.md フォーマット仕様）、[Qiita: DESIGN.md と Claude Code](https://qiita.com/miruky/items/a6312c14e6352376ec00) |
@@ -76,3 +76,9 @@ DESIGN.md の front matter から CSS 変数を **自動生成** し、手書き
 | 損益の色 | 楽天証券式（赤 = 上昇、緑 = 下落） |
 | アクセント色 | 深い紺 `#1F4E79` |
 | テーマ | ライト固定 |
+
+## 実装時の補足（2026-09-20）
+
+- 生成物 `tokens.css` は Biome の整形対象から外した（`biome.json` の `files.includes`）。整形されると生成結果と一致しなくなるため
+- `components` のクラス名: `badge-warn` / `badge-critical` / `badge-neutral`、`banner-stale`、`detail-body`、`.tabs`、`.actions`（ボタンの横並び）、`.summary`（ページ冒頭の要約行）、`.empty`（空状態）。表・ナビ・ボタン・見出しは要素セレクタで当てる
+- 損益の色は `gain` / `loss` クラス（`pctClass` が返す）

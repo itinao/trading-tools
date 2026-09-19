@@ -18,7 +18,8 @@
     "db:erd": "pnpm --filter @trading/db erd",
     "detect": "tsx tools/detect/src/main.ts",
     "actions": "tsx tools/actions/src/main.ts",
-    "dashboard": "pnpm --filter @trading/dashboard dev"
+    "dashboard": "pnpm --filter @trading/dashboard dev",
+    "design:tokens": "pnpm --filter @trading/dashboard design:tokens"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",

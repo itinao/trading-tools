@@ -43,7 +43,7 @@ pnpm ワークスペース。Node 22（`.node-version`）。ビルドせず `tsx
 | `tools/collect` | `@trading/tool-collect` | `pnpm collect quotes`。M2 で `news` / `disclosures` |
 | `tools/detect` | `@trading/tool-detect` | `pnpm detect run`。シグナルとアクションを作る。閾値は `config/detect.json` |
 | `tools/actions` | `@trading/tool-actions` | `pnpm actions list` / `show` / `resolve` |
-| `apps/dashboard` | `@trading/dashboard` | `pnpm dashboard` で http://127.0.0.1:3000 |
+| `apps/dashboard` | `@trading/dashboard` | `pnpm dashboard` で http://127.0.0.1:3000。見た目は `apps/dashboard/DESIGN.md` |
 | `tools/<name>` | `@trading/tool-<name>` | 各ツール（M1 以降） |
 | `.agents/skills/` | | エージェントのスキル（M2 以降）。`.claude/skills` はシンボリックリンク |
 | `docs/design-docs/` | | Design Doc（連番、変更ごとに1本） |
@@ -99,6 +99,13 @@ pnpm dashboard           # http://127.0.0.1:3000
 - サーバー関数（`createServerFn`）は `api` セグメントに置く。画面のデータ取得は `pages/<page>/api`、利用者の操作（書き込み）は `features/<feature>/api`。DB を触るモジュール（`shared/api`、`@trading/domain`、`@trading/db`）は **handler 内で動的 import** し、クライアントバンドルに入れない
 - widgets は自分でデータを取らず props で受け取る
 - `pnpm --filter @trading/dashboard fsd`（`pnpm lint` に含まれる）で層の逆流・公開 API の迂回を検査する。通らない構成は直す
+
+### 見た目（DESIGN.md）
+
+- ダッシュボードの見た目は [apps/dashboard/DESIGN.md](apps/dashboard/DESIGN.md)（Google Stitch の DESIGN.md フォーマット）に従う（Design Doc 0007）。front matter がトークン（色・文字・角丸・余白・コンポーネント）、本文が意図と Do's / Don'ts
+- 色・文字・角丸・余白の値は `pnpm design:tokens` で `apps/dashboard/src/app/tokens.css` に生成される。CSS は **この変数だけ** を使い、生の色コードや px を `styles.css` に書かない。DESIGN.md を変えたら再生成する（古いままだと `pnpm test` が落ちる）
+- 新しい UI 部品を作るときは、先に DESIGN.md の `components` と本文の Components に定義を足し、`styles.css` にそのコンポーネント名のクラスを書く
+- 損益・変化率の色は楽天証券に合わせて **赤 = 上昇（`gain`）、緑 = 下落（`loss`）**。重大度（`warn` / `critical`）は必ずバッジ（面つき）で示し、損益の文字色と混同させない
 
 ## スキーマの変え方
 

@@ -1,0 +1,74 @@
+/* 自動生成。手で編集しない。生成元は DESIGN.md、コマンドは pnpm design:tokens（Design Doc 0007） */
+:root {
+  /* colors */
+  --color-background: #F6F7F9;
+  --color-on-background: #1C2128;
+  --color-surface: #FFFFFF;
+  --color-on-surface: #1C2128;
+  --color-on-surface-variant: #5C6773;
+  --color-surface-container: #F0F2F5;
+  --color-surface-container-high: #E6E9ED;
+  --color-outline: #D3D8DF;
+  --color-outline-variant: #E7EAEE;
+  --color-primary: #1F4E79;
+  --color-on-primary: #FFFFFF;
+  --color-primary-container: #E2ECF6;
+  --color-on-primary-container: #173A5A;
+  --color-gain: #C0392B;
+  --color-gain-container: #FCE9E6;
+  --color-loss: #1B6E3A;
+  --color-loss-container: #E3F2E7;
+  --color-warn: #9A6700;
+  --color-warn-container: #FFF3CD;
+  --color-critical: #B3261E;
+  --color-critical-container: #FCE4E1;
+  --color-on-critical: #FFFFFF;
+
+  /* typography */
+  --font-headline-md-family: Inter, "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  --font-headline-md-size: 20px;
+  --font-headline-md-weight: 600;
+  --font-headline-md-line-height: 28px;
+  --font-headline-md-letter-spacing: -0.01em;
+  --font-title-sm-family: Inter, "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  --font-title-sm-size: 15px;
+  --font-title-sm-weight: 600;
+  --font-title-sm-line-height: 22px;
+  --font-title-sm-letter-spacing: 0em;
+  --font-body-md-family: Inter, "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  --font-body-md-size: 14px;
+  --font-body-md-weight: 400;
+  --font-body-md-line-height: 22px;
+  --font-body-md-letter-spacing: 0em;
+  --font-label-sm-family: Inter, "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  --font-label-sm-size: 12px;
+  --font-label-sm-weight: 500;
+  --font-label-sm-line-height: 16px;
+  --font-label-sm-letter-spacing: 0.01em;
+  --font-numeric-md-family: Inter, "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  --font-numeric-md-size: 14px;
+  --font-numeric-md-weight: 500;
+  --font-numeric-md-line-height: 22px;
+  --font-numeric-md-letter-spacing: 0em;
+  --font-numeric-md-feature: "tnum" 1, "lnum" 1;
+
+  /* rounded */
+  --rounded-sm: 4px;
+  --rounded: 6px;
+  --rounded-md: 8px;
+  --rounded-full: 9999px;
+
+  /* spacing */
+  --spacing-unit: 4px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+  --spacing-page-padding: 24px;
+  --spacing-content-max-width: 1120px;
+  --spacing-cell-padding-y: 8px;
+  --spacing-cell-padding-x: 12px;
+
+}

@@ -7,7 +7,8 @@
     "dev": "vite dev",
     "build": "vite build",
     "typecheck": "tsc --noEmit",
-    "fsd": "steiger ./src"
+    "fsd": "steiger ./src",
+    "design:tokens": "tsx scripts/design-tokens.ts"
   },
   "dependencies": {
     "@tanstack/react-router": "^1.170.38",
@@ -25,6 +26,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.1",
     "steiger": "^0.6.0",
-    "vite": "^8.3.0"
+    "vite": "^8.3.0",
+    "yaml": "^2.9.1"
   }
 }

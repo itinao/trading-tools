@@ -42,6 +42,7 @@ pnpm dashboard   # http://127.0.0.1:3000
 | [docs/design-docs/](docs/design-docs/) | Design Doc。変更ごとに1本。[0001](docs/design-docs/0001-repository.md) が全体像 |
 | [docs/execution-plans/](docs/execution-plans/) | 実行計画。マイルストーンと完了の定義 |
 | [docs/schema.md](docs/schema.md) | 現在の全テーブルの ER 図（自動生成、常に最新） |
+| [apps/dashboard/DESIGN.md](apps/dashboard/DESIGN.md) | ダッシュボードのデザインシステム（Stitch DESIGN.md 形式） |
 | [AGENTS.md](AGENTS.md) | エージェント（codex / Claude Code）向けの指示 |
 
 ## 進め方
