@@ -44,6 +44,7 @@ pnpm ワークスペース。Node 22（`.node-version`）。ビルドせず `tsx
 | `apps/dashboard` | | 閲覧用 Web（M1 以降） |
 | `.agents/skills/` | | エージェントのスキル（M2 以降）。`.claude/skills` はシンボリックリンク |
 | `docs/design-docs/` | | Design Doc（連番、変更ごとに1本） |
+| `docs/schema.md` | | **現在の全テーブルの ER 図（自動生成）** |
 | `docs/execution-plans/` | | 実行計画（進捗に合わせて更新する） |
 | `data/source/` | | 個人データ（gitignore） |
 | `data/trading.db` | | SQLite（gitignore）。`TRADING_DB_PATH` で変更可 |
@@ -83,9 +84,11 @@ pnpm collect quotes
 ## スキーマの変え方
 
 1. `packages/db/src/schema/` にテーブルを1ファイル1テーブルで追加し、`index.ts` から re-export する
-2. `pnpm db:generate` で `packages/db/migrations/` に SQL を生成する。**生成された SQL は手で編集しない**
+2. `pnpm db:generate <名前>` で `packages/db/migrations/` に SQL を生成する。**生成された SQL は手で編集しない**
 3. `pnpm db migrate` で適用する
-4. スキーマと生成された SQL・`meta/` を一緒にコミットする
+4. `packages/db/src/erd.ts` の `DEFINED_IN` に、そのテーブルを定義した Design Doc の番号を足す
+5. `pnpm db:erd` で [docs/schema.md](docs/schema.md) を再生成する（古いままだと `pnpm test` が落ちる）
+6. スキーマ・生成された SQL・`meta/`・`docs/schema.md` を一緒にコミットする
 
 テストでは `createTestDatabase()`（`@trading/db/testing`）でマイグレーション済みのメモリ DB を使う。
 

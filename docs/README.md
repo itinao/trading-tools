@@ -4,6 +4,7 @@
 | --- | --- |
 | [design-docs/](./design-docs/) | Design Doc。変更ごとに1本、連番。実装済みになったら書き換えない |
 | [execution-plans/](./execution-plans/) | 実行計画。マイルストーンと完了の定義 |
+| [schema.md](./schema.md) | 現在の全テーブルの ER 図。`pnpm db:erd` で自動生成 |
 
 ## 進め方
 

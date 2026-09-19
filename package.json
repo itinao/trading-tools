@@ -14,7 +14,8 @@
     "lint": "biome check .",
     "format": "biome format --write .",
     "import-holdings": "tsx tools/import-holdings/src/main.ts",
-    "collect": "tsx tools/collect/src/main.ts"
+    "collect": "tsx tools/collect/src/main.ts",
+    "db:erd": "pnpm --filter @trading/db erd"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",
