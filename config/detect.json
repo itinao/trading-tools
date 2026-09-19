@@ -1,0 +1,7 @@
+{
+  "price_drop_cost": { "warn": -10, "critical": -20 },
+  "drawdown_60d": { "warn": -15, "critical": -25, "window": 60, "minHistory": 20 },
+  "below_ma200": { "window": 200 },
+  "price_drop_day": { "warn": -7 },
+  "reissue_after_days": 30
+}

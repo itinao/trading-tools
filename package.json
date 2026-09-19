@@ -15,7 +15,8 @@
     "format": "biome format --write .",
     "import-holdings": "tsx tools/import-holdings/src/main.ts",
     "collect": "tsx tools/collect/src/main.ts",
-    "db:erd": "pnpm --filter @trading/db erd"
+    "db:erd": "pnpm --filter @trading/db erd",
+    "detect": "tsx tools/detect/src/main.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",
