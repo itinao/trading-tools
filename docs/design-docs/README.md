@@ -10,7 +10,7 @@
 | 0003 | [保有の取り込みと株価の収集（M1 入力側）](./0003-holdings-and-quotes.md) — 楽天証券 CSV、instruments / holdings / quotes、モック Provider | 実装済み |
 | 0004 | [スキーマ図の自動生成](./0004-schema-doc.md) — `docs/schema.md` を Drizzle スキーマから生成し、テストで鮮度を担保 | 実装済み |
 | 0005 | [下落の検知とダッシュボード（M1 出力側）](./0005-detect-and-dashboard.md) — signals / actions、detect・actions ツール、TanStack Start | 実装済み |
-| 0006 | [ダッシュボードを FSD で構成する](./0006-dashboard-fsd.md) — 層と依存方向、routes の扱い、steiger による検査 | 承認 |
+| 0006 | [ダッシュボードを FSD で構成する](./0006-dashboard-fsd.md) — 層と依存方向、routes の扱い、steiger による検査 | 実装済み |
 
 状態: 草案 → 承認 → 実装済み → supersede（後続の番号を記す）
 

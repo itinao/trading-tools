@@ -89,6 +89,17 @@ pnpm dashboard           # http://127.0.0.1:3000
 - 日付は `YYYY-MM-DD`、時刻は ISO 8601（オフセット付き）、タイムゾーンは `Asia/Tokyo`
 - テストは `tool.run(argv, { stdout, stderr, env })` で stdout を捕まえて JSON を検証する（`tools/db/test/tool.test.ts` を参照）
 
+## ダッシュボードの作り方（FSD）
+
+`apps/dashboard/src` は [Feature-Sliced Design](https://feature-sliced.design/) で構成する（Design Doc 0006）。
+
+- 層と依存方向: `app → pages → widgets → features → entities → shared`。上の層は下の層だけを import する。同じ層のスライス同士は import しない
+- `routes/` は TanStack Router の規約上の場所で、層ではない。ルートファイルは `pages` のコンポーネントとサーバー関数を呼ぶだけの薄いアダプタにする
+- スライスは `index.ts` を公開 API とし、他からはそこだけを import する。`shared` は層の `index.ts` を持たず、`shared/api` / `shared/lib` / `shared/ui` のセグメントごとに `index.ts` を置く
+- サーバー関数（`createServerFn`）は `api` セグメントに置く。画面のデータ取得は `pages/<page>/api`、利用者の操作（書き込み）は `features/<feature>/api`。DB を触るモジュール（`shared/api`、`@trading/domain`、`@trading/db`）は **handler 内で動的 import** し、クライアントバンドルに入れない
+- widgets は自分でデータを取らず props で受け取る
+- `pnpm --filter @trading/dashboard fsd`（`pnpm lint` に含まれる）で層の逆流・公開 API の迂回を検査する。通らない構成は直す
+
 ## スキーマの変え方
 
 1. `packages/db/src/schema/` にテーブルを1ファイル1テーブルで追加し、`index.ts` から re-export する

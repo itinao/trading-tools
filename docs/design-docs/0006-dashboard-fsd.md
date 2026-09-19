@@ -2,7 +2,7 @@
 
 | | |
 | --- | --- |
-| 状態 | 承認（2026-09-20） |
+| 状態 | 実装済み（2026-09-20） |
 | 作成日 | 2026-09-20 |
 | 元になる Design Doc | [0005](./0005-detect-and-dashboard.md) §3.5 ダッシュボード |
 | supersede | 0005 §3.5 のうち、ファイル構成に関する記述 |
@@ -108,3 +108,11 @@ steiger がこの構成で実用にならない場合（TanStack のファイル
 | --- | --- | --- |
 | R1 | 3 画面の移し替えで動作が変わる | 移し替え前後で同じ操作（一覧、状態変更、詳細、404）をブラウザで確認する。機能追加は同時にしない |
 | R2 | steiger が TanStack Start の構成で誤検知する | §3.4 の代替案 |
+
+## 実装時の補足（2026-09-20）
+
+- `shared` 層は FSD の規約上、層全体の `index.ts` を持たず、セグメント（`api` / `lib` / `ui`）ごとに公開 API を置く。steiger の `no-layer-public-api` で検出された
+- steiger の `insignificant-slice`（参照が1つのスライスは統合を促す）は無効化した。M2 以降で再利用する前提で widgets を分けているため
+- ルーターは `tanstackStart({ router: { entry: 'app/router.tsx' } })` で `app` 層に置いた（パスは `src` 基準）
+- CSS は `routes/__root.tsx` で `import '../app/styles.css'` の副作用 import にした
+- ルートの `pnpm lint` は Biome に続けて steiger を実行する

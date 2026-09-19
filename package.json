@@ -11,7 +11,7 @@
     "build": "pnpm -r --if-present build",
     "test": "vitest run",
     "typecheck": "pnpm -r --if-present typecheck",
-    "lint": "biome check .",
+    "lint": "biome check . && pnpm --filter @trading/dashboard fsd",
     "format": "biome format --write .",
     "import-holdings": "tsx tools/import-holdings/src/main.ts",
     "collect": "tsx tools/collect/src/main.ts",

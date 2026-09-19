@@ -1,6 +1,6 @@
-import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router'
-import type { ReactNode } from 'react'
-import appCss from '../styles.css?url'
+import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
+import { AppLayout } from '../app/layout.tsx'
+import '../app/styles.css'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -9,36 +9,19 @@ export const Route = createRootRoute({
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { title: 'trading-tools' },
     ],
-    links: [{ rel: 'stylesheet', href: appCss }],
   }),
-  component: RootComponent,
-  notFoundComponent: () => <p>ページが見つからない。</p>,
-})
-
-function RootComponent() {
-  return (
-    <RootDocument>
-      <Outlet />
-    </RootDocument>
-  )
-}
-
-function RootDocument({ children }: { children: ReactNode }) {
-  return (
+  component: () => (
     <html lang="ja">
       <head>
         <HeadContent />
       </head>
       <body>
-        <nav>
-          <Link to="/" activeOptions={{ exact: true }}>
-            アクション
-          </Link>
-          <Link to="/holdings">保有</Link>
-        </nav>
-        <main>{children}</main>
+        <AppLayout>
+          <Outlet />
+        </AppLayout>
         <Scripts />
       </body>
     </html>
-  )
-}
+  ),
+  notFoundComponent: () => <p>ページが見つからない。</p>,
+})
