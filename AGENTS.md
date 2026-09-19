@@ -9,7 +9,7 @@
 
 ## 現在のフェーズ
 
-**M1（守りの最小経路）実装中。** 入力側 [Design Doc 0003](docs/design-docs/0003-holdings-and-quotes.md) は実装済み。次は出力側の Design Doc 0004（`detect` と `dashboard`）を書いて承認を得る。
+**M1（守りの最小経路）実装中。** 入力側 [Design Doc 0003](docs/design-docs/0003-holdings-and-quotes.md) は実装済み。出力側 [Design Doc 0005](docs/design-docs/0005-detect-and-dashboard.md) は承認済み、実装中。
 進捗は [実行計画 0001](docs/execution-plans/0001-initial.md)。
 
 ## 作業を始める前に
