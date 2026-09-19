@@ -7,14 +7,16 @@
 
 ## 現在の状態
 
-**M0（基盤）完了。** 次は M1（守りの最小経路）の Design Doc。
+**M1（守りの最小経路）完了。** 保有 CSV の取り込み → 株価（モック）→ 下落の検知 → ダッシュボードで確認、が一本通っている。
 
 | 段階 | 状態 |
 | --- | --- |
 | Design Doc 0001（リポジトリ全体） | 承認 |
 | 実行計画 0001（M0〜M5） | 承認 |
 | M0 基盤 | 完了 |
-| M1 守りの最小経路 | 実装中（0003 実装済み、0004 未着手） |
+| M1 守りの最小経路 | 完了 |
+| S1 データソース検証 | 未着手 |
+| M2 ニュース・開示とスコア | 未着手 |
 
 ## セットアップ
 
@@ -29,6 +31,8 @@ pnpm test
 ```bash
 pnpm import-holdings run "data/source/assetbalance(all)_YYYYMMDD_HHMMSS.csv"
 pnpm collect quotes
+pnpm detect run
+pnpm dashboard   # http://127.0.0.1:3000
 ```
 
 ## ドキュメント

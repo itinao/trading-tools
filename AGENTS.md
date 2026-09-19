@@ -9,7 +9,7 @@
 
 ## 現在のフェーズ
 
-**M1（守りの最小経路）実装中。** 入力側 [Design Doc 0003](docs/design-docs/0003-holdings-and-quotes.md) は実装済み。出力側 [Design Doc 0005](docs/design-docs/0005-detect-and-dashboard.md) は承認済み、実装中。
+**M1（守りの最小経路）完了。** 次は S1（データソース検証）と M2（ニュース・開示とスコア）。着手前に Design Doc を書いて承認を得る。
 進捗は [実行計画 0001](docs/execution-plans/0001-initial.md)。
 
 ## 作業を始める前に
@@ -39,9 +39,12 @@ pnpm ワークスペース。Node 22（`.node-version`）。ビルドせず `tsx
 | `packages/market-data` | `@trading/market-data` | `QuoteProvider` と各 Provider（M1 は mock のみ） |
 | `tools/db` | `@trading/tool-db` | `pnpm db migrate` / `pnpm db status` |
 | `tools/import-holdings` | `@trading/tool-import-holdings` | `pnpm import-holdings run <csv>` / `list` |
+| `packages/domain` | `@trading/domain` | ツールとダッシュボードが共有する読み書き（保有、株価、アクション） |
 | `tools/collect` | `@trading/tool-collect` | `pnpm collect quotes`。M2 で `news` / `disclosures` |
+| `tools/detect` | `@trading/tool-detect` | `pnpm detect run`。シグナルとアクションを作る。閾値は `config/detect.json` |
+| `tools/actions` | `@trading/tool-actions` | `pnpm actions list` / `show` / `resolve` |
+| `apps/dashboard` | `@trading/dashboard` | `pnpm dashboard` で http://127.0.0.1:3000 |
 | `tools/<name>` | `@trading/tool-<name>` | 各ツール（M1 以降） |
-| `apps/dashboard` | | 閲覧用 Web（M1 以降） |
 | `.agents/skills/` | | エージェントのスキル（M2 以降）。`.claude/skills` はシンボリックリンク |
 | `docs/design-docs/` | | Design Doc（連番、変更ごとに1本） |
 | `docs/schema.md` | | **現在の全テーブルの ER 図（自動生成）** |
@@ -62,11 +65,16 @@ pnpm lint && pnpm typecheck
 # 楽天証券の CSV を data/source/ に置いたとき
 pnpm import-holdings run "data/source/assetbalance(all)_YYYYMMDD_HHMMSS.csv"
 
-# 株価の取得（M1 はモック。data/source/mock-quotes.json を編集して値を変えられる）
-pnpm collect quotes
+# 毎日（引け後）
+pnpm collect quotes      # 株価の取得（M1 はモック。data/source/mock-quotes.json を編集して値を変えられる）
+pnpm detect run          # 下落の検知 → シグナルとアクション
+pnpm actions list        # 未対応のアクション（ダッシュボードでも見られる）
+
+# 確認
+pnpm dashboard           # http://127.0.0.1:3000
 ```
 
-`mock-quotes.json` は初回の `collect quotes` で最新スナップショットの現在値から生成される。
+`mock-quotes.json` は初回の `collect quotes` で最新スナップショットの現在値から生成される。過去日の株価を入れるには `pnpm collect quotes --as-of YYYY-MM-DD`。
 
 ## ツールの作り方（CLI 規約）
 
