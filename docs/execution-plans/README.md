@@ -5,4 +5,4 @@ Design Doc と違い、実行計画は **進捗に合わせて更新する** liv
 
 | 実行計画 | 状態 |
 | --- | --- |
-| [0001-initial.md](./0001-initial.md) — Design Doc 0001 を実現する最初の計画（M0〜M5） | 草案 |
+| [0001-initial.md](./0001-initial.md) — Design Doc 0001 を実現する最初の計画（M0〜M5） | 承認 |

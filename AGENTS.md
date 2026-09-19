@@ -9,7 +9,7 @@
 
 ## 現在のフェーズ
 
-**設計フェーズ。実装は始まっていない。** 実行計画 [0001](docs/execution-plans/0001-initial.md) を壁打ち中。
+**設計フェーズ。実装は始まっていない。** 実行計画 [0001](docs/execution-plans/0001-initial.md) は承認済み。次は M0 の Design Doc 0002 を書く。
 
 ## 作業を始める前に
 
