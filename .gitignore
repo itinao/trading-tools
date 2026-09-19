@@ -1,0 +1,24 @@
+# 個人データ（証券会社CSVなど）は絶対にコミットしない
+data/source/
+*.csv
+
+# ローカルDB
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+
+# 依存・ビルド成果物
+node_modules
+dist
+.output
+.nitro
+.tanstack
+.vite
+
+# 環境変数・秘密情報
+.env
+.env.*
+!.env.example
+
+*.log
+.DS_Store
