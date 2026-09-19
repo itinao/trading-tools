@@ -63,6 +63,18 @@ importers:
 
   packages/market-data: {}
 
+  tools/actions:
+    dependencies:
+      '@trading/cli':
+        specifier: workspace:*
+        version: link:../../packages/cli
+      '@trading/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@trading/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+
   tools/collect:
     dependencies:
       '@trading/cli':
