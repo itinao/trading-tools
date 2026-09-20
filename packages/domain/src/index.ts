@@ -64,6 +64,15 @@ export {
   WatchError,
 } from './monitored.ts'
 export { latestQuoteDate, latestQuotes, quoteHistory } from './quotes.ts'
+export {
+  type HistoryRow,
+  type HistorySummary,
+  history,
+  sparklineData,
+  type TimelineEvent,
+  type TimelineEventType,
+  timeline,
+} from './review.ts'
 export { latestScores, type ScoreComponents, scoreHistory, upsertScore } from './scores.ts'
 export { getScreenRun, listScreenRuns, type ScreenResultInput, saveScreenRun } from './screen.ts'
 export {
