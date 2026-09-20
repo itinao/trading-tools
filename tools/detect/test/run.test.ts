@@ -235,3 +235,85 @@ describe('runDetect', () => {
     handle.close()
   })
 })
+
+describe('runDetect: 判定・財務・スコア', () => {
+  it('悪材料の判定から news_negative とスコアが出る', () => {
+    const handle = createTestDatabase()
+    seed(handle)
+    quote(handle, 'JP:1234', '2026-01-05', 1000)
+    const news = handle.db
+      .insert(schema.newsItems)
+      .values({
+        instrumentId: 'JP:1234',
+        publishedAt: '2026-01-05T09:00:00+09:00',
+        title: '不祥事',
+        url: 'u',
+        source: 's',
+        fetchedAt: NOW,
+      })
+      .returning({ id: schema.newsItems.id })
+      .get()?.id as number
+    handle.db
+      .insert(schema.assessments)
+      .values({
+        subjectType: 'news',
+        subjectId: news,
+        instrumentId: 'JP:1234',
+        relevance: 'relevant',
+        sentiment: -2,
+        impact: 3,
+        summary: '大型の不祥事',
+        rationale: '「不祥事」',
+        author: 'ai',
+        createdAt: NOW,
+      })
+      .run()
+    const r = runDetect(handle, context(), { asOf: '2026-01-05' }, DEFAULT_CONFIG)
+    expect(r.scores.written).toBe(1)
+    const kinds = signals(handle)
+      .map((s) => s.kind)
+      .sort()
+    expect(kinds).toEqual(['news_negative'])
+    const score = handle.db.select().from(schema.scores).all()[0]
+    expect(score?.score).toBe(-30)
+    const action = actions(handle)[0]
+    expect(action?.title).toBe('A: 悪材料のニュース（1 件）')
+    expect(action?.body).toContain('「不祥事」')
+    handle.close()
+  })
+
+  it('年次財務の悪化から margin_deterioration が出る', () => {
+    const handle = createTestDatabase()
+    seed(handle)
+    quote(handle, 'JP:1234', '2026-01-05', 1000)
+    handle.db
+      .insert(schema.financials)
+      .values([
+        {
+          instrumentId: 'JP:1234',
+          periodType: 'annual',
+          periodEnd: '2025-03-31',
+          source: 's',
+          revenue: 1000,
+          operatingIncome: 100,
+          fetchedAt: NOW,
+        },
+        {
+          instrumentId: 'JP:1234',
+          periodType: 'annual',
+          periodEnd: '2026-03-31',
+          source: 's',
+          revenue: 1000,
+          operatingIncome: 30,
+          fetchedAt: NOW,
+        },
+      ])
+      .run()
+    const r = runDetect(handle, context(), { asOf: '2026-01-05' }, DEFAULT_CONFIG)
+    expect(signals(handle).map((s) => [s.kind, s.severity])).toEqual([
+      ['margin_deterioration', 'critical'],
+    ])
+    expect(r.skipped.find((s) => s.kind === 'equity_ratio_drop')?.reason).toContain('insufficient')
+    handle.close()
+  })
+})

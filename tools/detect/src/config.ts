@@ -2,12 +2,23 @@ import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { findWorkspaceRoot, ToolError } from '@trading/cli'
 
-/** 閾値。config/detect.json で上書きできる（Design Doc 0005 §3.1） */
+/** 閾値と係数。config/detect.json で上書きできる（Design Doc 0005 §3.1、0011 §3.4 / §3.5） */
 export interface DetectConfig {
   price_drop_cost: { warn: number; critical: number }
   drawdown_60d: { warn: number; critical: number; window: number; minHistory: number }
   below_ma200: { window: number }
   price_drop_day: { warn: number }
+  news_negative: { windowDays: number; minImpact: number; maxSentiment: number }
+  forecast_down: { windowDays: number }
+  dividend_cut: { windowDays: number }
+  margin_deterioration: { warn: number; critical: number }
+  equity_ratio_drop: { warn: number; critical: number }
+  score_low: { warn: number; critical: number }
+  score: {
+    assessment: { windowDays: number; halfLifeDays: number; scale: number; cap: number }
+    price: { drawdownFactor: number; belowMaPenalty: number; floor: number }
+    financials: { marginFactor: number; equityFactor: number; cap: number }
+  }
   reissue_after_days: number
 }
 
@@ -16,6 +27,17 @@ export const DEFAULT_CONFIG: DetectConfig = {
   drawdown_60d: { warn: -15, critical: -25, window: 60, minHistory: 20 },
   below_ma200: { window: 200 },
   price_drop_day: { warn: -7 },
+  news_negative: { windowDays: 7, minImpact: 2, maxSentiment: -1 },
+  forecast_down: { windowDays: 30 },
+  dividend_cut: { windowDays: 30 },
+  margin_deterioration: { warn: -3, critical: -6 },
+  equity_ratio_drop: { warn: -5, critical: -10 },
+  score_low: { warn: -40, critical: -60 },
+  score: {
+    assessment: { windowDays: 30, halfLifeDays: 14, scale: 5, cap: 50 },
+    price: { drawdownFactor: 0.5, belowMaPenalty: -10, floor: -40 },
+    financials: { marginFactor: 2, equityFactor: 1, cap: 20 },
+  },
   reissue_after_days: 30,
 }
 
@@ -35,41 +57,32 @@ export function loadConfig(root: string = findWorkspaceRoot()): DetectConfig {
   return mergeConfig(raw)
 }
 
+/** 既定値に部分指定を重ねる。数値であるべき所に数値以外があれば bad_config */
 export function mergeConfig(raw: unknown): DetectConfig {
-  const r = (raw ?? {}) as Record<string, Record<string, unknown> | number>
-  const num = (section: string, key: string, fallback: number): number => {
-    const s = r[section]
-    const v = typeof s === 'object' && s !== null ? s[key] : undefined
-    if (v === undefined) return fallback
-    if (typeof v !== 'number' || Number.isNaN(v)) {
-      throw new ToolError(
-        'bad_config',
-        `${CONFIG_PATH}: ${section}.${key} は数値で指定してください`,
-      )
+  const merge = (base: unknown, over: unknown, path: string): unknown => {
+    if (over === undefined) return base
+    if (typeof base === 'number') {
+      if (typeof over !== 'number' || Number.isNaN(over))
+        throw new ToolError('bad_config', `${CONFIG_PATH}: ${path} は数値で指定してください`)
+      return over
     }
-    return v
+    if (typeof base === 'object' && base !== null) {
+      if (typeof over !== 'object' || over === null)
+        throw new ToolError(
+          'bad_config',
+          `${CONFIG_PATH}: ${path} はオブジェクトで指定してください`,
+        )
+      const out: Record<string, unknown> = {}
+      for (const k of Object.keys(base as object)) {
+        out[k] = merge(
+          (base as Record<string, unknown>)[k],
+          (over as Record<string, unknown>)[k],
+          path ? `${path}.${k}` : k,
+        )
+      }
+      return out
+    }
+    return over
   }
-  const top = (key: keyof DetectConfig, fallback: number): number => {
-    const v = r[key]
-    if (v === undefined) return fallback
-    if (typeof v !== 'number')
-      throw new ToolError('bad_config', `${CONFIG_PATH}: ${key} は数値で指定してください`)
-    return v
-  }
-  const d = DEFAULT_CONFIG
-  return {
-    price_drop_cost: {
-      warn: num('price_drop_cost', 'warn', d.price_drop_cost.warn),
-      critical: num('price_drop_cost', 'critical', d.price_drop_cost.critical),
-    },
-    drawdown_60d: {
-      warn: num('drawdown_60d', 'warn', d.drawdown_60d.warn),
-      critical: num('drawdown_60d', 'critical', d.drawdown_60d.critical),
-      window: num('drawdown_60d', 'window', d.drawdown_60d.window),
-      minHistory: num('drawdown_60d', 'minHistory', d.drawdown_60d.minHistory),
-    },
-    below_ma200: { window: num('below_ma200', 'window', d.below_ma200.window) },
-    price_drop_day: { warn: num('price_drop_day', 'warn', d.price_drop_day.warn) },
-    reissue_after_days: top('reissue_after_days', d.reissue_after_days),
-  }
+  return merge(DEFAULT_CONFIG, raw ?? {}, '') as DetectConfig
 }

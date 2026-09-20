@@ -1,11 +1,15 @@
 import type { Position } from '@trading/domain'
-import type { RuleHit } from './rules.ts'
+import type { RuleHit } from './rules/index.ts'
 
-const yen = (n: number) => `${Math.round(n).toLocaleString('ja-JP')} 円`
-const price = (n: number) => `${n.toLocaleString('ja-JP')} 円`
+const yen = (n: number | null | undefined) =>
+  n == null ? '-' : `${Math.round(n).toLocaleString('ja-JP')} 円`
+const price = (n: number | null | undefined) =>
+  n == null ? '-' : `${n.toLocaleString('ja-JP')} 円`
+const oku = (n: number | null | undefined) =>
+  n == null ? '-' : `${(n / 1e8).toLocaleString('ja-JP', { maximumFractionDigits: 0 })} 億円`
 const FOOTER = '\n\n売る / 持つの判断は人が行う。これは事実の整理であり、助言ではない。'
 
-/** ルール生成アクションの文面（Design Doc 0005 §3.3）。判断は含めない */
+/** ルール生成アクションの文面（Design Doc 0005 §3.3、0011 §3.5）。判断は含めない */
 export function actionText(
   hit: RuleHit,
   position: Position,
@@ -13,37 +17,82 @@ export function actionText(
 ): { title: string; body: string } {
   const d = hit.details
   const n = position.name
+  const num = (k: string) => Number(d[k])
   switch (hit.kind) {
     case 'price_drop_cost':
       return {
         title: `${n}: 取得単価比 ${hit.value}%`,
         body:
-          `- 日付: ${asOf}\n- 平均取得単価: ${price(Number(d.averageCost))}\n- 当日の株価: ${price(Number(d.price))}\n` +
-          `- 保有数量: ${position.quantity.toLocaleString('ja-JP')} 株\n- 含み損益: ${yen((Number(d.price) - position.averageCost) * position.quantity)}` +
+          `- 日付: ${asOf}\n- 平均取得単価: ${price(num('averageCost'))}\n- 当日の株価: ${price(num('price'))}\n` +
+          `- 保有数量: ${position.quantity.toLocaleString('ja-JP')} 株\n- 含み損益: ${yen((num('price') - position.averageCost) * position.quantity)}` +
           FOOTER,
       }
     case 'drawdown_60d':
       return {
         title: `${n}: 直近高値から ${hit.value}%`,
         body:
-          `- 日付: ${asOf}\n- 直近 ${d.window} 営業日の高値: ${price(Number(d.high))}（${d.highAsOf}）\n- 当日の株価: ${price(Number(d.price))}\n` +
-          `- 取得単価比: ${pctText(Number(d.price), position.averageCost)}` +
+          `- 日付: ${asOf}\n- 直近 ${d.window} 営業日の高値: ${price(num('high'))}（${d.highAsOf}）\n- 当日の株価: ${price(num('price'))}\n` +
+          `- 取得単価比: ${pctText(num('price'), position.averageCost)}` +
           FOOTER,
       }
     case 'below_ma200':
       return {
         title: `${n}: 200 日線を下回った`,
         body:
-          `- 日付: ${asOf}\n- 200 日移動平均: ${price(Number(d.ma))}\n- 当日の株価: ${price(Number(d.price))}（乖離 ${hit.value}%）\n` +
-          `- 前日: ${price(Number(d.previousPrice))}（平均 ${price(Number(d.previousMa))}）` +
+          `- 日付: ${asOf}\n- 200 日移動平均: ${price(num('ma'))}\n- 当日の株価: ${price(num('price'))}（乖離 ${hit.value}%）\n` +
+          `- 前日: ${price(num('previousPrice'))}（平均 ${price(num('previousMa'))}）` +
           FOOTER,
       }
     case 'price_drop_day':
       return {
         title: `${n}: 前日比 ${hit.value}%`,
         body:
-          `- 日付: ${asOf}\n- 前日（${d.previousAsOf}）: ${price(Number(d.previous))}\n- 当日の株価: ${price(Number(d.price))}\n` +
-          `- 評価額の変化: ${yen((Number(d.price) - Number(d.previous)) * position.quantity)}\n- ニュース・開示を確認する` +
+          `- 日付: ${asOf}\n- 前日（${d.previousAsOf}）: ${price(num('previous'))}\n- 当日の株価: ${price(num('price'))}\n` +
+          `- 評価額の変化: ${yen((num('price') - num('previous')) * position.quantity)}\n- ニュース・開示を確認する` +
+          FOOTER,
+      }
+    case 'news_negative':
+      return {
+        title: `${n}: 悪材料のニュース（${d.count} 件）`,
+        body:
+          `- 見出し: ${d.title}\n- 判定の要約: ${d.summary}\n- 根拠: ${d.rationale}\n- 判定 id: ${d.assessmentId}（\`pnpm assess override\` で上書きできる）` +
+          FOOTER,
+      }
+    case 'forecast_down':
+      return {
+        title: `${n}: 業績予想の下方修正`,
+        body:
+          `- 開示: ${d.title}（${d.disclosedAt}）\n- 判定の要約: ${d.summary}\n- 根拠: ${d.rationale}\n- 判定 id: ${d.assessmentId}` +
+          FOOTER,
+      }
+    case 'dividend_cut':
+      return {
+        title: `${n}: 減配・無配`,
+        body:
+          `- 開示: ${d.title}（${d.disclosedAt}）\n- 判定の要約: ${d.summary}\n- 根拠: ${d.rationale}\n- 判定 id: ${d.assessmentId}` +
+          FOOTER,
+      }
+    case 'margin_deterioration':
+      return {
+        title: `${n}: 営業利益率が前年比 ${hit.value} pt`,
+        body:
+          `- ${d.previousPeriod}: 売上 ${oku(num('previousRevenue'))}、営業利益 ${oku(num('previousOperatingIncome'))}、利益率 ${d.previousMargin}%\n` +
+          `- ${d.currentPeriod}: 売上 ${oku(num('currentRevenue'))}、営業利益 ${oku(num('currentOperatingIncome'))}、利益率 ${d.currentMargin}%` +
+          FOOTER,
+      }
+    case 'equity_ratio_drop':
+      return {
+        title: `${n}: 自己資本比率が前年比 ${hit.value} pt`,
+        body:
+          `- ${d.previousPeriod}: 総資産 ${oku(num('previousAssets'))}、自己資本 ${oku(num('previousEquity'))}、比率 ${d.previousRatio}%\n` +
+          `- ${d.currentPeriod}: 総資産 ${oku(num('currentAssets'))}、自己資本 ${oku(num('currentEquity'))}、比率 ${d.currentRatio}%` +
+          FOOTER,
+      }
+    case 'score_low':
+      return {
+        title: `${n}: スコア ${hit.value}`,
+        body:
+          `- 日付: ${asOf}\n- スコア: ${d.score}（判定 ${d.assessment} / 株価 ${d.price} / 財務 ${d.financials}）\n- 内訳は銘柄詳細で確認する` +
           FOOTER,
       }
   }

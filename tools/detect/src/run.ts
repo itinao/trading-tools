@@ -1,10 +1,31 @@
 import { isIsoDate, nowJst, type ToolContext, ToolError, UsageError } from '@trading/cli'
 import { type DatabaseHandle, schema } from '@trading/db'
-import { latestQuoteDate, type Position, positions, quoteHistory } from '@trading/domain'
-import { and, desc, eq } from 'drizzle-orm'
+import {
+  effectiveAssessments,
+  financialHistory,
+  latestQuoteDate,
+  type Position,
+  positions,
+  quoteHistory,
+  upsertScore,
+} from '@trading/domain'
+import { and, desc, eq, inArray } from 'drizzle-orm'
 import { actionText } from './actions-text.ts'
 import type { DetectConfig } from './config.ts'
-import { evaluateAll, type RuleHit, SIGNAL_KINDS, type SignalKind } from './rules.ts'
+import {
+  type DatedAssessment,
+  dividendCut,
+  equityRatioDrop,
+  evaluatePriceRules,
+  forecastDown,
+  marginDeterioration,
+  newsNegative,
+  type RuleHit,
+  type RuleOutcome,
+  SIGNAL_KINDS,
+  type SignalKind,
+} from './rules/index.ts'
+import { computeScore, scoreLow } from './score.ts'
 
 export interface RunResult {
   asOf: string
@@ -12,6 +33,56 @@ export interface RunResult {
   skipped: { code: string; kind: SignalKind | 'all'; reason: string }[]
   signals: { created: number; updated: number }
   actions: { created: number; suppressed: number }
+  scores: { written: number }
+}
+
+/** 有効な判定に対象の日時・表題・開示の種別を付ける（news_negative 等とスコアの入力） */
+export function datedAssessments(
+  handle: DatabaseHandle,
+  instrumentIds: string[],
+): Map<string, DatedAssessment[]> {
+  const out = new Map<string, DatedAssessment[]>()
+  if (instrumentIds.length === 0) return out
+  const all = effectiveAssessments(handle.db, { instrumentIds })
+  const newsIds = all.filter((a) => a.subjectType === 'news').map((a) => a.subjectId)
+  const discIds = all.filter((a) => a.subjectType === 'disclosure').map((a) => a.subjectId)
+  const news = new Map(
+    (newsIds.length > 0
+      ? handle.db.select().from(schema.newsItems).where(inArray(schema.newsItems.id, newsIds)).all()
+      : []
+    ).map((n) => [n.id, n]),
+  )
+  const disc = new Map(
+    (discIds.length > 0
+      ? handle.db
+          .select()
+          .from(schema.disclosures)
+          .where(inArray(schema.disclosures.id, discIds))
+          .all()
+      : []
+    ).map((d) => [d.id, d]),
+  )
+  for (const a of all) {
+    let dated: DatedAssessment | undefined
+    if (a.subjectType === 'news') {
+      const n = news.get(a.subjectId)
+      if (n) dated = { ...a, subjectAt: n.publishedAt, subjectTitle: n.title }
+    } else {
+      const d = disc.get(a.subjectId)
+      if (d)
+        dated = {
+          ...a,
+          subjectAt: d.disclosedAt,
+          subjectTitle: d.title,
+          subjectCategory: d.category,
+        }
+    }
+    if (!dated) continue
+    const list = out.get(a.instrumentId) ?? []
+    list.push(dated)
+    out.set(a.instrumentId, list)
+  }
+  return out
 }
 
 const SEVERITY_RANK = { warn: 1, critical: 2 } as const
@@ -34,6 +105,7 @@ export function runDetect(
     skipped: [],
     signals: { created: 0, updated: 0 },
     actions: { created: 0, suppressed: 0 },
+    scores: { written: 0 },
   }
   const now = nowJst()
 
@@ -41,7 +113,13 @@ export function runDetect(
     if (!context.options.dryRun) fn()
   }
 
-  for (const position of positions(db)) {
+  const held = positions(db)
+  const assessmentsByInstrument = datedAssessments(
+    handle,
+    held.map((p) => p.instrumentId),
+  )
+
+  for (const position of held) {
     const history = quoteHistory(db, position.instrumentId, {
       upTo: asOf,
       limit: config.below_ma200.window + 1,
@@ -51,7 +129,32 @@ export function runDetect(
       continue
     }
     result.evaluated++
-    const outcomes = evaluateAll(history, position.averageCost, config)
+    const assessments = assessmentsByInstrument.get(position.instrumentId) ?? []
+    const annual = financialHistory(db, position.instrumentId, 'annual')
+
+    // スコア（Design Doc 0011 §3.4）。シグナルの前に計算し、score_low の入力にする
+    const { score, components } = computeScore({ asOf, history, assessments, annual }, config)
+    write(() => upsertScore(db, position.instrumentId, asOf, score, components))
+    result.scores.written++
+    const scoreHit = scoreLow(score, config.score_low)
+    if (scoreHit && !('skipped' in scoreHit)) {
+      scoreHit.details = {
+        ...scoreHit.details,
+        assessment: components.assessment,
+        price: components.price,
+        financials: components.financials,
+      }
+    }
+
+    const outcomes: Record<SignalKind, RuleOutcome> = {
+      ...evaluatePriceRules(history, position.averageCost, config),
+      news_negative: newsNegative(assessments, asOf, config.news_negative),
+      forecast_down: forecastDown(assessments, asOf, config.forecast_down),
+      dividend_cut: dividendCut(assessments, asOf, config.dividend_cut),
+      margin_deterioration: marginDeterioration(annual, config.margin_deterioration),
+      equity_ratio_drop: equityRatioDrop(annual, config.equity_ratio_drop),
+      score_low: scoreHit,
+    }
     for (const kind of SIGNAL_KINDS) {
       const outcome = outcomes[kind]
       if (outcome === null) continue
@@ -59,7 +162,7 @@ export function runDetect(
         result.skipped.push({ code: position.code, kind, reason: outcome.skipped })
         continue
       }
-      context.logger.info(`${position.code} ${kind} ${outcome.severity} ${outcome.value}%`)
+      context.logger.info(`${position.code} ${kind} ${outcome.severity} ${outcome.value}`)
       db.transaction((tx) => {
         const signalId = upsertSignal(tx, position.instrumentId, asOf, outcome, now, result, write)
         createActionIfNeeded(tx, position, asOf, signalId, outcome, config, now, result, write)

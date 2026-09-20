@@ -1,13 +1,14 @@
-import type { DetectConfig } from './config.ts'
+import type { DetectConfig } from '../config.ts'
+import {
+  type RuleHit,
+  type RuleOutcome,
+  round2,
+  type Severity,
+  type SignalKind,
+  severityFor,
+} from './types.ts'
 
-export type Severity = 'warn' | 'critical'
-export type SignalKind = 'price_drop_cost' | 'drawdown_60d' | 'below_ma200' | 'price_drop_day'
-export const SIGNAL_KINDS: readonly SignalKind[] = [
-  'price_drop_cost',
-  'drawdown_60d',
-  'below_ma200',
-  'price_drop_day',
-]
+export type { RuleHit, RuleOutcome, Severity, SignalKind }
 
 /** 株価の履歴。[0] が as_of 当日、以降が古い順（新しい順に並んだ配列） */
 export interface PricePoint {
@@ -16,28 +17,8 @@ export interface PricePoint {
   previousClose?: number | null
 }
 
-export interface RuleHit {
-  kind: SignalKind
-  severity: Severity
-  /** 変化率(%)。below_ma200 は MA からの乖離率 */
-  value: number
-  details: Record<string, number | string>
-}
-
-export type RuleOutcome = RuleHit | { skipped: string } | null
-
 export function pct(current: number, base: number): number {
-  return round(((current - base) / base) * 100)
-}
-
-function round(n: number): number {
-  return Math.round(n * 100) / 100
-}
-
-function severityFor(value: number, warn: number, critical?: number): Severity | null {
-  if (critical !== undefined && value <= critical) return 'critical'
-  if (value <= warn) return 'warn'
-  return null
+  return round2(((current - base) / base) * 100)
 }
 
 export function priceDropCost(
@@ -53,7 +34,7 @@ export function priceDropCost(
     kind: 'price_drop_cost',
     severity,
     value,
-    details: { price: today.price, averageCost: round(averageCost) },
+    details: { price: today.price, averageCost: round2(averageCost) },
   }
 }
 
@@ -93,9 +74,9 @@ export function belowMa200(history: PricePoint[], cfg: DetectConfig['below_ma200
     value: pct(today.price, maToday),
     details: {
       price: today.price,
-      ma: round(maToday),
+      ma: round2(maToday),
       previousPrice: yesterday.price,
-      previousMa: round(maYesterday),
+      previousMa: round2(maYesterday),
     },
   }
 }
@@ -118,11 +99,13 @@ export function priceDropDay(
   }
 }
 
-export function evaluateAll(
+export type PriceKind = 'price_drop_cost' | 'drawdown_60d' | 'below_ma200' | 'price_drop_day'
+
+export function evaluatePriceRules(
   history: PricePoint[],
   averageCost: number,
   cfg: DetectConfig,
-): Record<SignalKind, RuleOutcome> {
+): Record<PriceKind, RuleOutcome> {
   const today = history[0] as PricePoint
   return {
     price_drop_cost: priceDropCost(today, averageCost, cfg.price_drop_cost),
