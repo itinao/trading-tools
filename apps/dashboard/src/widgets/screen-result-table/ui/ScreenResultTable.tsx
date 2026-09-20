@@ -55,7 +55,7 @@ export function ScreenResultTable({
           <th className="num">配当利回り</th>
           <th className="num">時価総額</th>
           <th className="num">増収増益</th>
-          <th>操作</th>
+          <th className="ops">操作</th>
         </tr>
       </thead>
       <tbody>
@@ -75,7 +75,7 @@ export function ScreenResultTable({
             <td className="num">{r.dividendYield == null ? '-' : `${f2(r.dividendYield)}%`}</td>
             <td className="num">{oku(r.marketCap)}</td>
             <td className="num">{r.growthYears == null ? '-' : `${r.growthYears} 年`}</td>
-            <td>
+            <td className="ops">
               {r.status === 'holding' ? (
                 <span className="badge badge-neutral">保有中</span>
               ) : r.status === 'watch' ? (

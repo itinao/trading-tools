@@ -28,8 +28,9 @@ export function AddWatchButton({
             const r = await add({
               data: { code, ...(screenRunId ? { screenRunId } : {}), ...(note ? { note } : {}) },
             })
-            setMessage(r.ok ? '追加しました' : r.message)
+            // 成功したら行が「ウォッチ中」に変わるので、メッセージは失敗のときだけ出す（幅が変わってチラつかないように）
             if (r.ok) await router.invalidate()
+            else setMessage(r.message)
           } finally {
             setBusy(false)
           }

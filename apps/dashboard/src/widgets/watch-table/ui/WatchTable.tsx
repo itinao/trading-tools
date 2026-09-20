@@ -38,7 +38,7 @@ export function WatchTable({ rows }: { rows: WatchRow[] }) {
           <th className="num">200 日線比</th>
           <th className="num">スコア</th>
           <th className="num">未対応</th>
-          <th>操作</th>
+          <th className="ops">操作</th>
         </tr>
       </thead>
       <tbody>
@@ -54,7 +54,7 @@ export function WatchTable({ rows }: { rows: WatchRow[] }) {
             <PctCell value={r.vsMa200} />
             <td className={`num ${scoreClass(r.score)}`}>{scoreText(r.score)}</td>
             <td className="num">{r.openActions}</td>
-            <td>
+            <td className="ops">
               <RemoveWatchButton code={r.code} />
             </td>
           </tr>

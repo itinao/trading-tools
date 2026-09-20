@@ -266,6 +266,12 @@ td.num {
 th.num {
   font-weight: var(--font-label-sm-weight);
 }
+/* 操作列。中身（「ウォッチに追加」↔「ウォッチ中 外す」）が変わっても他の列の幅が動かないよう幅を固定する */
+th.ops,
+td.ops {
+  width: 168px;
+  white-space: nowrap;
+}
 
 /* ---------- semantic text colors ---------- */
 .nowrap {
