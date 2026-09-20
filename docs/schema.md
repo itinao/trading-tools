@@ -16,7 +16,11 @@
 | `news_items` | [0010](design-docs/0010-real-data-collection.md) |
 | `quotes` | [0003](design-docs/0003-holdings-and-quotes.md) |
 | `scores` | [0011](design-docs/0011-assessment-and-score.md) |
+| `screen_results` | [0013](design-docs/0013-watch-and-screen.md) |
+| `screen_runs` | [0013](design-docs/0013-watch-and-screen.md) |
 | `signals` | [0005](design-docs/0005-detect-and-dashboard.md) |
+| `universe` | [0013](design-docs/0013-watch-and-screen.md) |
+| `watches` | [0013](design-docs/0013-watch-and-screen.md) |
 
 ```mermaid
 erDiagram
@@ -144,6 +148,29 @@ erDiagram
         text components_json
         text created_at
     }
+    screen_results {
+        integer run_id PK,FK "-> screen_runs"
+        text code PK
+        text name
+        text segment
+        text sector33 "nullable"
+        real price "nullable"
+        real per "nullable"
+        real forward_per "nullable"
+        real pbr "nullable"
+        real dividend_yield "nullable"
+        real market_cap "nullable"
+        integer growth_years "nullable"
+        integer rank
+    }
+    screen_runs {
+        integer id PK
+        text executed_at
+        text preset "nullable"
+        text criteria_json
+        integer universe_size
+        integer matched
+    }
     signals {
         integer id PK
         text instrument_id FK "-> instruments; unique(instrument_id, kind, as_of)"
@@ -154,6 +181,23 @@ erDiagram
         text details_json
         text created_at
         text updated_at
+    }
+    universe {
+        text code PK
+        text name
+        text segment
+        text segment_raw
+        text sector33 "nullable"
+        text size "nullable"
+        text listed_as_of
+        text fetched_at
+    }
+    watches {
+        text instrument_id PK,FK "-> instruments"
+        text added_at
+        text note "nullable"
+        text source
+        integer screen_run_id "nullable"
     }
     holding_snapshots ||--o{ holdings : ""
     instruments ||--o{ actions : ""
@@ -166,5 +210,7 @@ erDiagram
     instruments ||--o{ quotes : ""
     instruments ||--o{ scores : ""
     instruments ||--o{ signals : ""
+    instruments ||--o{ watches : ""
+    screen_runs ||--o{ screen_results : ""
     signals ||--o{ actions : ""
 ```

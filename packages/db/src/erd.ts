@@ -17,6 +17,10 @@ const DEFINED_IN: Record<string, string> = {
   disclosures: '0010',
   assessments: '0011',
   scores: '0011',
+  universe: '0013',
+  watches: '0013',
+  screen_runs: '0013',
+  screen_results: '0013',
 }
 
 function isTable(value: unknown): value is SQLiteTable {
