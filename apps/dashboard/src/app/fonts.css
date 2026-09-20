@@ -1,0 +1,9 @@
+/*
+ * フォントとアイコン（Design Doc 0016）。すべて自己ホスト（node_modules から Vite が配信する）。
+ * - Google Sans Flex（欧文・数字、可変）
+ * - Noto Sans JP（和文、可変）
+ * - Material Symbols Outlined（アイコン、可変）
+ */
+@import "@fontsource-variable/google-sans-flex";
+@import "@fontsource-variable/noto-sans-jp";
+@import "material-symbols/outlined.css";

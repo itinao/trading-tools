@@ -16,7 +16,7 @@
 | 0013 | [攻め — ウォッチ銘柄とスクリーニング（M4）](./0013-watch-and-screen.md) — universe / watches / screen、攻めのルール、watch・screen ツール | 実装済み |
 | 0014 | [振り返り（M5）](./0014-review.md) — タイムライン、判断の履歴、review ツール、retrospect スキル | 実装済み |
 | 0015 | [ダッシュボードの情報設計と画面構成](./0015-dashboard-ia.md) — サイドバー、中央寄せ、銘柄カード、銘柄画面の統合、銘柄詳細のタブ | 実装済み |
-| 0016 | [フォントとアイコン](./0016-typography-icons.md) — Google Sans Flex + Noto Sans JP、Material Symbols、自己ホスト | 承認 |
+| 0016 | [フォントとアイコン](./0016-typography-icons.md) — Google Sans Flex + Noto Sans JP、Material Symbols、自己ホスト | 実装済み |
 | 0005 | [下落の検知とダッシュボード（M1 出力側）](./0005-detect-and-dashboard.md) — signals / actions、detect・actions ツール、TanStack Start | 実装済み |
 | 0006 | [ダッシュボードを FSD で構成する](./0006-dashboard-fsd.md) — 層と依存方向、routes の扱い、steiger による検査 | 実装済み |
 | 0007 | [デザインシステム（DESIGN.md）の導入](./0007-design-system.md) — Stitch フォーマットの DESIGN.md を正本にし、トークンから CSS 変数を生成 | 実装済み |
@@ -28,7 +28,7 @@
 | 0013 | [攻め — ウォッチ銘柄とスクリーニング（M4）](./0013-watch-and-screen.md) — universe / watches / screen、攻めのルール、watch・screen ツール | 実装済み |
 | 0014 | [振り返り（M5）](./0014-review.md) — タイムライン、判断の履歴、review ツール、retrospect スキル | 実装済み |
 | 0015 | [ダッシュボードの情報設計と画面構成](./0015-dashboard-ia.md) — サイドバー、中央寄せ、銘柄カード、銘柄画面の統合、銘柄詳細のタブ | 実装済み |
-| 0016 | [フォントとアイコン](./0016-typography-icons.md) — Google Sans Flex + Noto Sans JP、Material Symbols、自己ホスト | 承認 |
+| 0016 | [フォントとアイコン](./0016-typography-icons.md) — Google Sans Flex + Noto Sans JP、Material Symbols、自己ホスト | 実装済み |
 
 状態: 草案 → 承認 → 実装済み → supersede（後続の番号を記す）
 

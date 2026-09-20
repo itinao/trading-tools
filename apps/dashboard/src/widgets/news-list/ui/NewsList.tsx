@@ -1,5 +1,6 @@
 import { AssessmentBadge, type AssessmentView } from '../../../entities/assessment/index.ts'
 import { OverrideForm } from '../../../features/override-assessment/index.ts'
+import { Icon } from '../../../shared/ui'
 
 export interface NewsRow {
   id: number
@@ -29,7 +30,7 @@ export function NewsList({ items }: { items: NewsRow[] }) {
             <td className="muted nowrap">{n.publishedAt.slice(0, 16).replace('T', ' ')}</td>
             <td>
               <a href={n.url} target="_blank" rel="noreferrer noopener">
-                {n.title}
+                {n.title} <Icon name="open_in_new" className="icon-xs" />
               </a>
               {n.assessment && <div className="muted">{n.assessment.summary}</div>}
             </td>

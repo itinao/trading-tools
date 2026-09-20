@@ -1,6 +1,7 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
 import { getShell } from '../app/api/get-shell.ts'
 import { AppLayout } from '../app/layout.tsx'
+import '../app/fonts.css'
 import '../app/styles.css'
 
 export const Route = createRootRoute({

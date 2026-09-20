@@ -602,3 +602,43 @@ table.compact {
   white-space: nowrap;
   padding-top: var(--spacing-xs);
 }
+
+/* ---------- icons（Design Doc 0016） ---------- */
+.icon {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 20;
+  font-size: 20px;
+  line-height: 1;
+  vertical-align: -4px;
+  color: inherit;
+}
+.icon-sm {
+  font-size: 18px;
+  vertical-align: -4px;
+}
+.icon-xs {
+  font-size: 14px;
+  vertical-align: -2px;
+  color: var(--color-on-surface-variant);
+}
+.sidebar-label .icon {
+  color: var(--color-on-surface-variant);
+}
+.sidebar-item.active .icon {
+  color: var(--color-primary);
+}
+.empty::before {
+  content: "info";
+  font-family: "Material Symbols Outlined", sans-serif;
+  font-size: 18px;
+  vertical-align: -4px;
+  margin-right: 6px;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 20;
+}

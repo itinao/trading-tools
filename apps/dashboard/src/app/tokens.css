@@ -25,27 +25,27 @@
   --color-on-critical: #FFFFFF;
 
   /* typography */
-  --font-headline-md-family: Inter, "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  --font-headline-md-family: "Google Sans Flex Variable", "Noto Sans JP Variable", system-ui, sans-serif;
   --font-headline-md-size: 20px;
   --font-headline-md-weight: 600;
   --font-headline-md-line-height: 28px;
   --font-headline-md-letter-spacing: -0.01em;
-  --font-title-sm-family: Inter, "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  --font-title-sm-family: "Google Sans Flex Variable", "Noto Sans JP Variable", system-ui, sans-serif;
   --font-title-sm-size: 15px;
   --font-title-sm-weight: 600;
   --font-title-sm-line-height: 22px;
   --font-title-sm-letter-spacing: 0em;
-  --font-body-md-family: Inter, "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  --font-body-md-family: "Google Sans Flex Variable", "Noto Sans JP Variable", system-ui, sans-serif;
   --font-body-md-size: 14px;
   --font-body-md-weight: 400;
   --font-body-md-line-height: 22px;
   --font-body-md-letter-spacing: 0em;
-  --font-label-sm-family: Inter, "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  --font-label-sm-family: "Google Sans Flex Variable", "Noto Sans JP Variable", system-ui, sans-serif;
   --font-label-sm-size: 12px;
   --font-label-sm-weight: 500;
   --font-label-sm-line-height: 16px;
   --font-label-sm-letter-spacing: 0.01em;
-  --font-numeric-md-family: Inter, "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  --font-numeric-md-family: "Google Sans Flex Variable", "Noto Sans JP Variable", system-ui, sans-serif;
   --font-numeric-md-size: 14px;
   --font-numeric-md-weight: 500;
   --font-numeric-md-line-height: 22px;

@@ -5,6 +5,7 @@ import {
 } from '../../../entities/assessment/index.ts'
 import { CategoryBadge } from '../../../entities/disclosure/index.ts'
 import { OverrideForm } from '../../../features/override-assessment/index.ts'
+import { Icon } from '../../../shared/ui'
 
 export interface DisclosureRow {
   id: number
@@ -40,7 +41,7 @@ export function DisclosureList({ items }: { items: DisclosureRow[] }) {
             </td>
             <td>
               <a href={d.pdfUrl} target="_blank" rel="noreferrer noopener">
-                {d.title}
+                {d.title} <Icon name="open_in_new" className="icon-xs" />
               </a>
               {d.assessment && <div className="muted">{d.assessment.summary}</div>}
             </td>

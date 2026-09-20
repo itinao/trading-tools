@@ -2,7 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { dayChangePct } from '../../../entities/quote/index.ts'
 import { scoreClass, scoreText } from '../../../entities/score/index.ts'
 import { dateOnly, pctClass, pctOf, pctText, price, yen } from '../../../shared/lib'
-import { Sparkline, YenCell } from '../../../shared/ui'
+import { Icon, Sparkline, YenCell } from '../../../shared/ui'
 import { ActionCard, groupActions } from '../../../widgets/action-card/index.ts'
 import { DisclosureList } from '../../../widgets/disclosure-list/index.ts'
 import { FinancialsTable } from '../../../widgets/financials-table/index.ts'
@@ -12,12 +12,12 @@ import { Timeline } from '../../../widgets/timeline/index.ts'
 import type { InstrumentPageData } from '../api/get-instrument-page.ts'
 
 export type InstrumentTab = 'overview' | 'timeline' | 'news' | 'financials' | 'quotes'
-const TABS: { key: InstrumentTab; label: string }[] = [
-  { key: 'overview', label: '概要' },
-  { key: 'timeline', label: 'タイムライン' },
-  { key: 'news', label: 'ニュース・開示' },
-  { key: 'financials', label: '財務・指標' },
-  { key: 'quotes', label: '株価' },
+const TABS: { key: InstrumentTab; label: string; icon: string }[] = [
+  { key: 'overview', label: '概要', icon: 'dashboard' },
+  { key: 'timeline', label: 'タイムライン', icon: 'timeline' },
+  { key: 'news', label: 'ニュース・開示', icon: 'newspaper' },
+  { key: 'financials', label: '財務・指標', icon: 'account_balance' },
+  { key: 'quotes', label: '株価', icon: 'show_chart' },
 ]
 
 /** 銘柄詳細。ヘッダ帯（株価・スコア・折れ線）で「今どうか」、タブで 概要 / タイムライン / ニュース・開示 / 財務・指標 / 株価 */
@@ -92,7 +92,7 @@ export function InstrumentPage({ data, tab }: { data: InstrumentPageData; tab: I
             activeOptions={{ exact: true }}
             className={t.key === tab ? 'active' : ''}
           >
-            {t.label}
+            <Icon name={t.icon} className="icon-sm" /> {t.label}
           </Link>
         ))}
       </div>

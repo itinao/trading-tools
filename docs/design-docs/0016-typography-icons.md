@@ -2,7 +2,7 @@
 
 | | |
 | --- | --- |
-| 状態 | 承認（2026-09-20） |
+| 状態 | 実装済み（2026-09-20） |
 | 作成日 | 2026-09-20 |
 | 元になる Design Doc | [0007](./0007-design-system.md)（DESIGN.md）、[0015](./0015-dashboard-ia.md) |
 | supersede | 0007 R1「Web フォントの読み込みはしない」、DESIGN.md の Typography と「アイコンの多用」の Don't |
@@ -36,3 +36,9 @@
 - DESIGN.md の `typography.*.fontFamily` を `"Google Sans Flex", "Noto Sans JP", system-ui, sans-serif` に。`numeric-md` の `fontFeature` はそのまま
 - `shared/ui/Icon`: `<span class="material-symbols-outlined" aria-hidden>name</span>`
 - 適用: `widgets/sidebar`、`widgets/status-strip`、`pages/instrument` のタブ、外部リンク
+
+## 実装時の補足（2026-09-20）
+
+- fontsource の可変フォントのファミリー名は `"Google Sans Flex Variable"` / `"Noto Sans JP Variable"`（`Variable` 付き）。DESIGN.md の `fontFamily` はこの名前で書く。YAML では先頭が `"` だと引用スカラーになるので、値全体を `'…'` で囲む
+- Noto Sans JP はユニコード範囲ごとに分割配信され（1 ファイル 15〜20KB）、表示に使う範囲だけ読まれる。Material Symbols Outlined は 1 ファイル 3.9MB（可変・全アイコン）。ローカル配信でキャッシュされるので許容した。減らしたくなったら使うアイコン名で subset する
+- 空状態（`.empty`）のアイコンは CSS の `::before` で付けた（部品ごとに書かなくて済む）

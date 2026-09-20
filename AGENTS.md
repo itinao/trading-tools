@@ -9,7 +9,7 @@
 
 ## 現在のフェーズ
 
-**実行計画 0001（M0〜M5）完了。実行計画 [0002](docs/execution-plans/0002-operations.md)（運用フェーズの改善）の O1（ダッシュボードの情報設計、Design Doc 0015）完了。** 次の項目に着手する前に Design Doc を書いて承認を得る。
+**実行計画 0001（M0〜M5）完了。実行計画 [0002](docs/execution-plans/0002-operations.md)（運用フェーズの改善）の O1（ダッシュボードの情報設計、0015）と O7（フォントとアイコン、0016）完了。** 次の項目に着手する前に Design Doc を書いて承認を得る。
 進捗は [実行計画 0001](docs/execution-plans/0001-initial.md)。
 
 ## 作業を始める前に
@@ -137,6 +137,7 @@ pnpm watch add <code> --note "..."  # ダッシュボードのスクリーナー
 - ダッシュボードの見た目は [apps/dashboard/DESIGN.md](apps/dashboard/DESIGN.md)（Google Stitch の DESIGN.md フォーマット）に従う（Design Doc 0007）。front matter がトークン（色・文字・角丸・余白・コンポーネント）、本文が意図と Do's / Don'ts
 - 色・文字・角丸・余白の値は `pnpm design:tokens` で `apps/dashboard/src/app/tokens.css` に生成される。CSS は **この変数だけ** を使い、生の色コードや px を `styles.css` に書かない。DESIGN.md を変えたら再生成する（古いままだと `pnpm test` が落ちる）
 - 新しい UI 部品を作るときは、先に DESIGN.md の `components` と本文の Components に定義を足し、`styles.css` にそのコンポーネント名のクラスを書く
+- フォントは Google Sans Flex + Noto Sans JP、アイコンは Material Symbols Outlined（`shared/ui` の `Icon`）。どちらも自己ホスト。アイコンの使いどころは DESIGN.md の Icons に従う（ボタン・バッジ・セルには置かない）
 - 損益・変化率の色は楽天証券に合わせて **赤 = 上昇（`gain`）、緑 = 下落（`loss`）**。重大度（`warn` / `critical`）は必ずバッジ（面つき）で示し、損益の文字色と混同させない
 
 ## スキーマの変え方

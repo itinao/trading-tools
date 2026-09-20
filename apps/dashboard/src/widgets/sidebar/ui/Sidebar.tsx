@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { Icon } from '../../../shared/ui'
 
 export interface SidebarData {
   today: string
@@ -12,10 +13,28 @@ export interface SidebarData {
 }
 
 const ITEMS = [
-  { to: '/', label: 'アクション', hint: '毎朝の入口。検知と助言を確認して処理する', exact: true },
-  { to: '/instruments', label: '銘柄', hint: '監視している銘柄（保有 / ウォッチ）', exact: false },
-  { to: '/screener', label: 'スクリーナー', hint: '候補を探してウォッチへ', exact: false },
-  { to: '/history', label: '履歴', hint: '判断の記録（全銘柄）', exact: false },
+  {
+    to: '/',
+    label: 'アクション',
+    hint: '毎朝の入口。検知と助言を確認して処理する',
+    exact: true,
+    icon: 'inbox',
+  },
+  {
+    to: '/instruments',
+    label: '銘柄',
+    hint: '監視している銘柄（保有 / ウォッチ）',
+    exact: false,
+    icon: 'visibility',
+  },
+  {
+    to: '/screener',
+    label: 'スクリーナー',
+    hint: '候補を探してウォッチへ',
+    exact: false,
+    icon: 'filter_alt',
+  },
+  { to: '/history', label: '履歴', hint: '判断の記録（全銘柄）', exact: false, icon: 'history' },
 ] as const
 
 /** 左固定のナビ。4 項目 + 1 行の説明、未対応の件数、株価の鮮度、最終収集（Design Doc 0015 §3.1） */
@@ -26,7 +45,8 @@ export function Sidebar({ data }: { data: SidebarData }) {
       <div className="sidebar-brand">
         <div className="sidebar-title">trading-tools</div>
         <div className={`sidebar-fresh ${stale ? 'stale' : ''}`}>
-          株価: {data.status.latestQuoteDate ?? 'なし'}
+          <Icon name={stale ? 'schedule' : 'check_circle'} className="icon-sm" /> 株価:{' '}
+          {data.status.latestQuoteDate ?? 'なし'}
           {stale ? `（今日は ${data.today}）` : '（今日）'}
         </div>
       </div>
@@ -39,6 +59,7 @@ export function Sidebar({ data }: { data: SidebarData }) {
             className="sidebar-item"
           >
             <span className="sidebar-label">
+              <Icon name={item.icon} />
               {item.label}
               {item.to === '/' && data.status.openActions.total > 0 && (
                 <span className="badge badge-critical">{data.status.openActions.total}</span>

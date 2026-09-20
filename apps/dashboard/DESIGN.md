@@ -27,31 +27,31 @@ colors:
   on-critical: "#FFFFFF"
 typography:
   headline-md:
-    fontFamily: Inter, "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif
+    fontFamily: '"Google Sans Flex Variable", "Noto Sans JP Variable", system-ui, sans-serif'
     fontSize: 20px
     fontWeight: "600"
     lineHeight: 28px
     letterSpacing: -0.01em
   title-sm:
-    fontFamily: Inter, "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif
+    fontFamily: '"Google Sans Flex Variable", "Noto Sans JP Variable", system-ui, sans-serif'
     fontSize: 15px
     fontWeight: "600"
     lineHeight: 22px
     letterSpacing: 0em
   body-md:
-    fontFamily: Inter, "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif
+    fontFamily: '"Google Sans Flex Variable", "Noto Sans JP Variable", system-ui, sans-serif'
     fontSize: 14px
     fontWeight: "400"
     lineHeight: 22px
     letterSpacing: 0em
   label-sm:
-    fontFamily: Inter, "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif
+    fontFamily: '"Google Sans Flex Variable", "Noto Sans JP Variable", system-ui, sans-serif'
     fontSize: 12px
     fontWeight: "500"
     lineHeight: 16px
     letterSpacing: 0.01em
   numeric-md:
-    fontFamily: Inter, "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif
+    fontFamily: '"Google Sans Flex Variable", "Noto Sans JP Variable", system-ui, sans-serif'
     fontSize: 14px
     fontWeight: "500"
     lineHeight: 22px
@@ -196,7 +196,7 @@ trading-tools のダッシュボードは、毎朝数分だけ開いて「何が
 - 利用者: 本人1名。毎日見るので、目が慣れる単調さは長所
 - 色は **意味があるときだけ** 使う。損益の符号、シグナルの重大度、データが古いことの警告。それ以外は無彩色
 - 数字が主役。すべての数値は等幅数字（tabular figures）で右揃えにし、桁を目で追えるようにする
-- 日本語と英数字が混在するため、和文は Hiragino Sans / Noto Sans JP、数字と英字は Inter を優先し、行間に余裕を持たせる
+- 日本語と英数字が混在するため、欧文・数字は Google Sans Flex、和文は Noto Sans JP（どちらも Google Fonts の書体、自己ホスト）。行間に余裕を持たせる
 
 ## Colors
 
@@ -211,7 +211,7 @@ trading-tools のダッシュボードは、毎朝数分だけ開いて「何が
 
 ## Typography
 
-見出しは控えめに、本文は 14px を基準にする。長文はほとんどなく、表と短い文が中心なので、行間は 22px で詰めすぎない。
+書体は Google Fonts のサイトと同じ **Google Sans Flex**（欧文・数字）と **Noto Sans JP**（和文）。どちらも可変フォントで、`@fontsource-variable` で自己ホストする（Design Doc 0016）。見出しは控えめに、本文は 14px を基準にする。長文はほとんどなく、表と短い文が中心なので、行間は 22px で詰めすぎない。
 
 - `headline-md`（20px / 600）: ページタイトル。1画面に1つ
 - `title-sm`（15px / 600）: 銘柄詳細のセクション見出し（保有、アクション、シグナル、株価）
@@ -219,6 +219,14 @@ trading-tools のダッシュボードは、毎朝数分だけ開いて「何が
 - `label-sm`（12px / 500）: 表のヘッダ、バッジ、証券コード、日付などの補助情報
 - `numeric-md`（14px / 500、tabular figures）: 数値セル。`font-feature-settings: "tnum" 1, "lnum" 1` を必ず付け、右揃えにする
 - 銘柄名は全角英数が混じる（証券会社由来）。そのまま表示し、無理に半角化しない
+
+## Icons
+
+**Material Symbols Outlined**（可変、weight 400、optical size 20、`material-symbols` で自己ホスト）。使いどころを限る。
+
+- 使う: サイドバーの項目、状態の帯の各面、銘柄詳細のタブ、外部リンク（`open_in_new`）、空状態
+- 使わない: ボタンの中、バッジの中、表のセル、見出し。文字で足りる所に飾りとして置かない
+- 必ずラベルと一緒に置き、単独で意味を持たせない（`aria-hidden`）。色は周囲の文字色を継承する
 
 ## Layout
 
@@ -303,7 +311,7 @@ trading-tools のダッシュボードは、毎朝数分だけ開いて「何が
 - Do: 空状態には次にやるコマンドを書く（例: 「`pnpm import-holdings run` で取り込む」）
 - Do: 画面のつながりはサイドバーの 1 行の説明と、画面内のリンク（「スクリーナーで探す →」など）で示す。グループ名で分類しない
 - Do: 助言ではなく事実の整理であることを、控えめな注記で毎回示す
-- Don't: 影、グラデーション、アイコンの多用、アニメーション。計器盤に演出はいらない
+- Don't: 影、グラデーション、アニメーション、Icons に書いた場所以外のアイコン。計器盤に演出はいらない
 - Don't: 上昇・下落の色を欧米式（緑 = 上昇）にしない。楽天証券の慣習（赤 = 上昇）に固定する。重大度の赤は必ずバッジで示し、損益の赤（文字色のみ）と見分けがつくようにする
 - Don't: 警告色を複数使わない。黄色（`warn`）と赤（`critical`）の2段階だけ
 - Don't: 文字を `on-surface-variant` より薄くしない。読めない補助情報は出さない方がよい
