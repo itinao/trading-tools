@@ -26,6 +26,7 @@ export function createMockProvider(
     name: 'mock',
     filePath: options.filePath,
     async fetchQuotes(codes) {
+      // モックは as_of を返さない（collect 側で実行日を使う）
       const data = loadOrSeed(options)
       return codes.map<QuoteResult>((code) => {
         const q = data[code]

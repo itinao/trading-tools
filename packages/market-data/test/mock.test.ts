@@ -18,7 +18,7 @@ describe('mock provider', () => {
   it('ファイルがなければ seed から生成して返す', async () => {
     const filePath = tmp()
     const p = createMockProvider({ filePath, seed: () => ({ '1234': 2500, '5678': 700.5 }) })
-    const r = await p.fetchQuotes(['1234', '5678', '9999'], '2026-01-01')
+    const r = await p.fetchQuotes(['1234', '5678', '9999'])
     expect(r).toEqual([
       { code: '1234', ok: true, price: 2500 },
       { code: '5678', ok: true, price: 700.5 },
@@ -41,7 +41,7 @@ describe('mock provider', () => {
         throw new Error('should not seed')
       },
     })
-    expect(await p.fetchQuotes(['1234'], '2026-01-01')).toEqual([
+    expect(await p.fetchQuotes(['1234'])).toEqual([
       { code: '1234', ok: true, price: 2000, previousClose: 2500 },
     ])
   })
