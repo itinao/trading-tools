@@ -50,7 +50,7 @@ pnpm ワークスペース。Node 22（`.node-version`）。ビルドせず `tsx
 | `tools/screen` | `@trading/tool-screen` | `pnpm screen run --preset value`。母集団は `pnpm collect universe`（JPX、月 1 回） |
 | `tools/review` | `@trading/tool-review` | `pnpm review timeline <code>` / `history`。振り返り |
 | `tools/schedule` | `@trading/tool-schedule` | `pnpm schedule install` で launchd に日次実行を登録 |
-| `apps/dashboard` | `@trading/dashboard` | `pnpm dashboard` で http://localhost:3000（`0.0.0.0` で待つ。`HOST` / `PORT` で変更可。認証は無いので LAN / Tailscale の外に出さない）。画面は アクション（`/`）/ 銘柄（`/instruments`）/ スクリーナー / 履歴 と銘柄詳細。見た目は `apps/dashboard/DESIGN.md` |
+| `apps/dashboard` | `@trading/dashboard` | `pnpm dashboard` で http://localhost:3000（`0.0.0.0` で待つ。`HOST` / `PORT` で変更可。マシン名・`.local`・`.ts.net` を Host として許可し、ほかは `ALLOWED_HOSTS=a,b` で足す。認証は無いので LAN / Tailscale の外に出さない）。画面は アクション（`/`）/ 銘柄（`/instruments`）/ スクリーナー / 履歴 と銘柄詳細。見た目は `apps/dashboard/DESIGN.md` |
 | `tools/<name>` | `@trading/tool-<name>` | 各ツール（M1 以降） |
 | `.agents/skills/` | | エージェントのスキル。`morning`（朝の確認: assess → detect → advise）、`assess`、`advise`、`retrospect`（月次の振り返り、提案のみ）。`.claude/skills` はシンボリックリンク |
 | `docs/design-docs/` | | Design Doc（連番、変更ごとに1本） |
