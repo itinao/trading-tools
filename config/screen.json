@@ -1,0 +1,26 @@
+{
+  "defaults": { "segments": ["prime", "standard"], "limit": 50, "marketCapMin": 30000000000 },
+  "presets": {
+    "value": {
+      "perMax": 12,
+      "pbrMax": 1.0,
+      "dividendMin": 3.0,
+      "marketCapMin": 30000000000,
+      "sort": "dividendYield"
+    },
+    "growth": {
+      "growthYears": 3,
+      "perMax": 25,
+      "marketCapMin": 30000000000,
+      "sort": "growthYears"
+    },
+    "quality": {
+      "roeMin": 10,
+      "operatingMarginMin": 10,
+      "equityRatioMin": 40,
+      "dividendMin": 2.0,
+      "marketCapMin": 30000000000,
+      "sort": "dividendYield"
+    }
+  }
+}

@@ -7,6 +7,7 @@ import { collectFundamentals } from './fundamentals.ts'
 import { collectNews } from './news.ts'
 import { defaultProviders, type Providers, resolveQuoteProvider } from './providers.ts'
 import { collectQuotes, type QuotesOptions } from './quotes.ts'
+import { collectUniverse } from './universe.ts'
 
 async function withDatabase<T>(
   context: ToolContext,
@@ -104,6 +105,14 @@ export const tool = defineTool({
               defaultProviders(undefined, process.env, []).disclosures,
             ),
           ),
+        ),
+    },
+    {
+      name: 'universe',
+      description: '東証の上場銘柄一覧（JPX）を入れ替える。月 1 回。all には含まれない',
+      handler: (_o, context) =>
+        withDatabase(context, async (handle) =>
+          dry(context, await collectUniverse(handle, context)),
         ),
     },
     {

@@ -185,3 +185,39 @@ describe('collectAll', () => {
     handle.close()
   })
 })
+
+describe('collectUniverse', () => {
+  it('一覧を入れ替え、区分ごとの件数を返す', async () => {
+    const { collectUniverse } = await import('../src/universe.ts')
+    const { universeCount } = await import('@trading/domain')
+    const handle = createTestDatabase()
+    const r = await collectUniverse(handle, context(), async () => [
+      {
+        code: '7203',
+        name: 'トヨタ自動車',
+        segment: 'prime',
+        segmentRaw: 'プライム',
+        sector33: '輸送用機器',
+        size: null,
+        listedAsOf: '2026-08-31',
+      },
+      {
+        code: '1306',
+        name: 'ETF',
+        segment: 'other',
+        segmentRaw: 'ETF',
+        sector33: null,
+        size: null,
+        listedAsOf: '2026-08-31',
+      },
+    ])
+    expect(r).toEqual({
+      source: 'jpx',
+      listedAsOf: '2026-08-31',
+      rows: 2,
+      bySegment: { prime: 1, other: 1 },
+    })
+    expect(universeCount(handle.db)).toBe(2)
+    handle.close()
+  })
+})

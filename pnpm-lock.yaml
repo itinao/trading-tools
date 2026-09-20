@@ -224,6 +224,33 @@ importers:
         specifier: workspace:*
         version: link:../../packages/cli
 
+  tools/screen:
+    dependencies:
+      '@trading/cli':
+        specifier: workspace:*
+        version: link:../../packages/cli
+      '@trading/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@trading/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+      '@trading/market-data':
+        specifier: workspace:*
+        version: link:../../packages/market-data
+
+  tools/watch:
+    dependencies:
+      '@trading/cli':
+        specifier: workspace:*
+        version: link:../../packages/cli
+      '@trading/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@trading/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+
 packages:
 
   '@babel/code-frame@7.29.7':
