@@ -21,7 +21,7 @@
 ## 守ること
 
 - **承認された Design Doc がない変更は実装しない。** 依頼されたら、先に Design Doc を書くことを提案する
-- **画面（見た目・構成）に関わる変更は、Design Doc の承認 → モックを見せる → OK → 実装、の順を必ず守る。** モックは静的 HTML（DESIGN.md のトークンを使う）をヘッドレス Chrome でスクリーンショットにして見せる。承認済みの Design Doc の範囲内の小さな見た目の変更でも、モックは省略しない
+- **画面（見た目・構成）に関わる変更は、Design Doc の承認 → モックを見せる → OK → 実装、の順を必ず守る。** モックは静的 HTML（DESIGN.md のトークンを使う）をヘッドレス Chrome でスクリーンショットにして見せる。承認済みの Design Doc の範囲内の小さな見た目の変更でも、モックは省略しない。画面やナビが増減・移動するときは、モックと一緒に **画面遷移図の差分**（`docs/screens.md` の diff）も見せる
 - **個人データをコミットしない。** `data/source/` と `*.csv` は `.gitignore` 済み。ツールは `data/source/` を参照するだけで、編集・移動・削除しない
 - **事実と評価を分ける。** 外部由来のデータ（株価、ニュース、開示）は取得時点付きで保存し、編集しない。評価（スコア、シグナル、助言）は事実から作り直せるようにする
 - **AI に関わる処理はツールの外に置く。** ツールは AI なしで決定的に動く。判定・助言はエージェントのスキルで行い、結果はツールの CLI 経由で書き戻す
@@ -126,6 +126,7 @@ pnpm watch add <code> --note "..."  # ダッシュボードのスクリーナー
    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --disable-gpu --hide-scrollbars --window-size=1440,1000 --virtual-time-budget=6000 --screenshot=/tmp/mock.png file:///.../mock/xxx.html
    ```
    複数案があれば並べて 1 枚にする。利用者に画像を送り、OK を待つ
+   - 画面（ルート）やナビのリンクが増減・移動するなら、**画面遷移図の差分も一緒に見せる**。変更後の `docs/screens.md` を手で書いて `git diff` の形で示すか、ルートの雛形だけ先に置いて `pnpm screens` を実行して diff を取る（本実装はまだしない）。mermaid の変更点を言葉でも添える
 3. OK が出てから実装する。実装後も同じ手順でスクリーンショットを撮り、モックと比べる
 4. モックは実装後に消す（`mock/` は `.gitignore`）。残すのは Design Doc の補足に書いた決定だけ
 

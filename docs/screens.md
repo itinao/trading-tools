@@ -11,7 +11,7 @@
 | `/instruments/$id` | 銘柄詳細。ヘッダ帯（株価・スコア・折れ線）で「今どうか」、タブで 概要 / タイムライン / ニュース・開示 / 財務・指標 / 株価 | `routes/instruments.$id.tsx` | `pages/instrument` |
 | `/screener` | スクリーナー。CLI（pnpm screen run）の実行結果を見て、候補をウォッチに追加する。実行は画面からは行わない | `routes/screener.tsx` | `pages/screener` |
 
-共通ナビ（すべての画面のヘッダ）: 
+共通ナビ（すべての画面のサイドバー）: `/`, `/history`, `/instruments`, `/screener`
 
 矢印は「その画面のコードから到達できる `<Link>`」。静的解析なので表示条件（props で出し分ける等）は見ない。自分自身への矢印はタブなど、同じ画面のまま条件が変わる遷移。
 
@@ -23,10 +23,15 @@ flowchart LR
     R_instruments_["/instruments/<br><small>銘柄</small>"]
     R_instruments__id["/instruments/$id<br><small>銘柄詳細</small>"]
     R_screener["/screener<br><small>スクリーナー</small>"]
+    NAV -.-> R_
+    NAV -.-> R_history
+    NAV -.-> R_instruments_
+    NAV -.-> R_screener
     R_ --> R_
     R_ --> R_instruments__id
     R_history --> R_history
     R_history --> R_instruments__id
+    R_instruments_ --> R_instruments_
     R_instruments_ --> R_instruments__id
     R_instruments_ --> R_screener
     R_instruments__id --> R_instruments__id

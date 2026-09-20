@@ -16,7 +16,8 @@ export interface Screen {
 
 const ROUTE_RE = /createFileRoute\('([^']+)'\)/
 const IMPORT_RE = /from\s+'(\.{1,2}\/[^']+)'/g
-const LINK_RE = /\bto=(?:"([^"]+)"|\{'([^']+)'\})/g
+// <Link to="/x"> / <Link to={'/x'}> と、サイドバーのようにリンク先を配列で持つ { to: '/x' } の両方を拾う
+const LINK_RE = /\bto(?:=(?:"([^"]+)"|\{'([^']+)'\})|:\s*'([^']+)')/g
 const JSDOC_RE = /\/\*\*\s*([^\n*]+?)\s*\*\//
 
 function resolveImport(fromFile: string, spec: string): string | null {
@@ -57,7 +58,8 @@ export function collectGlobalLinks(srcDir: string): string[] {
   if (!existsSync(root)) return []
   const links = new Set<string>()
   for (const f of reachableFiles(root)) {
-    for (const m of readFileSync(f, 'utf8').matchAll(LINK_RE)) links.add((m[1] ?? m[2]) as string)
+    for (const m of readFileSync(f, 'utf8').matchAll(LINK_RE))
+      links.add((m[1] ?? m[2] ?? m[3]) as string)
   }
   return [...links].sort()
 }
@@ -75,7 +77,7 @@ export function collectScreens(srcDir: string): Screen[] {
     const links = new Set<string>()
     for (const f of files) {
       const t = readFileSync(f, 'utf8')
-      for (const m of t.matchAll(LINK_RE)) links.add((m[1] ?? m[2]) as string)
+      for (const m of t.matchAll(LINK_RE)) links.add((m[1] ?? m[2] ?? m[3]) as string)
     }
     const pageUi = files.find((f) => /\/pages\/[^/]+\/ui\/[^/]+Page\.tsx$/.test(f))
     const pageSlice = pageUi ? (/\/pages\/([^/]+)\//.exec(pageUi)?.[1] ?? null) : null
@@ -99,7 +101,9 @@ const nodeId = (path: string) => `R${path.replace(/[^a-zA-Z0-9]/g, '_') || 'root
 export function renderScreensDoc(srcDir: string): string {
   const screens = collectScreens(srcDir)
   const globalLinks = collectGlobalLinks(srcDir)
-  const known = new Set(screens.map((s) => s.path))
+  // index ルートのパスは末尾に / が付く（/instruments/）が、リンクは /instruments と書くので揃える
+  const known = new Map(screens.map((s) => [s.path.replace(/(.)\/$/, '$1'), s.path]))
+  const target = (to: string) => known.get(to.replace(/(.)\/$/, '$1'))
   const lines = ['flowchart LR']
   lines.push('    NAV(["共通ナビ"])')
   for (const s of screens) {
@@ -108,12 +112,15 @@ export function renderScreensDoc(srcDir: string): string {
       : s.path
     lines.push(`    ${nodeId(s.path)}["${label}"]`)
   }
-  for (const to of globalLinks) if (known.has(to)) lines.push(`    NAV -.-> ${nodeId(to)}`)
+  for (const to of globalLinks) {
+    const t = target(to)
+    if (t) lines.push(`    NAV -.-> ${nodeId(t)}`)
+  }
   const edges = new Set<string>()
   for (const s of screens) {
     for (const to of s.links) {
-      if (!known.has(to)) continue
-      edges.add(`    ${nodeId(s.path)} --> ${nodeId(to)}`)
+      const t = target(to)
+      if (t) edges.add(`    ${nodeId(s.path)} --> ${nodeId(t)}`)
     }
   }
   lines.push(...[...edges].sort())
@@ -132,7 +139,7 @@ export function renderScreensDoc(srcDir: string): string {
     '| --- | --- | --- | --- |',
     ...rows,
     '',
-    `共通ナビ（すべての画面のヘッダ）: ${globalLinks.map((l) => `\`${l}\``).join(', ')}`,
+    `共通ナビ（すべての画面のサイドバー）: ${globalLinks.map((l) => `\`${l}\``).join(', ')}`,
     '',
     '矢印は「その画面のコードから到達できる `<Link>`」。静的解析なので表示条件（props で出し分ける等）は見ない。自分自身への矢印はタブなど、同じ画面のまま条件が変わる遷移。',
     '',
