@@ -9,7 +9,7 @@
 
 ## 現在のフェーズ
 
-**M4（攻め）実装中。** [Design Doc 0013](docs/design-docs/0013-watch-and-screen.md) は承認済み。
+**M4（攻め）完了。** 次は M5（振り返り）。着手前に Design Doc を書いて承認を得る。
 進捗は [実行計画 0001](docs/execution-plans/0001-initial.md)。
 
 ## 作業を始める前に
@@ -45,6 +45,8 @@ pnpm ワークスペース。Node 22（`.node-version`）。ビルドせず `tsx
 | `tools/actions` | `@trading/tool-actions` | `pnpm actions list` / `show` / `resolve` |
 | `tools/assess` | `@trading/tool-assess` | `pnpm assess pending` / `record` / `override` / `list`。AI 判定の出し入れ |
 | `tools/advise` | `@trading/tool-advise` | `pnpm advise pending` / `record`。アクションへの AI 助言の出し入れ |
+| `tools/watch` | `@trading/tool-watch` | `pnpm watch add` / `remove` / `list`。ウォッチ銘柄 |
+| `tools/screen` | `@trading/tool-screen` | `pnpm screen run --preset value`。母集団は `pnpm collect universe`（JPX、月 1 回） |
 | `tools/schedule` | `@trading/tool-schedule` | `pnpm schedule install` で launchd に日次実行を登録 |
 | `apps/dashboard` | `@trading/dashboard` | `pnpm dashboard` で http://127.0.0.1:3000。見た目は `apps/dashboard/DESIGN.md` |
 | `tools/<name>` | `@trading/tool-<name>` | 各ツール（M1 以降） |
@@ -82,6 +84,11 @@ pnpm advise record --input <file>   # 助言を書き込む
 # 確認
 pnpm actions list        # 未対応のアクション
 pnpm dashboard           # http://127.0.0.1:3000
+
+# 攻め（週末など）
+pnpm collect universe    # 東証の上場銘柄一覧（月 1 回）
+pnpm screen run --preset value    # value | growth | quality、または --per-max 等で条件指定。約 1〜2 分
+pnpm watch add <code> --note "..."  # ダッシュボードのスクリーナーからも追加できる
 ```
 
 - 株価が 1 件もない銘柄（新規保有）は `collect quotes` が自動で 1 年分の日足を遡る。全銘柄を遡り直すなら `pnpm collect quotes --backfill`
@@ -89,6 +96,7 @@ pnpm dashboard           # http://127.0.0.1:3000
 - 外部ソースは非公式（Yahoo / Google News）を含む。止まったら `failed` に出て、ダッシュボードの「株価が古い」バナーで気づく（Design Doc 0009）
 - AI の判定は `pnpm assess override <id> --sentiment N` かダッシュボードで人が上書きできる。AI の判定は消えず、human が優先される
 - 助言は `actions` に `origin = 'ai'`、ルール生成のアクションと同じ `signal_id` で保存され、一覧では同じ行の中に出る。事実の束（`advise pending`）に無いことを根拠にしない
+- 監視対象は保有 ∪ ウォッチ。攻めのルール（`valuation_cheap` / `growth_streak` / `oversold_quality`）はウォッチ銘柄にだけ適用され、アクションは「買い検討」バッジで区別される。ウォッチの助言の stance は candidate / review / pass
 
 ## ツールの作り方（CLI 規約）
 

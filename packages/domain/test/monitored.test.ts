@@ -88,7 +88,7 @@ describe('watches', () => {
     ])
     expect(listWatches(handle.db).map((m) => m.code)).toEqual(['4444', '7203'])
     expect(monitoredTargets(handle.db)).toHaveLength(4)
-    expect(removeWatch(handle.db, '4444')).toEqual({ instrumentId: 'JP:4444' })
+    expect(removeWatch(handle.db, '4444')).toEqual({ instrumentId: 'JP:4444', dismissedActions: 0 })
     expect(() => removeWatch(handle.db, '4444')).toThrow(WatchError)
     handle.close()
   })

@@ -30,8 +30,13 @@ export function valuationCheap(
   return {
     kind: 'valuation_cheap',
     severity: 'warn',
-    value: f.per as number,
-    details: { per: f.per, pbr: f.pbr, dividendYield: f.dividendYield, asOf: f.asOf },
+    value: round2(f.per as number),
+    details: {
+      per: round2(f.per as number),
+      pbr: round2(f.pbr as number),
+      dividendYield: round2(f.dividendYield as number),
+      asOf: f.asOf,
+    },
   }
 }
 

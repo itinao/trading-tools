@@ -1,6 +1,6 @@
 import { nowJst } from '@trading/cli'
 import { schema, type TradingDatabase } from '@trading/db'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { type Position, positions } from './holdings.ts'
 import { findUniverse } from './universe.ts'
 
@@ -123,11 +123,24 @@ export function addWatch(
   return { instrumentId: id, code, name, addedAt: now }
 }
 
-export function removeWatch(db: TradingDatabase, code: string): { instrumentId: string } {
+/** ウォッチから外す。保有していなければ、その銘柄の未対応アクション（と助言）を「見送り」にする */
+export function removeWatch(
+  db: TradingDatabase,
+  code: string,
+): { instrumentId: string; dismissedActions: number } {
   const id = schema.instrumentId('JP', code)
   const r = db.delete(schema.watches).where(eq(schema.watches.instrumentId, id)).run()
   if (r.changes === 0) throw new WatchError('not_watched', `${code} はウォッチにありません`)
-  return { instrumentId: id }
+  let dismissedActions = 0
+  if (!positions(db).some((p) => p.instrumentId === id)) {
+    const upd = db
+      .update(schema.actions)
+      .set({ status: 'dismissed', resolvedAt: nowJst(), note: 'ウォッチから外した' })
+      .where(and(eq(schema.actions.instrumentId, id), eq(schema.actions.status, 'open')))
+      .run()
+    dismissedActions = upd.changes
+  }
+  return { instrumentId: id, dismissedActions }
 }
 
 export function listWatches(db: TradingDatabase): MonitoredInstrument[] {
