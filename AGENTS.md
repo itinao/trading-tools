@@ -9,7 +9,7 @@
 
 ## 現在のフェーズ
 
-**M2（ニュース・開示とスコア）完了。** 次は M3（AI 助言 `advise`）。着手前に Design Doc を書いて承認を得る。
+**M3（AI 助言）実装中。** [Design Doc 0012](docs/design-docs/0012-advise.md) は承認済み。
 進捗は [実行計画 0001](docs/execution-plans/0001-initial.md)。
 
 ## 作業を始める前に
