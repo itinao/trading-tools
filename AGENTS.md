@@ -9,7 +9,7 @@
 
 ## 現在のフェーズ
 
-**M3（AI 助言）完了。** 次は M4（攻め: ウォッチ銘柄とスクリーニング）。着手前に Design Doc を書いて承認を得る。
+**M4（攻め）実装中。** [Design Doc 0013](docs/design-docs/0013-watch-and-screen.md) は承認済み。
 進捗は [実行計画 0001](docs/execution-plans/0001-initial.md)。
 
 ## 作業を始める前に
