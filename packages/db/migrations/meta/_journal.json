@@ -15,6 +15,13 @@
       "when": 1789829896246,
       "tag": "0001_m1-signals-actions",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1789863864122,
+      "tag": "0002_m2-market-data",
+      "breakpoints": true
     }
   ]
 }
