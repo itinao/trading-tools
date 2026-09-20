@@ -2,7 +2,7 @@
 
 | | |
 | --- | --- |
-| 状態 | 草案（壁打ち中） |
+| 状態 | 承認（2026-09-20） |
 | 作成日 | 2026-09-20 |
 | 元になる Design Doc | [0001](./0001-repository.md) §9 概念・§12 エージェント・付録 A、[0005](./0005-detect-and-dashboard.md)（detect）、[0010](./0010-real-data-collection.md)（事実の収集） |
 | 対応するマイルストーン | [実行計画 0001](../execution-plans/0001-initial.md) M2 |
@@ -211,9 +211,11 @@ erDiagram
 | R5 | launchd の環境（PATH、Node のバージョン）で失敗する | plist に `pnpm` の絶対パスと作業ディレクトリを書く。ログで確認 |
 | U1 | `claude -p` を launchd から呼んで `assess` を自動化できるか | M2 の完了後に試す。できれば 0011 の補足に記録 |
 
-## 要確認
+## 決定事項（壁打ちの結果）
 
-1. 判定の項目（relevance / sentiment / impact / direction / summary / rationale）でよいか
-2. スコアの構成（判定 ±50、株価 -40..0、財務 ±20、損益は含めない）でよいか
-3. 日次実行を launchd + 朝にエージェントを人が起動、という分担でよいか
-4. ニュースは見出しだけで判定する、でよいか
+| 論点 | 決定 |
+| --- | --- |
+| 判定の項目 | 草案どおり（relevance / sentiment / impact / direction / summary / rationale / author / model） |
+| スコアの構成 | 判定 ±50、株価 -40..0、財務 ±20。個人の損益は含めない |
+| 日次実行 | launchd で collect → detect、AI 判定は朝にエージェントを人が起動 |
+| ニュースの材料 | 見出しのみ |

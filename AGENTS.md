@@ -9,7 +9,7 @@
 
 ## 現在のフェーズ
 
-**M2（ニュース・開示とスコア）実装中。** 前半 [Design Doc 0010](docs/design-docs/0010-real-data-collection.md)（実データの収集）は実装済み。次は後半 0011（判定とスコア、日次実行の環境）の Design Doc を書いて承認を得る。
+**M2（ニュース・開示とスコア）実装中。** 前半 [Design Doc 0010](docs/design-docs/0010-real-data-collection.md)（実データの収集）は実装済み。後半 [Design Doc 0011](docs/design-docs/0011-assessment-and-score.md)（判定とスコア）は承認済み、実装中。
 進捗は [実行計画 0001](docs/execution-plans/0001-initial.md)。
 
 ## 作業を始める前に
