@@ -9,7 +9,7 @@
 
 ## 現在のフェーズ
 
-**実行計画 0001（M0〜M5）完了。実行計画 [0002](docs/execution-plans/0002-operations.md)（運用フェーズの改善）で O1（ダッシュボードの情報設計、Design Doc 0015）を壁打ち中。**
+**実行計画 0001（M0〜M5）完了。実行計画 [0002](docs/execution-plans/0002-operations.md)（運用フェーズの改善）の O1（ダッシュボードの情報設計、[Design Doc 0015](docs/design-docs/0015-dashboard-ia.md)）を実装中。**
 進捗は [実行計画 0001](docs/execution-plans/0001-initial.md)。
 
 ## 作業を始める前に
