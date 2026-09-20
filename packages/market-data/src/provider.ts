@@ -105,3 +105,19 @@ export const DEFAULT_HEADERS = { 'user-agent': 'trading-tools/0.1 (personal; +lo
 export function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms))
 }
+
+/** スクリーニング用の一括の指標。比率は %。Design Doc 0013 §3.5 */
+export interface QuoteMetrics {
+  code: string
+  price: number
+  per?: number
+  forwardPer?: number
+  pbr?: number
+  dividendYield?: number
+  marketCap?: number
+}
+
+export interface QuoteMetricsProvider {
+  readonly name: string
+  fetchQuoteMetrics(codes: string[]): Promise<QuoteMetrics[]>
+}

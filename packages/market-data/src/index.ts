@@ -5,6 +5,16 @@ export {
   parseGoogleNewsRss,
 } from './google-news.ts'
 export {
+  EXPECTED_COLUMNS as JPX_EXPECTED_COLUMNS,
+  fetchJpxListing,
+  JPX_LISTING_URL,
+  JpxFormatError,
+  type JpxOptions,
+  type ListedCompany,
+  parseJpxListing,
+  type Segment,
+} from './jpx.ts'
+export {
   createMockProvider,
   type MockProviderOptions,
   type MockQuote,
@@ -25,6 +35,8 @@ export type {
   FundamentalsValues,
   NewsItem,
   NewsProvider,
+  QuoteMetrics,
+  QuoteMetricsProvider,
   QuoteProvider,
   QuoteResult,
 } from './provider.ts'

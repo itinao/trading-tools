@@ -5,6 +5,8 @@ import type {
   FinancialsResult,
   FundamentalsProvider,
   FundamentalsResult,
+  QuoteMetrics,
+  QuoteMetricsProvider,
   QuoteProvider,
   QuoteResult,
 } from './provider.ts'
@@ -117,7 +119,7 @@ async function defaultClient(): Promise<YahooClient> {
 
 export function createYahooProvider(
   options: YahooProviderOptions = {},
-): QuoteProvider & FundamentalsProvider & FinancialsProvider {
+): QuoteProvider & FundamentalsProvider & FinancialsProvider & QuoteMetricsProvider {
   const intervalMs = options.intervalMs ?? 200
   const now = options.now ?? (() => new Date())
   let clientPromise: Promise<YahooClient> | undefined
@@ -151,6 +153,37 @@ export function createYahooProvider(
           asOf: q.regularMarketTime ? jstDate(q.regularMarketTime) : undefined,
         })
       })
+    },
+
+    /** スクリーニング用の一括取得。quote() に 100 銘柄ずつ渡す（Design Doc 0013 §3.5） */
+    async fetchQuoteMetrics(codes) {
+      const c = await client()
+      const out: QuoteMetrics[] = []
+      for (let i = 0; i < codes.length; i += 100) {
+        const batch = codes.slice(i, i + 100)
+        let quotes: YahooQuote[] = []
+        try {
+          quotes = await c.quote(batch.map(symbolOf))
+        } catch {
+          quotes = []
+        }
+        for (const q of quotes) {
+          if (q.regularMarketPrice == null) continue
+          out.push(
+            compact<QuoteMetrics>({
+              code: codeOf(q.symbol),
+              price: q.regularMarketPrice,
+              per: num(q.trailingPE),
+              forwardPer: num(q.forwardPE),
+              pbr: num(q.priceToBook),
+              dividendYield: num(q.dividendYield) ?? pct(num(q.trailingAnnualDividendYield)),
+              marketCap: num(q.marketCap),
+            }),
+          )
+        }
+        if (i + 100 < codes.length) await sleep(Math.max(intervalMs, 300))
+      }
+      return out
     },
 
     async fetchHistory(code, from): Promise<Bar[]> {

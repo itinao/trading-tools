@@ -122,3 +122,40 @@ describe('yahoo provider', () => {
     })
   })
 })
+
+describe('fetchQuoteMetrics', () => {
+  it('100 銘柄ずつ一括で取り、価格の無い銘柄は落とす', async () => {
+    const calls: string[][] = []
+    const bulk = createYahooProvider({
+      intervalMs: 0,
+      client: {
+        ...client,
+        quote: async (symbols) => {
+          calls.push(symbols)
+          return symbols
+            .filter((s) => s !== '0002.T')
+            .map((s) => ({
+              symbol: s,
+              regularMarketPrice: 100,
+              trailingPE: 10,
+              priceToBook: 0.9,
+              dividendYield: 3.5,
+              marketCap: 5e10,
+            }))
+        },
+      },
+    })
+    const codes = Array.from({ length: 150 }, (_, i) => String(i + 1).padStart(4, '0'))
+    const r = await bulk.fetchQuoteMetrics(codes)
+    expect(calls.map((c) => c.length)).toEqual([100, 50])
+    expect(r).toHaveLength(149)
+    expect(r[0]).toEqual({
+      code: '0001',
+      price: 100,
+      per: 10,
+      pbr: 0.9,
+      dividendYield: 3.5,
+      marketCap: 5e10,
+    })
+  })
+})
