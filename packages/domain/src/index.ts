@@ -6,6 +6,23 @@ export {
   setActionStatus,
 } from './actions.ts'
 export {
+  type Assessment,
+  type AssessmentAuthor,
+  type AssessmentInput,
+  DIRECTIONS,
+  type Direction,
+  effectiveAssessments,
+  getAssessment,
+  type PendingSubject,
+  pendingSubjects,
+  RELEVANCES,
+  type Relevance,
+  recordAssessments,
+  SUBJECT_TYPES,
+  type SubjectType,
+  validateAssessmentInput,
+} from './assessments.ts'
+export {
   type HoldingAccountRow,
   holdingTargets,
   latestSnapshot,
@@ -20,3 +37,4 @@ export {
   recentNews,
 } from './market-data.ts'
 export { latestQuoteDate, latestQuotes, quoteHistory } from './quotes.ts'
+export { latestScores, type ScoreComponents, scoreHistory, upsertScore } from './scores.ts'

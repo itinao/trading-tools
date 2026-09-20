@@ -1,0 +1,15 @@
+{
+  "name": "@trading/tool-assess",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@trading/cli": "workspace:*",
+    "@trading/db": "workspace:*",
+    "@trading/domain": "workspace:*",
+    "@trading/market-data": "workspace:*"
+  }
+}
