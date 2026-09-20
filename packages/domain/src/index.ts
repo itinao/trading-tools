@@ -6,6 +6,22 @@ export {
   setActionStatus,
 } from './actions.ts'
 export {
+  type Advice,
+  AdviceError,
+  type AdviceInput,
+  type AdviceReference,
+  adviceForActions,
+  type FactBundle,
+  factBundle,
+  parseAdviceBody,
+  pendingAdvice,
+  recordAdvice,
+  renderAdviceBody,
+  STANCES,
+  type Stance,
+  validateAdviceInput,
+} from './advice.ts'
+export {
   type Assessment,
   type AssessmentAuthor,
   type AssessmentInput,

@@ -3,7 +3,7 @@ import { schema, type TradingDatabase } from '@trading/db'
 
 export type ActionStatus = (typeof schema.ACTION_STATUSES)[number]
 
-import { and, desc, eq, sql } from 'drizzle-orm'
+import { and, desc, eq, ne, sql } from 'drizzle-orm'
 
 export interface ActionView {
   id: number
@@ -28,9 +28,11 @@ const severityOrder = sql<number>`case ${schema.signals.severity} when 'critical
 /** アクション一覧。status 指定なしは全部。重大度 → 新しい順 */
 export function listActions(
   db: TradingDatabase,
-  filter: { status?: ActionStatus | 'all'; instrumentId?: string } = {},
+  filter: { status?: ActionStatus | 'all'; instrumentId?: string; includeAdvice?: boolean } = {},
 ): ActionView[] {
   const conditions = []
+  // 助言（origin = ai）はルール生成の行の中に表示するので、既定では一覧に出さない（Design Doc 0012 §3.1）
+  if (!filter.includeAdvice) conditions.push(ne(schema.actions.origin, 'ai'))
   if (filter.status && filter.status !== 'all')
     conditions.push(eq(schema.actions.status, filter.status))
   if (filter.instrumentId) conditions.push(eq(schema.actions.instrumentId, filter.instrumentId))
@@ -85,5 +87,17 @@ export function setActionStatus(
     .set({ status, resolvedAt, ...(note === undefined ? {} : { note }) })
     .where(eq(schema.actions.id, id))
     .run()
+  // 同じシグナルの助言（origin = ai）も連動させる（Design Doc 0012 §3.1）
+  const target = db
+    .select({ signalId: schema.actions.signalId, origin: schema.actions.origin })
+    .from(schema.actions)
+    .where(eq(schema.actions.id, id))
+    .get()
+  if (target?.signalId != null && target.origin !== 'ai') {
+    db.update(schema.actions)
+      .set({ status, resolvedAt })
+      .where(and(eq(schema.actions.signalId, target.signalId), eq(schema.actions.origin, 'ai')))
+      .run()
+  }
   return { id, status, resolvedAt }
 }
