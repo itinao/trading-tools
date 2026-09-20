@@ -41,7 +41,7 @@ export function StatusStrip({ data }: { data: StatusStripData }) {
           <Icon name="rate_review" className="icon-sm" /> 未判定
         </div>
         <div className="status-value">{data.pendingAssessments.toLocaleString('ja-JP')}</div>
-        {data.pendingAssessments > 0 && <div className="muted">「朝の確認をして」で減る</div>}
+        {data.pendingAssessments > 0 && <div className="muted">「朝の確認をして」で減ります</div>}
       </div>
       <div className="status-cell">
         <div className="status-label">

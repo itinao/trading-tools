@@ -66,7 +66,8 @@ export function HistoryTable({ rows }: { rows: HistoryRowView[] }) {
   if (rows.length === 0)
     return (
       <p className="empty">
-        対応した / 見送りにしたアクションはまだない。アクション一覧で状態を変えると、ここに残る。
+        対応した / 見送り
+        にしたアクションはまだありません。アクション一覧で状態を変えると、ここに残ります。
       </p>
     )
   return (

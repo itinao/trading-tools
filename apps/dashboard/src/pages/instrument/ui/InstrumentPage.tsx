@@ -139,10 +139,11 @@ export function InstrumentPage({ data, tab }: { data: InstrumentPageData; tab: I
               </tbody>
             </table>
           ) : (
-            <p className="empty">保有はない{watch ? '（ウォッチ中）' : ''}。</p>
+            <p className="empty">保有していません{watch ? '（ウォッチ中）' : ''}。</p>
           )}
           <p className="muted">
-            評価額 {yen(position?.marketValue)} 円（取込時）。最新の評価は銘柄一覧を参照。
+            評価額 {yen(position?.marketValue)}{' '}
+            円（取込時）。最新の評価は銘柄一覧を参照してください。
           </p>
         </>
       )}

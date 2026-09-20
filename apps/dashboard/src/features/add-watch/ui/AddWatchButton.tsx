@@ -28,7 +28,7 @@ export function AddWatchButton({
             const r = await add({
               data: { code, ...(screenRunId ? { screenRunId } : {}), ...(note ? { note } : {}) },
             })
-            setMessage(r.ok ? '追加した' : r.message)
+            setMessage(r.ok ? '追加しました' : r.message)
             if (r.ok) await router.invalidate()
           } finally {
             setBusy(false)

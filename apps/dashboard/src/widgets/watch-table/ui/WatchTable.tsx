@@ -22,7 +22,8 @@ export function WatchTable({ rows }: { rows: WatchRow[] }) {
   if (rows.length === 0)
     return (
       <p className="empty">
-        ウォッチ銘柄がない。<code>pnpm watch add &lt;code&gt;</code> か、スクリーナーから追加する。
+        ウォッチ銘柄はありません。<code>pnpm watch add &lt;code&gt;</code>{' '}
+        か、スクリーナーから追加してください。
       </p>
     )
   return (

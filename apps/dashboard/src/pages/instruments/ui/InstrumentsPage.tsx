@@ -16,8 +16,9 @@ export function InstrumentsPage({ data, tab }: { data: InstrumentsPageData; tab:
         <div>
           <h1>銘柄</h1>
           <p className="summary">
-            監視している銘柄: 保有 {data.holdings.length} / ウォッチ {data.watches.length} / 株価{' '}
-            {data.latestQuoteDate ?? 'なし'}
+            監視している銘柄です。
+            <br />
+            保有は楽天証券の CSV から、ウォッチはスクリーナーから追加します。
           </p>
         </div>
         <div className="page-actions">

@@ -14,7 +14,11 @@ export function ActionsPage({ data }: { data: ActionsPageData }) {
       <header className="page-header">
         <div>
           <h1>アクション</h1>
-          <p className="summary">検知したことと助言を確認して、対応した / 見送り にする。</p>
+          <p className="summary">
+            保有・ウォッチ銘柄で検知した下落・悪材料・財務悪化と、それに対する AI の助言です。
+            <br />
+            内容を確認して、対応した / 見送り にしてください。
+          </p>
         </div>
       </header>
       <StatusStrip data={data.strip} />
@@ -32,7 +36,7 @@ export function ActionsPage({ data }: { data: ActionsPageData }) {
         ))}
       </div>
       {cards.length === 0 ? (
-        <p className="empty">{STATUS_LABEL[data.status]}のアクションはない。</p>
+        <p className="empty">{STATUS_LABEL[data.status]}のアクションはありません。</p>
       ) : (
         cards.map((card) => <ActionCard key={card.instrumentId} card={card} />)
       )}
@@ -67,7 +71,7 @@ export function ActionsPage({ data }: { data: ActionsPageData }) {
         </>
       )}
       <p className="note">
-        アクションは事実の整理、助言は判断材料。売る / 持つ / 買うの最終判断は人が行う。
+        アクションは事実の整理、助言は判断材料です。売る / 持つ / 買うの最終判断は人が行います。
       </p>
     </>
   )

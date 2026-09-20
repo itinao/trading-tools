@@ -28,7 +28,7 @@ export function HoldingsTable({
   if (rows.length === 0)
     return (
       <p className="empty">
-        保有がない。<code>pnpm import-holdings run</code> で取り込む。
+        保有はありません。<code>pnpm import-holdings run</code> で取り込みます。
       </p>
     )
   return (

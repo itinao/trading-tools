@@ -71,13 +71,13 @@ export function FinancialsTable({
         </dl>
       ) : (
         <p className="empty">
-          指標はまだない。<code>pnpm collect fundamentals</code> で取れる。
+          指標はまだありません。<code>pnpm collect fundamentals</code> で取得します。
         </p>
       )}
       <h3>年次の財務（億円）</h3>
       {asc.length === 0 ? (
         <p className="empty">
-          財務はまだない。<code>pnpm collect financials</code> で取れる。
+          財務はまだありません。<code>pnpm collect financials</code> で取得します。
         </p>
       ) : (
         <table>

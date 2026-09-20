@@ -1,4 +1,5 @@
 import { AddWatchButton } from '../../../features/add-watch/index.ts'
+import { RemoveWatchButton } from '../../../features/remove-watch/index.ts'
 import { price } from '../../../shared/lib'
 
 export interface ScreenResultRow {
@@ -38,7 +39,7 @@ export function ScreenResultTable({
   runId: number
   preset: string | null
 }) {
-  if (rows.length === 0) return <p className="empty">該当なし</p>
+  if (rows.length === 0) return <p className="empty">該当する銘柄はありません。</p>
   return (
     <table>
       <thead>
@@ -78,7 +79,10 @@ export function ScreenResultTable({
               {r.status === 'holding' ? (
                 <span className="badge badge-neutral">保有中</span>
               ) : r.status === 'watch' ? (
-                <span className="badge badge-primary">ウォッチ中</span>
+                <span className="actions">
+                  <span className="badge badge-primary">ウォッチ中</span>
+                  <RemoveWatchButton code={r.code} />
+                </span>
               ) : (
                 <AddWatchButton
                   code={r.code}

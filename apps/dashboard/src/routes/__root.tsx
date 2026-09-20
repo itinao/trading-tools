@@ -27,5 +27,5 @@ export const Route = createRootRoute({
       </body>
     </html>
   ),
-  notFoundComponent: () => <p>ページが見つからない。</p>,
+  notFoundComponent: () => <p>ページが見つかりません。</p>,
 })

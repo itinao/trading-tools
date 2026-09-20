@@ -39,7 +39,7 @@ export function AdvicePanel({ advice }: { advice: AdviceView | null }) {
         )}
       </details>
       <div className="note">
-        AI の助言（{advice.model ?? 'model 不明'}）。判断材料であり、最終判断は人が行う。
+        AI の助言（{advice.model ?? 'model 不明'}）です。判断材料であり、最終判断は人が行います。
       </div>
     </div>
   )

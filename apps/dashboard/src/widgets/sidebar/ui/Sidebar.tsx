@@ -16,14 +16,14 @@ const ITEMS = [
   {
     to: '/',
     label: 'アクション',
-    hint: '毎朝の入口。検知と助言を確認して処理する',
+    hint: '毎朝の入口。検知と助言の確認',
     exact: true,
     icon: 'inbox',
   },
   {
     to: '/instruments',
     label: '銘柄',
-    hint: '監視している銘柄（保有 / ウォッチ）',
+    hint: '監視中の銘柄（保有 / ウォッチ）',
     exact: false,
     icon: 'visibility',
   },

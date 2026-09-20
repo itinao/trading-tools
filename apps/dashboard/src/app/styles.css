@@ -125,12 +125,12 @@ h3 {
   background: var(--color-primary-container);
 }
 .sidebar-label {
-  color: var(--color-on-primary-container);
-}
-.sidebar-item.active .sidebar-label {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  color: var(--color-on-primary-container);
+}
+.sidebar-item.active .sidebar-label {
   font-weight: 500;
 }
 .sidebar-hint {
@@ -389,6 +389,29 @@ details[open] summary::before {
 .summary {
   color: var(--color-on-surface-variant);
   margin: 0 0 var(--spacing-lg);
+}
+/* スクリーナーの実行の要約と条件のチップ（DESIGN.md「実行の要約 / 条件」） */
+.run-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs) var(--spacing-lg);
+  color: var(--color-on-surface-variant);
+  margin: 0 0 var(--spacing-md);
+}
+.run-meta b {
+  font-weight: 500;
+  color: var(--color-on-surface);
+}
+.criteria {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+.criteria span {
+  background: var(--color-surface-container);
+  border-radius: var(--rounded-sm);
+  padding: 0 6px;
+  font-feature-settings: var(--font-numeric-md-feature);
 }
 .note {
   color: var(--color-on-surface-variant);

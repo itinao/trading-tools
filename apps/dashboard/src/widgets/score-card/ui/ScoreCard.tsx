@@ -8,7 +8,8 @@ export interface ScoreView {
 
 /** スコアと内訳（判定 / 株価 / 財務）。Design Doc 0011 §3.4 */
 export function ScoreCard({ score }: { score: ScoreView | null }) {
-  if (!score) return <p className="empty">スコアはまだない。`pnpm detect run` で計算される。</p>
+  if (!score)
+    return <p className="empty">スコアはまだありません。`pnpm detect run` で計算します。</p>
   const c = score.components
   return (
     <div className="score-card">

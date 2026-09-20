@@ -19,7 +19,16 @@ const sinceOf = (days: number | null) => {
 export function HistoryPage({ data }: { data: HistoryPageData }) {
   return (
     <>
-      <h1>履歴</h1>
+      <header className="page-header">
+        <div>
+          <h1>履歴</h1>
+          <p className="summary">
+            対応した / 見送り にしたアクションと、判断した日の株価とその後の変化です。
+            <br />
+            判断の傾向を振り返るために使います。
+          </p>
+        </div>
+      </header>
       <div className="tabs">
         {RANGES.map((r) => {
           const since = sinceOf(r.days)
@@ -41,8 +50,10 @@ export function HistoryPage({ data }: { data: HistoryPageData }) {
       <h2>判断</h2>
       <HistoryTable rows={data.rows} />
       <p className="note">
-        「その後」は株価の変化率だけで、判断の良し悪しはそれだけでは決まらない。「対応した」に何をしたか（売った
-        / 買った / 確認した）をメモに書く運用にすると、振り返りに使える。
+        「その後」は株価の変化率だけで、判断の良し悪しはそれだけでは決まりません。
+        <br />
+        「対応した」に何をしたか（売った / 買った /
+        確認した）をメモに書いておくと、振り返りに使えます。
       </p>
     </>
   )

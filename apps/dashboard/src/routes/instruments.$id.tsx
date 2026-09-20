@@ -13,7 +13,7 @@ export const Route = createFileRoute('/instruments/$id')({
     if (!data) throw notFound()
     return data
   },
-  notFoundComponent: () => <p>銘柄が見つからない。</p>,
+  notFoundComponent: () => <p>銘柄が見つかりません。</p>,
   component: () => (
     <InstrumentPage data={Route.useLoaderData()} tab={Route.useSearch().tab ?? 'overview'} />
   ),
