@@ -12,7 +12,13 @@ export function ActionsPage({ data }: { data: ActionsPageData }) {
       <StaleQuotesBanner latestQuoteDate={data.latestQuoteDate} today={data.today} />
       <div className="tabs">
         {ACTION_STATUSES.map((s) => (
-          <Link key={s} to="/" search={{ status: s }} className={s === data.status ? 'active' : ''}>
+          <Link
+            key={s}
+            to="/"
+            activeOptions={{ exact: true }}
+            search={{ status: s }}
+            className={s === data.status ? 'active' : ''}
+          >
             {STATUS_LABEL[s]} ({data.counts[s]})
           </Link>
         ))}

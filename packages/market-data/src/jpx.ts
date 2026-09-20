@@ -66,19 +66,19 @@ export async function parseJpxListing(bytes: Uint8Array): Promise<ListedCompany[
   }
   return rows
     .map((r) => {
-      const code = String(r['コード'] ?? '').trim()
-      const d = String(r['日付'] ?? '')
+      const code = String(r.コード ?? '').trim()
+      const d = String(r.日付 ?? '')
       const listedAsOf = /^\d{8}$/.test(d)
         ? `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`
         : d
       const segmentRaw = String(r['市場・商品区分'] ?? '')
       return {
         code,
-        name: String(r['銘柄名'] ?? '').trim(),
+        name: String(r.銘柄名 ?? '').trim(),
         segment: segmentOf(segmentRaw),
         segmentRaw,
         sector33: dash(r['33業種区分']),
-        size: dash(r['規模区分']),
+        size: dash(r.規模区分),
         listedAsOf,
       }
     })

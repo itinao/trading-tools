@@ -15,6 +15,8 @@ export const getInstrumentPage = createServerFn({ method: 'GET' })
       quoteHistory,
       recentDisclosures,
       recentNews,
+      sparklineData,
+      timeline,
     } = await import('@trading/domain')
     const d = db()
     const instrument = d
@@ -67,6 +69,8 @@ export const getInstrumentPage = createServerFn({ method: 'GET' })
       })),
       score: latestScores(d).get(id) ?? null,
       watch: monitored?.watch ?? null,
+      timeline: timeline(d, id, { days: 90 }).events,
+      sparkline: sparklineData(d, id),
     }
   })
 

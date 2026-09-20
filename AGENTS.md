@@ -9,7 +9,7 @@
 
 ## 現在のフェーズ
 
-**M5（振り返り）実装中。** [Design Doc 0014](docs/design-docs/0014-review.md) は承認済み。
+**実行計画 0001（M0〜M5）完了。** 次の変更は新しい実行計画（0002）を書いてから。着手前に Design Doc を書いて承認を得る。
 進捗は [実行計画 0001](docs/execution-plans/0001-initial.md)。
 
 ## 作業を始める前に
@@ -47,10 +47,11 @@ pnpm ワークスペース。Node 22（`.node-version`）。ビルドせず `tsx
 | `tools/advise` | `@trading/tool-advise` | `pnpm advise pending` / `record`。アクションへの AI 助言の出し入れ |
 | `tools/watch` | `@trading/tool-watch` | `pnpm watch add` / `remove` / `list`。ウォッチ銘柄 |
 | `tools/screen` | `@trading/tool-screen` | `pnpm screen run --preset value`。母集団は `pnpm collect universe`（JPX、月 1 回） |
+| `tools/review` | `@trading/tool-review` | `pnpm review timeline <code>` / `history`。振り返り |
 | `tools/schedule` | `@trading/tool-schedule` | `pnpm schedule install` で launchd に日次実行を登録 |
 | `apps/dashboard` | `@trading/dashboard` | `pnpm dashboard` で http://127.0.0.1:3000。見た目は `apps/dashboard/DESIGN.md` |
 | `tools/<name>` | `@trading/tool-<name>` | 各ツール（M1 以降） |
-| `.agents/skills/` | | エージェントのスキル。`morning`（朝の確認: assess → detect → advise）、`assess`、`advise`。`.claude/skills` はシンボリックリンク |
+| `.agents/skills/` | | エージェントのスキル。`morning`（朝の確認: assess → detect → advise）、`assess`、`advise`、`retrospect`（月次の振り返り、提案のみ）。`.claude/skills` はシンボリックリンク |
 | `docs/design-docs/` | | Design Doc（連番、変更ごとに1本） |
 | `docs/schema.md` | | **現在の全テーブルの ER 図（自動生成）** |
 | `docs/screens.md` | | **現在の画面遷移図（自動生成）** |
@@ -85,6 +86,10 @@ pnpm advise record --input <file>   # 助言を書き込む
 pnpm actions list        # 未対応のアクション
 pnpm dashboard           # http://127.0.0.1:3000
 
+# 振り返り（月 1 回）。「振り返りをして」と言うと .agents/skills/retrospect が履歴を読んで傾向と閾値の調整案を出す（設定は変えない）
+pnpm review history --since YYYY-MM-DD
+pnpm review timeline <code>
+
 # 攻め（週末など）
 pnpm collect universe    # 東証の上場銘柄一覧（月 1 回）
 pnpm screen run --preset value    # value | growth | quality、または --per-max 等で条件指定。約 1〜2 分
@@ -96,6 +101,7 @@ pnpm watch add <code> --note "..."  # ダッシュボードのスクリーナー
 - 外部ソースは非公式（Yahoo / Google News）を含む。止まったら `failed` に出て、ダッシュボードの「株価が古い」バナーで気づく（Design Doc 0009）
 - AI の判定は `pnpm assess override <id> --sentiment N` かダッシュボードで人が上書きできる。AI の判定は消えず、human が優先される
 - 助言は `actions` に `origin = 'ai'`、ルール生成のアクションと同じ `signal_id` で保存され、一覧では同じ行の中に出る。事実の束（`advise pending`）に無いことを根拠にしない
+- アクションを「対応した」にするときは、何をしたか（売った / 買った / 確認した）をメモに書く。履歴（`/history`）と `retrospect` がそれを使う
 - 監視対象は保有 ∪ ウォッチ。攻めのルール（`valuation_cheap` / `growth_streak` / `oversold_quality`）はウォッチ銘柄にだけ適用され、アクションは「買い検討」バッジで区別される。ウォッチの助言の stance は candidate / review / pass
 
 ## ツールの作り方（CLI 規約）

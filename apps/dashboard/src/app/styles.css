@@ -348,3 +348,26 @@ form.actions {
   font-size: var(--font-label-sm-size);
   line-height: var(--font-label-sm-line-height);
 }
+
+/* ---------- sparkline ---------- */
+.sparkline {
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+.sparkline svg {
+  display: block;
+  width: 100%;
+  height: 48px;
+}
+.sparkline .mark {
+  fill: var(--color-critical);
+}
+.sparkline-legend {
+  display: flex;
+  justify-content: space-between;
+  font-feature-settings: var(--font-numeric-md-feature);
+}
+table.compact {
+  width: auto;
+  margin-bottom: var(--spacing-lg);
+}

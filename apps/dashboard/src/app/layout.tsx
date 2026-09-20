@@ -12,6 +12,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         <Link to="/holdings">保有</Link>
         <Link to="/watch">ウォッチ</Link>
         <Link to="/screener">スクリーナー</Link>
+        <Link to="/history">履歴</Link>
       </nav>
       <main>{children}</main>
     </>

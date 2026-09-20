@@ -19,6 +19,7 @@ export function ScreenerPage({ data }: { data: ScreenerPageData }) {
               <Link
                 key={r.id}
                 to="/screener"
+                activeOptions={{ exact: true }}
                 search={{ run: r.id }}
                 className={r.id === data.run?.id ? 'active' : ''}
               >

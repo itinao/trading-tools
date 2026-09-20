@@ -2,7 +2,6 @@ import { schema, type TradingDatabase } from '@trading/db'
 import { and, asc, desc, eq, gte, inArray } from 'drizzle-orm'
 import { parseAdviceBody, type Stance } from './advice.ts'
 import { effectiveAssessments } from './assessments.ts'
-import { positions } from './holdings.ts'
 import { latestQuotes, quoteHistory } from './quotes.ts'
 import { scoreHistory } from './scores.ts'
 
