@@ -4,15 +4,18 @@ import { and, desc, eq, gte, inArray } from 'drizzle-orm'
 import { parse, stringify } from 'yaml'
 import { type ActionView, listActions } from './actions.ts'
 import { effectiveAssessments } from './assessments.ts'
-import { positions } from './holdings.ts'
 import { financialHistory, latestFundamentals } from './market-data.ts'
+import { monitoredInstruments } from './monitored.ts'
 import { quoteHistory } from './quotes.ts'
 import { latestScores, scoreHistory } from './scores.ts'
 
 /** 助言（Design Doc 0012）。actions に origin = 'ai' で保存し、本文の front matter に stance と references を持つ */
 
-export const STANCES = ['hold', 'review', 'reduce'] as const
+/** 保有: hold / review / reduce、ウォッチ: candidate / review / pass（Design Doc 0013 §3.6） */
+export const STANCES = ['hold', 'review', 'reduce', 'candidate', 'pass'] as const
 export type Stance = (typeof STANCES)[number]
+export const HOLDING_STANCES: readonly Stance[] = ['hold', 'review', 'reduce']
+export const WATCH_STANCES: readonly Stance[] = ['candidate', 'review', 'pass']
 
 export interface AdviceReference {
   type: 'news' | 'disclosure' | 'signal' | 'financials' | 'quote' | 'score' | 'action'
@@ -72,7 +75,9 @@ const daysAgo = (asOf: string, days: number) => {
 /** 助言のための事実の束（0012 §3.2）。エージェントはこれ以外を材料にしない */
 export function factBundle(db: TradingDatabase, action: ActionView) {
   const id = action.instrumentId
-  const position = positions(db).find((p) => p.instrumentId === id) ?? null
+  const monitored = monitoredInstruments(db).find((m) => m.instrumentId === id) ?? null
+  const position = monitored?.position ?? null
+  const context: 'holding' | 'watch' = position ? 'holding' : 'watch'
   const quotes = quoteHistory(db, id, { limit: 200 })
   const latest = quotes[0]
   const window60 = quotes.slice(0, 60)
@@ -108,6 +113,8 @@ export function factBundle(db: TradingDatabase, action: ActionView) {
   const pct = (a: number, b: number | null) =>
     b && b > 0 ? Math.round(((a - b) / b) * 10000) / 100 : null
   return {
+    context,
+    stances: context === 'holding' ? HOLDING_STANCES : WATCH_STANCES,
     action: {
       id: action.id,
       kind: action.kind,
@@ -120,6 +127,7 @@ export function factBundle(db: TradingDatabase, action: ActionView) {
       id,
       code: action.code,
       name: action.name,
+      watch: monitored?.watch ?? null,
       position: position
         ? {
             quantity: position.quantity,
@@ -303,7 +311,7 @@ export function validateAdviceInput(
 
 export class AdviceError extends Error {
   constructor(
-    readonly code: 'not_found' | 'not_open' | 'already_advised' | 'no_signal',
+    readonly code: 'not_found' | 'not_open' | 'already_advised' | 'no_signal' | 'bad_stance',
     message: string,
   ) {
     super(message)
@@ -335,6 +343,15 @@ export function recordAdvice(
         throw new AdviceError(
           'already_advised',
           `アクション ${a.actionId} には既に助言があります（id=${dup.id}）`,
+        )
+      const isHolding = monitoredInstruments(tx as unknown as TradingDatabase).some(
+        (m) => m.instrumentId === rule.instrumentId && m.position !== null,
+      )
+      const allowed = isHolding ? HOLDING_STANCES : WATCH_STANCES
+      if (!allowed.includes(a.stance))
+        throw new AdviceError(
+          'bad_stance',
+          `アクション ${a.actionId}（${isHolding ? '保有' : 'ウォッチ'}）の stance は ${allowed.join(' | ')}`,
         )
       const row = tx
         .insert(schema.actions)

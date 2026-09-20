@@ -1,6 +1,6 @@
 import { defineTool, type ToolContext, ToolError } from '@trading/cli'
 import { type DatabaseHandle, openDatabase } from '@trading/db'
-import { holdingTargets } from '@trading/domain'
+import { monitoredTargets } from '@trading/domain'
 import { collectDisclosures } from './disclosures.ts'
 import { collectFinancials } from './financials.ts'
 import { collectFundamentals } from './fundamentals.ts'
@@ -43,7 +43,7 @@ export const tool = defineTool({
           const provider = resolveQuoteProvider(
             options.provider,
             process.env,
-            holdingTargets(handle.db),
+            monitoredTargets(handle.db),
           )
           return dry(context, await collectQuotes(handle, context, options, provider))
         }),
@@ -116,7 +116,7 @@ export const tool = defineTool({
           const providers = defaultProviders(
             options.provider,
             process.env,
-            holdingTargets(handle.db),
+            monitoredTargets(handle.db),
           )
           return dry(context, await collectAll(handle, context, providers))
         }),

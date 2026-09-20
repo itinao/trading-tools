@@ -84,7 +84,7 @@ describe('validateAdviceInput', () => {
     })
     expect(validateAdviceInput({ ...input(1), stance: 'sell' }, 2)).toMatchObject({
       ok: false,
-      error: '[2] stance は hold | review | reduce',
+      error: expect.stringContaining('[2] stance は'),
     })
     expect(validateAdviceInput(input(1), 0)).toMatchObject({ ok: true })
   })

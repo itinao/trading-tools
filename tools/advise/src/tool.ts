@@ -5,7 +5,6 @@ import {
   type AdviceInput,
   pendingAdvice,
   recordAdvice,
-  STANCES,
   validateAdviceInput,
 } from '@trading/domain'
 
@@ -48,10 +47,7 @@ export const tool = defineTool({
         const limit = Number(options.limit)
         if (!Number.isInteger(limit) || limit <= 0)
           throw new UsageError(`--limit は正の整数: ${options.limit}`)
-        return withDatabase(context, (handle) => ({
-          stances: STANCES,
-          ...pendingAdvice(handle.db, limit),
-        }))
+        return withDatabase(context, (handle) => pendingAdvice(handle.db, limit))
       },
     },
     {

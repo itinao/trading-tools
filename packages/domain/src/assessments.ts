@@ -8,7 +8,7 @@ import type {
   SubjectType,
 } from '@trading/db/schema'
 import { and, desc, eq, gte, inArray, sql } from 'drizzle-orm'
-import { positions } from './holdings.ts'
+import { monitoredInstruments } from './monitored.ts'
 
 export type { Assessment, AssessmentAuthor, Direction, Relevance, SubjectType }
 
@@ -35,7 +35,7 @@ export function pendingSubjects(
   db: TradingDatabase,
   options: { kind?: SubjectType; limit?: number } = {},
 ): { items: PendingSubject[]; remaining: number } {
-  const held = new Map(positions(db).map((p) => [p.instrumentId, p]))
+  const held = new Map(monitoredInstruments(db).map((m) => [m.instrumentId, m]))
   const assessed = new Set(
     db
       .select({ t: schema.assessments.subjectType, id: schema.assessments.subjectId })

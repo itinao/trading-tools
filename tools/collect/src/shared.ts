@@ -1,15 +1,15 @@
 import { type ToolContext, ToolError } from '@trading/cli'
 import type { DatabaseHandle } from '@trading/db'
-import { holdingTargets, type Target } from '@trading/domain'
+import { monitoredTargets, type Target } from '@trading/domain'
 
 export interface Failed {
   code: string
   reason: string
 }
 
-/** 収集対象。無ければ no_targets */
+/** 収集対象 = 保有 ∪ ウォッチ（Design Doc 0013）。無ければ no_targets */
 export function requireTargets(handle: DatabaseHandle): Target[] {
-  const targets = holdingTargets(handle.db)
+  const targets = monitoredTargets(handle.db)
   if (targets.length === 0) {
     throw new ToolError(
       'no_targets',

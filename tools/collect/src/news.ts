@@ -1,6 +1,6 @@
 import { nowJst, type ToolContext, ToolError } from '@trading/cli'
 import { type DatabaseHandle, schema } from '@trading/db'
-import { positions } from '@trading/domain'
+import { monitoredInstruments } from '@trading/domain'
 import { type NewsProvider, normalizeCompanyName } from '@trading/market-data'
 import { type Failed, logFailures } from './shared.ts'
 
@@ -17,7 +17,7 @@ export async function collectNews(
   context: ToolContext,
   provider: NewsProvider,
 ): Promise<NewsResult> {
-  const targets = positions(handle.db)
+  const targets = monitoredInstruments(handle.db)
   if (targets.length === 0)
     throw new ToolError(
       'no_targets',

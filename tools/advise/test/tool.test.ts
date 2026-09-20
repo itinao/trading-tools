@@ -110,9 +110,10 @@ describe('advise CLI', () => {
     const { path, actionId } = tempDb()
     const p = await run(['--db', path, 'pending'])
     expect(p.code).toBe(0)
-    expect(p.json.data.stances).toEqual(['hold', 'review', 'reduce'])
     expect(p.json.data.items).toHaveLength(1)
     expect(p.json.data.items[0].action.id).toBe(actionId)
+    expect(p.json.data.items[0].context).toBe('holding')
+    expect(p.json.data.items[0].stances).toEqual(['hold', 'review', 'reduce'])
     expect(p.json.data.items[0].quotes.vsAverageCost).toBe(-20)
 
     const advice = [

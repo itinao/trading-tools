@@ -13,6 +13,7 @@ export {
   adviceForActions,
   type FactBundle,
   factBundle,
+  HOLDING_STANCES,
   parseAdviceBody,
   pendingAdvice,
   recordAdvice,
@@ -20,6 +21,7 @@ export {
   STANCES,
   type Stance,
   validateAdviceInput,
+  WATCH_STANCES,
 } from './advice.ts'
 export {
   type Assessment,
@@ -52,5 +54,22 @@ export {
   recentDisclosures,
   recentNews,
 } from './market-data.ts'
+export {
+  addWatch,
+  listWatches,
+  type MonitoredInstrument,
+  monitoredInstruments,
+  monitoredTargets,
+  removeWatch,
+  WatchError,
+} from './monitored.ts'
 export { latestQuoteDate, latestQuotes, quoteHistory } from './quotes.ts'
 export { latestScores, type ScoreComponents, scoreHistory, upsertScore } from './scores.ts'
+export { getScreenRun, listScreenRuns, type ScreenResultInput, saveScreenRun } from './screen.ts'
+export {
+  findUniverse,
+  type UniverseInput,
+  universeCount,
+  universeRows,
+  upsertUniverse,
+} from './universe.ts'
