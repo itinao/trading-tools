@@ -173,6 +173,18 @@ components:
     typography: "{typography.body-md}"
     rounded: "{rounded.DEFAULT}"
     padding: "{spacing.md}"
+  score-card:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.on-surface}"
+    rounded: "{rounded.md}"
+    padding: "{spacing.md} {spacing.lg}"
+  select:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.on-surface}"
+    typography: "{typography.label-sm}"
+    rounded: "{rounded.DEFAULT}"
+    height: 28px
+    padding: 0 6px
 ---
 
 ## Overview
@@ -256,6 +268,12 @@ trading-tools のダッシュボードは、毎朝数分だけ開いて「何が
 
 ### 折りたたみ本文（`detail-body`）
 アクションの本文。`<details>` の中に `surface-container` の面で表示し、Markdown の箇条書きをそのまま読める行間にする。
+
+### スコアカード（`score-card`）
+銘柄詳細の先頭。大きな数字（28px、等幅数字）と、判定 / 株価 / 財務の内訳を横に並べる。数字の色は `score_low` の閾値と揃え、-40 以下で `warn`、-60 以下で `critical` の文字色。
+
+### セレクト（`select`）
+判定の上書きに使う。ボタンと同じ高さ 28px・枠線・角丸で、横に並べたとき揃うようにする。
 
 ### リンク（`link`）
 `primary` の文字色、下線なし。ホバーで下線。

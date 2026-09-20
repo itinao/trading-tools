@@ -9,7 +9,7 @@
 
 ## 現在のフェーズ
 
-**M2（ニュース・開示とスコア）実装中。** 前半 [Design Doc 0010](docs/design-docs/0010-real-data-collection.md)（実データの収集）は実装済み。後半 [Design Doc 0011](docs/design-docs/0011-assessment-and-score.md)（判定とスコア）は承認済み、実装中。
+**M2（ニュース・開示とスコア）完了。** 次は M3（AI 助言 `advise`）。着手前に Design Doc を書いて承認を得る。
 進捗は [実行計画 0001](docs/execution-plans/0001-initial.md)。
 
 ## 作業を始める前に
@@ -41,11 +41,13 @@ pnpm ワークスペース。Node 22（`.node-version`）。ビルドせず `tsx
 | `tools/import-holdings` | `@trading/tool-import-holdings` | `pnpm import-holdings run <csv>` / `list` |
 | `packages/domain` | `@trading/domain` | ツールとダッシュボードが共有する読み書き（保有、株価、アクション） |
 | `tools/collect` | `@trading/tool-collect` | `pnpm collect all`（quotes / fundamentals / financials / news / disclosures） |
-| `tools/detect` | `@trading/tool-detect` | `pnpm detect run`。シグナルとアクションを作る。閾値は `config/detect.json` |
+| `tools/detect` | `@trading/tool-detect` | `pnpm detect run`。スコアを計算し、10 種のルールでシグナルとアクションを作る。閾値・係数は `config/detect.json` |
 | `tools/actions` | `@trading/tool-actions` | `pnpm actions list` / `show` / `resolve` |
+| `tools/assess` | `@trading/tool-assess` | `pnpm assess pending` / `record` / `override` / `list`。AI 判定の出し入れ |
+| `tools/schedule` | `@trading/tool-schedule` | `pnpm schedule install` で launchd に日次実行を登録 |
 | `apps/dashboard` | `@trading/dashboard` | `pnpm dashboard` で http://127.0.0.1:3000。見た目は `apps/dashboard/DESIGN.md` |
 | `tools/<name>` | `@trading/tool-<name>` | 各ツール（M1 以降） |
-| `.agents/skills/` | | エージェントのスキル（M2 以降）。`.claude/skills` はシンボリックリンク |
+| `.agents/skills/` | | エージェントのスキル。`assess`（ニュース・開示の判定）。`.claude/skills` はシンボリックリンク |
 | `docs/design-docs/` | | Design Doc（連番、変更ごとに1本） |
 | `docs/schema.md` | | **現在の全テーブルの ER 図（自動生成）** |
 | `docs/screens.md` | | **現在の画面遷移図（自動生成）** |
@@ -60,24 +62,29 @@ pnpm test                # 全パッケージのテスト
 pnpm lint && pnpm typecheck
 ```
 
-## 日次の手順（M2 時点、手動）
+## 日次の手順
 
 ```bash
 # 楽天証券の CSV を data/source/ に置いたとき
 pnpm import-holdings run "data/source/assetbalance(all)_YYYYMMDD_HHMMSS.csv"
 
-# 毎日（引け後）
+# 毎日（引け後）。launchd に登録すれば平日 18:30 に自動で走る（pnpm schedule install / status）
 pnpm collect all         # 株価・指標・財務・ニュース・開示（Yahoo Finance / Google News / TDnet）
-pnpm detect run          # 下落の検知 → シグナルとアクション（既定は株価の最新日）
-pnpm actions list        # 未対応のアクション（ダッシュボードでも見られる）
+pnpm detect run          # スコアの計算、下落・悪材料・財務悪化の検知 → シグナルとアクション
+
+# 朝（エージェントで）。「assess を実行して」と言うと .agents/skills/assess が動く
+pnpm assess pending      # 未判定のニュース・開示（開示は PDF 本文つき）
+pnpm assess record --input <file>   # 判定を書き込む → その後 pnpm detect run
 
 # 確認
+pnpm actions list        # 未対応のアクション
 pnpm dashboard           # http://127.0.0.1:3000
 ```
 
 - 株価が 1 件もない銘柄（新規保有）は `collect quotes` が自動で 1 年分の日足を遡る。全銘柄を遡り直すなら `pnpm collect quotes --backfill`
 - 手元の検証でモックを使うなら `pnpm collect quotes --provider mock`（`data/source/mock-quotes.json` を編集）。実データと混ざらないよう、検証後は `quotes` の `source = 'mock'` を消す
 - 外部ソースは非公式（Yahoo / Google News）を含む。止まったら `failed` に出て、ダッシュボードの「株価が古い」バナーで気づく（Design Doc 0009）
+- AI の判定は `pnpm assess override <id> --sentiment N` かダッシュボードで人が上書きできる。AI の判定は消えず、human が優先される
 
 ## ツールの作り方（CLI 規約）
 

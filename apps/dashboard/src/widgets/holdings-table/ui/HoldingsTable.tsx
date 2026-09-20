@@ -1,4 +1,5 @@
 import { InstrumentLink } from '../../../entities/instrument/index.ts'
+import { scoreClass, scoreText } from '../../../entities/score/index.ts'
 import { price } from '../../../shared/lib'
 import { PctCell, YenCell } from '../../../shared/ui'
 
@@ -11,6 +12,7 @@ export interface HoldingRow {
   price: number | null
   priceAsOf: string | null
   dayChangePct: number | null
+  score: number | null
   costChangePct: number | null
   marketValue: number
   unrealizedPnl: number
@@ -41,6 +43,7 @@ export function HoldingsTable({
           <th className="num">取得単価比</th>
           <th className="num">評価額</th>
           <th className="num">損益</th>
+          <th className="num">スコア</th>
         </tr>
       </thead>
       <tbody>
@@ -61,6 +64,7 @@ export function HoldingsTable({
             <PctCell value={r.costChangePct} />
             <YenCell value={r.marketValue} />
             <YenCell value={r.unrealizedPnl} signed />
+            <td className={`num ${scoreClass(r.score)}`}>{scoreText(r.score)}</td>
           </tr>
         ))}
       </tbody>

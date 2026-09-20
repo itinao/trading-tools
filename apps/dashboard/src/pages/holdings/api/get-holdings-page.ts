@@ -5,11 +5,11 @@ import type { HoldingRow } from '../../../widgets/holdings-table/index.ts'
 
 export const getHoldingsPage = createServerFn({ method: 'GET' }).handler(async () => {
   const { db } = await import('../../../shared/api')
-  const { latestQuoteDate, latestQuotes, latestSnapshot, positions, quoteHistory } = await import(
-    '@trading/domain'
-  )
+  const { latestQuoteDate, latestQuotes, latestScores, latestSnapshot, positions, quoteHistory } =
+    await import('@trading/domain')
   const d = db()
   const quotes = latestQuotes(d)
+  const scores = latestScores(d)
   const rows: HoldingRow[] = positions(d).map((p) => {
     const q = quotes.get(p.instrumentId)
     const previous = q ? quoteHistory(d, p.instrumentId, { upTo: q.asOf, limit: 2 })[1] : undefined
@@ -23,6 +23,7 @@ export const getHoldingsPage = createServerFn({ method: 'GET' }).handler(async (
       price,
       priceAsOf: q?.asOf ?? null,
       dayChangePct: q ? dayChangePct(q, previous) : null,
+      score: scores.get(p.instrumentId)?.score ?? null,
       ...valuation(p, price),
     }
   })

@@ -5,12 +5,13 @@ import { ActionTable } from '../../../widgets/action-table/index.ts'
 import { DisclosureList } from '../../../widgets/disclosure-list/index.ts'
 import { NewsList } from '../../../widgets/news-list/index.ts'
 import { QuoteHistoryTable } from '../../../widgets/quote-history-table/index.ts'
+import { ScoreCard } from '../../../widgets/score-card/index.ts'
 import { SignalTable } from '../../../widgets/signal-table/index.ts'
 import type { InstrumentPageData } from '../api/get-instrument-page.ts'
 
-/** 銘柄詳細。口座別の保有、この銘柄のアクションとシグナルの履歴、適時開示、ニュース、直近 30 件の株価 */
+/** 銘柄詳細。スコアと内訳、口座別の保有、アクションとシグナルの履歴、適時開示とニュース（判定つき）、直近 30 件の株価 */
 export function InstrumentPage({ data }: { data: InstrumentPageData }) {
-  const { instrument, position, quotes, signals, actions, news, disclosures } = data
+  const { instrument, position, quotes, signals, actions, news, disclosures, score } = data
   const latest = quotes[0]
   const costChange = position && latest ? pctOf(latest.price, position.averageCost) : null
   return (
@@ -27,6 +28,9 @@ export function InstrumentPage({ data }: { data: InstrumentPageData }) {
           </>
         )}
       </p>
+
+      <h2>スコア</h2>
+      <ScoreCard score={score} />
 
       <h2>保有</h2>
       {position ? (
