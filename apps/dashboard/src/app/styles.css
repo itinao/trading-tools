@@ -163,7 +163,8 @@ h3 {
   min-width: 0;
   padding: var(--spacing-xl) var(--spacing-2xl) var(--spacing-2xl);
 }
-.content > * {
+/* 直下の要素を中央寄せ。.summary 等の margin の一括指定に負けないよう main.content で詳細度を上げる */
+main.content > * {
   max-width: var(--spacing-content-max-width);
   margin-left: auto;
   margin-right: auto;
