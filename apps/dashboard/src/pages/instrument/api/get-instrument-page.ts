@@ -7,6 +7,7 @@ export const getInstrumentPage = createServerFn({ method: 'GET' })
     const { schema } = await import('@trading/db')
     const { desc, eq } = await import('drizzle-orm')
     const {
+      adviceForActions,
       effectiveAssessments,
       latestScores,
       listActions,
@@ -31,6 +32,7 @@ export const getInstrumentPage = createServerFn({ method: 'GET' })
       .orderBy(desc(schema.signals.asOf), desc(schema.signals.id))
       .limit(50)
       .all()
+    const actions = listActions(d, { instrumentId: id })
     const assessments = effectiveAssessments(d, { instrumentId: id })
     const byKey = new Map(assessments.map((a) => [`${a.subjectType}:${a.subjectId}`, a]))
     const view = (a: (typeof assessments)[number]) => ({
@@ -48,7 +50,8 @@ export const getInstrumentPage = createServerFn({ method: 'GET' })
       position,
       quotes,
       signals,
-      actions: listActions(d, { instrumentId: id }),
+      actions,
+      advice: Object.fromEntries([...adviceForActions(d, actions)].map(([k, v]) => [k, v])),
       news: recentNews(d, id, 20).map((n) => ({
         ...n,
         assessment: byKey.has(`news:${n.id}`)

@@ -330,3 +330,21 @@ select {
 form.actions {
   margin-top: var(--spacing-sm);
 }
+
+/* ---------- advice ---------- */
+.advice {
+  min-width: 260px;
+}
+.advice .note {
+  margin-top: var(--spacing-xs);
+}
+.detail-body.markdown {
+  white-space: pre-wrap;
+}
+.references {
+  margin: var(--spacing-xs) 0 0;
+  padding-left: 1.2em;
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-label-sm-size);
+  line-height: var(--font-label-sm-line-height);
+}

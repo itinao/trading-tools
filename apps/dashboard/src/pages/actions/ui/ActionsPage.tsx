@@ -19,6 +19,7 @@ export function ActionsPage({ data }: { data: ActionsPageData }) {
       </div>
       <ActionTable
         actions={data.actions}
+        advice={data.advice}
         emptyText={`${STATUS_LABEL[data.status]}のアクションはない。`}
       />
       <p className="note">アクションは事実の整理。売る / 持つの最終判断は人が行う。</p>

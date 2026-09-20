@@ -105,6 +105,7 @@ pnpm dashboard           # http://127.0.0.1:3000
 
 - 層と依存方向: `app → pages → widgets → features → entities → shared`。上の層は下の層だけを import する。同じ層のスライス同士は import しない
 - `routes/` は TanStack Router の規約上の場所で、層ではない。ルートファイルは `pages` のコンポーネントとサーバー関数を呼ぶだけの薄いアダプタにする
+- スライス名は単数形（`entities/action`、`widgets/action-table`）。steiger の命名チェックは不可算名詞（`advice`）を誤検知するため切ってある
 - スライスは `index.ts` を公開 API とし、他からはそこだけを import する。`shared` は層の `index.ts` を持たず、`shared/api` / `shared/lib` / `shared/ui` のセグメントごとに `index.ts` を置く
 - サーバー関数（`createServerFn`）は `api` セグメントに置く。画面のデータ取得は `pages/<page>/api`、利用者の操作（書き込み）は `features/<feature>/api`。DB を触るモジュール（`shared/api`、`@trading/domain`、`@trading/db`）は **handler 内で動的 import** し、クライアントバンドルに入れない
 - widgets は自分でデータを取らず props で受け取る

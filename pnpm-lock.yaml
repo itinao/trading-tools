@@ -134,6 +134,18 @@ importers:
         specifier: workspace:*
         version: link:../../packages/domain
 
+  tools/advise:
+    dependencies:
+      '@trading/cli':
+        specifier: workspace:*
+        version: link:../../packages/cli
+      '@trading/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@trading/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+
   tools/assess:
     dependencies:
       '@trading/cli':

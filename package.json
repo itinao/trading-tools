@@ -22,7 +22,8 @@
     "design:tokens": "pnpm --filter @trading/dashboard design:tokens",
     "screens": "pnpm --filter @trading/dashboard screens",
     "assess": "tsx tools/assess/src/main.ts",
-    "schedule": "tsx tools/schedule/src/main.ts"
+    "schedule": "tsx tools/schedule/src/main.ts",
+    "advise": "tsx tools/advise/src/main.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",

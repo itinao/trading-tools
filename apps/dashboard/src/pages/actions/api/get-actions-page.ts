@@ -9,9 +9,10 @@ export const getActionsPage = createServerFn({ method: 'GET' })
   .validator((status: ActionStatus) => (isActionStatus(status) ? status : 'open'))
   .handler(async ({ data: status }) => {
     const { db } = await import('../../../shared/api')
-    const { latestQuoteDate, listActions } = await import('@trading/domain')
+    const { adviceForActions, latestQuoteDate, listActions } = await import('@trading/domain')
     const { todayJst } = await import('@trading/cli')
     const d = db()
+    const actions = listActions(d, { status })
     return {
       status,
       today: todayJst(),
@@ -19,7 +20,8 @@ export const getActionsPage = createServerFn({ method: 'GET' })
       counts: Object.fromEntries(
         ACTION_STATUSES.map((s) => [s, listActions(d, { status: s }).length]),
       ) as Record<ActionStatus, number>,
-      actions: listActions(d, { status }),
+      actions,
+      advice: Object.fromEntries([...adviceForActions(d, actions)].map(([id, adv]) => [id, adv])),
     }
   })
 

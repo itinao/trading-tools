@@ -11,7 +11,7 @@ import type { InstrumentPageData } from '../api/get-instrument-page.ts'
 
 /** 銘柄詳細。スコアと内訳、口座別の保有、アクションとシグナルの履歴、適時開示とニュース（判定つき）、直近 30 件の株価 */
 export function InstrumentPage({ data }: { data: InstrumentPageData }) {
-  const { instrument, position, quotes, signals, actions, news, disclosures, score } = data
+  const { instrument, position, quotes, signals, actions, advice, news, disclosures, score } = data
   const latest = quotes[0]
   const costChange = position && latest ? pctOf(latest.price, position.averageCost) : null
   return (
@@ -70,7 +70,13 @@ export function InstrumentPage({ data }: { data: InstrumentPageData }) {
       )}
 
       <h2>アクション</h2>
-      <ActionTable actions={actions} showInstrument={false} showStatus resolvable={false} />
+      <ActionTable
+        actions={actions}
+        advice={advice}
+        showInstrument={false}
+        showStatus
+        resolvable={false}
+      />
 
       <h2>シグナル</h2>
       <SignalTable signals={signals} />
