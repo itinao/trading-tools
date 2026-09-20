@@ -33,3 +33,6 @@ apps/*/src/routeTree.gen.ts
 # launchd 用に生成する日次スクリプトとログ
 data/daily.sh
 data/logs/
+
+# 画面のモック（実装前に見せる。実装後に消す）
+apps/dashboard/mock/
