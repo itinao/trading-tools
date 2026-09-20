@@ -9,7 +9,7 @@
 
 ## 現在のフェーズ
 
-**実行計画 0001（M0〜M5）完了。実行計画 [0002](docs/execution-plans/0002-operations.md)（運用フェーズの改善）の O1（ダッシュボードの情報設計、[Design Doc 0015](docs/design-docs/0015-dashboard-ia.md)）を実装中。**
+**実行計画 0001（M0〜M5）完了。実行計画 [0002](docs/execution-plans/0002-operations.md)（運用フェーズの改善）の O1（ダッシュボードの情報設計、Design Doc 0015）完了。** 次の項目に着手する前に Design Doc を書いて承認を得る。
 進捗は [実行計画 0001](docs/execution-plans/0001-initial.md)。
 
 ## 作業を始める前に
@@ -49,7 +49,7 @@ pnpm ワークスペース。Node 22（`.node-version`）。ビルドせず `tsx
 | `tools/screen` | `@trading/tool-screen` | `pnpm screen run --preset value`。母集団は `pnpm collect universe`（JPX、月 1 回） |
 | `tools/review` | `@trading/tool-review` | `pnpm review timeline <code>` / `history`。振り返り |
 | `tools/schedule` | `@trading/tool-schedule` | `pnpm schedule install` で launchd に日次実行を登録 |
-| `apps/dashboard` | `@trading/dashboard` | `pnpm dashboard` で http://127.0.0.1:3000。見た目は `apps/dashboard/DESIGN.md` |
+| `apps/dashboard` | `@trading/dashboard` | `pnpm dashboard` で http://127.0.0.1:3000。画面は アクション（`/`）/ 銘柄（`/instruments`）/ スクリーナー / 履歴 と銘柄詳細。見た目は `apps/dashboard/DESIGN.md` |
 | `tools/<name>` | `@trading/tool-<name>` | 各ツール（M1 以降） |
 | `.agents/skills/` | | エージェントのスキル。`morning`（朝の確認: assess → detect → advise）、`assess`、`advise`、`retrospect`（月次の振り返り、提案のみ）。`.claude/skills` はシンボリックリンク |
 | `docs/design-docs/` | | Design Doc（連番、変更ごとに1本） |
@@ -127,6 +127,8 @@ pnpm watch add <code> --note "..."  # ダッシュボードのスクリーナー
 - スライスは `index.ts` を公開 API とし、他からはそこだけを import する。`shared` は層の `index.ts` を持たず、`shared/api` / `shared/lib` / `shared/ui` のセグメントごとに `index.ts` を置く
 - サーバー関数（`createServerFn`）は `api` セグメントに置く。画面のデータ取得は `pages/<page>/api`、利用者の操作（書き込み）は `features/<feature>/api`。DB を触るモジュール（`shared/api`、`@trading/domain`、`@trading/db`）は **handler 内で動的 import** し、クライアントバンドルに入れない
 - widgets は自分でデータを取らず props で受け取る
+- サイドバーの状態（件数・鮮度・最終収集）はルートのローダー（`routes/__root.tsx` → `app/api/get-shell.ts`）で 1 回だけ取る。画面ごとに取り直さない
+- アクションは銘柄ごとのカード（`widgets/action-card`）で表示し、`features/resolve-action` の一括操作で同じ銘柄の未対応をまとめて処理できる
 - 画面（`routes/*.tsx`）や `<Link>` を足したら `pnpm screens` で [docs/screens.md](docs/screens.md) を再生成する（古いままだと `pnpm test` が落ちる）。`<Link to>` には文字列リテラルを書く（変数を渡すと遷移図に載らない）。`pages/<page>/ui/*Page.tsx` の先頭には画面の説明を JSDoc で書く
 - `pnpm --filter @trading/dashboard fsd`（`pnpm lint` に含まれる）で層の逆流・公開 API の迂回を検査する。通らない構成は直す
 

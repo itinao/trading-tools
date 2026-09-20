@@ -1,4 +1,5 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
+import { getShell } from '../app/api/get-shell.ts'
 import { AppLayout } from '../app/layout.tsx'
 import '../app/styles.css'
 
@@ -10,13 +11,14 @@ export const Route = createRootRoute({
       { title: 'trading-tools' },
     ],
   }),
+  loader: () => getShell(),
   component: () => (
     <html lang="ja">
       <head>
         <HeadContent />
       </head>
       <body>
-        <AppLayout>
+        <AppLayout shell={Route.useLoaderData()}>
           <Outlet />
         </AppLayout>
         <Scripts />

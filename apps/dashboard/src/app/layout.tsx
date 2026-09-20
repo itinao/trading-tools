@@ -1,20 +1,12 @@
-import { Link } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
+import { Sidebar, type SidebarData } from '../widgets/sidebar/index.ts'
 
-/** ルートレイアウト。<html> と <body> は routes/__root.tsx が担当し、ここはナビと main */
-export function AppLayout({ children }: { children: ReactNode }) {
+/** ルートレイアウト。左にサイドバー、右にコンテンツ（中央寄せ）。<html> と <body> は routes/__root.tsx が担当 */
+export function AppLayout({ shell, children }: { shell: SidebarData; children: ReactNode }) {
   return (
-    <>
-      <nav>
-        <Link to="/" activeOptions={{ exact: true }}>
-          アクション
-        </Link>
-        <Link to="/holdings">保有</Link>
-        <Link to="/watch">ウォッチ</Link>
-        <Link to="/screener">スクリーナー</Link>
-        <Link to="/history">履歴</Link>
-      </nav>
-      <main>{children}</main>
-    </>
+    <div className="app">
+      <Sidebar data={shell} />
+      <main className="content">{children}</main>
+    </div>
   )
 }

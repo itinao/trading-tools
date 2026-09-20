@@ -9,6 +9,8 @@ export const getInstrumentPage = createServerFn({ method: 'GET' })
     const {
       adviceForActions,
       effectiveAssessments,
+      financialHistory,
+      latestFundamentals,
       latestScores,
       listActions,
       monitoredInstruments,
@@ -70,6 +72,9 @@ export const getInstrumentPage = createServerFn({ method: 'GET' })
       score: latestScores(d).get(id) ?? null,
       watch: monitored?.watch ?? null,
       timeline: timeline(d, id, { days: 90 }).events,
+      financials: financialHistory(d, id, 'annual'),
+      fundamentals: latestFundamentals(d, id) ?? null,
+      context: monitored ? (monitored.position ? ('holding' as const) : ('watch' as const)) : null,
       sparkline: sparklineData(d, id),
     }
   })

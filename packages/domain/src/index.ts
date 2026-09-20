@@ -75,6 +75,7 @@ export {
 } from './review.ts'
 export { latestScores, type ScoreComponents, scoreHistory, upsertScore } from './scores.ts'
 export { getScreenRun, listScreenRuns, type ScreenResultInput, saveScreenRun } from './screen.ts'
+export { type DashboardStatus, dashboardStatus } from './status.ts'
 export {
   findUniverse,
   type UniverseInput,

@@ -66,8 +66,9 @@
   --spacing-lg: 16px;
   --spacing-xl: 24px;
   --spacing-2xl: 32px;
-  --spacing-page-padding: 24px;
-  --spacing-content-max-width: 1120px;
+  --spacing-page-padding: 32px;
+  --spacing-content-max-width: 1200px;
+  --spacing-sidebar-width: 220px;
   --spacing-cell-padding-y: 8px;
   --spacing-cell-padding-x: 12px;
 
