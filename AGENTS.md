@@ -9,7 +9,7 @@
 
 ## 現在のフェーズ
 
-**M3（AI 助言）実装中。** [Design Doc 0012](docs/design-docs/0012-advise.md) は承認済み。
+**M3（AI 助言）完了。** 次は M4（攻め: ウォッチ銘柄とスクリーニング）。着手前に Design Doc を書いて承認を得る。
 進捗は [実行計画 0001](docs/execution-plans/0001-initial.md)。
 
 ## 作業を始める前に
@@ -44,10 +44,11 @@ pnpm ワークスペース。Node 22（`.node-version`）。ビルドせず `tsx
 | `tools/detect` | `@trading/tool-detect` | `pnpm detect run`。スコアを計算し、10 種のルールでシグナルとアクションを作る。閾値・係数は `config/detect.json` |
 | `tools/actions` | `@trading/tool-actions` | `pnpm actions list` / `show` / `resolve` |
 | `tools/assess` | `@trading/tool-assess` | `pnpm assess pending` / `record` / `override` / `list`。AI 判定の出し入れ |
+| `tools/advise` | `@trading/tool-advise` | `pnpm advise pending` / `record`。アクションへの AI 助言の出し入れ |
 | `tools/schedule` | `@trading/tool-schedule` | `pnpm schedule install` で launchd に日次実行を登録 |
 | `apps/dashboard` | `@trading/dashboard` | `pnpm dashboard` で http://127.0.0.1:3000。見た目は `apps/dashboard/DESIGN.md` |
 | `tools/<name>` | `@trading/tool-<name>` | 各ツール（M1 以降） |
-| `.agents/skills/` | | エージェントのスキル。`assess`（ニュース・開示の判定）。`.claude/skills` はシンボリックリンク |
+| `.agents/skills/` | | エージェントのスキル。`morning`（朝の確認: assess → detect → advise）、`assess`、`advise`。`.claude/skills` はシンボリックリンク |
 | `docs/design-docs/` | | Design Doc（連番、変更ごとに1本） |
 | `docs/schema.md` | | **現在の全テーブルの ER 図（自動生成）** |
 | `docs/screens.md` | | **現在の画面遷移図（自動生成）** |
@@ -72,9 +73,11 @@ pnpm import-holdings run "data/source/assetbalance(all)_YYYYMMDD_HHMMSS.csv"
 pnpm collect all         # 株価・指標・財務・ニュース・開示（Yahoo Finance / Google News / TDnet）
 pnpm detect run          # スコアの計算、下落・悪材料・財務悪化の検知 → シグナルとアクション
 
-# 朝（エージェントで）。「assess を実行して」と言うと .agents/skills/assess が動く
+# 朝（エージェントで）。「朝の確認をして」と言うと .agents/skills/morning が assess → detect run → advise を順に行う
 pnpm assess pending      # 未判定のニュース・開示（開示は PDF 本文つき）
 pnpm assess record --input <file>   # 判定を書き込む → その後 pnpm detect run
+pnpm advise pending      # 助言が無い未対応アクションと事実の束
+pnpm advise record --input <file>   # 助言を書き込む
 
 # 確認
 pnpm actions list        # 未対応のアクション
@@ -85,6 +88,7 @@ pnpm dashboard           # http://127.0.0.1:3000
 - 手元の検証でモックを使うなら `pnpm collect quotes --provider mock`（`data/source/mock-quotes.json` を編集）。実データと混ざらないよう、検証後は `quotes` の `source = 'mock'` を消す
 - 外部ソースは非公式（Yahoo / Google News）を含む。止まったら `failed` に出て、ダッシュボードの「株価が古い」バナーで気づく（Design Doc 0009）
 - AI の判定は `pnpm assess override <id> --sentiment N` かダッシュボードで人が上書きできる。AI の判定は消えず、human が優先される
+- 助言は `actions` に `origin = 'ai'`、ルール生成のアクションと同じ `signal_id` で保存され、一覧では同じ行の中に出る。事実の束（`advise pending`）に無いことを根拠にしない
 
 ## ツールの作り方（CLI 規約）
 

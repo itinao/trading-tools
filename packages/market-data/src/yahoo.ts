@@ -225,7 +225,7 @@ export function createYahooProvider(
             period1: from,
             period2: today(),
             type,
-            module: 'financials',
+            module: 'all',
           })
           await sleep(intervalMs)
           for (const r of rows) {

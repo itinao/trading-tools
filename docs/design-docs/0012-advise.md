@@ -2,7 +2,7 @@
 
 | | |
 | --- | --- |
-| 状態 | 承認（2026-09-20） |
+| 状態 | 実装済み（2026-09-20） |
 | 作成日 | 2026-09-20 |
 | 元になる Design Doc | [0001](./0001-repository.md) §3 G3（2-b）・§9 アクション・§13 R5、[0005](./0005-detect-and-dashboard.md)（アクション）、[0011](./0011-assessment-and-score.md)（判定・スコア） |
 | 対応するマイルストーン | [実行計画 0001](../execution-plans/0001-initial.md) M3 |
@@ -153,3 +153,10 @@ references:
 | `stance` | hold / review / reduce の 3 値 |
 | 表示と状態 | ルール生成の行の中に表示し、状態を連動させる |
 | 根拠の範囲 | 事実の束に無いことは根拠にしない（一般的な業界知識も使わない） |
+
+## 実装時の補足（2026-09-20）
+
+- 事実の束の `financials` に自己資本比率が入らなかった。Yahoo の `fundamentalsTimeSeries` を `module: 'financials'` で呼んでいて貸借対照表が含まれていなかったため、`'all'` に変更（0010 の補足でもある）。これで `equity_ratio_drop` が動くようになり、実データで 1 件検知した
+- スキルの手順を実データで通した: 未対応 7 件に助言を付け、`stance` は hold 2 / review 3 / reduce 2。`reduce` は 3 期連続の減収・赤字拡大が束にある銘柄だけ
+- 同じ銘柄に複数のアクション（取得単価比と直近高値比）があるときは、助言同士が `references` の `type: action` で相互に参照し、「同時に対応済みにする」と書く
+- steiger の `inconsistent-naming` は `entities/advice`（不可算名詞）を複数形と誤検知するため無効化した
