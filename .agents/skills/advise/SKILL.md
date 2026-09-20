@@ -10,7 +10,7 @@ trading-tools の `advise` ツールが出す「助言がまだ無いアクシ�
 ## 手順
 
 1. リポジトリのルートで `pnpm advise pending --limit 20` を実行し、stdout の JSON を読む
-   - `items[]` の各要素が 1 つのアクションと、その判断に必要な **事実の束**（`instrument` / `quotes` / `score` / `signals` / `assessments` / `financials` / `fundamentals` / `history`）
+   - `items[]` の各要素が 1 つのアクションと、その判断に必要な **事実の束**（`context` / `stances` / `instrument` / `quotes` / `score` / `signals` / `assessments` / `financials` / `fundamentals` / `history`）。`context` が `watch` なら保有していない銘柄（`instrument.watch` に追加日とメモ）
 2. 各項目について、**事実の束に書かれていることだけ**を材料に助言を書く（下の構成と禁止事項）
 3. 助言の配列を一時ファイル（例: `/tmp/advice.json`）に書き、`pnpm advise record --input /tmp/advice.json` で書き込む
    - 1 件でも不正・二重付与があると全体が失敗し、`error` に理由が出る。直して再実行する
@@ -40,7 +40,7 @@ trading-tools の `advise` ツールが出す「助言がまだ無いアクシ�
 
 | 項目 | 付け方 |
 | --- | --- |
-| `stance` | `hold`: 事実の束に企業側の悪化が無く、株価の変動も小さい。`review`: 判断材料が足りない、または株価だけが悪化している。`reduce`: **企業側の悪化**（悪材料の判定、業績予想の下方修正、減配、財務の悪化）が束にあるときだけ |
+| `stance` | 束の `context` と `stances` に従う。**保有**（`context: holding`）: `hold` = 企業側の悪化が無く株価の変動も小さい / `review` = 判断材料が足りない、または株価だけが悪化 / `reduce` = **企業側の悪化**（悪材料の判定、業績予想の下方修正、減配、財務の悪化）が束にあるときだけ。**ウォッチ**（`context: watch`）: `candidate` = **企業側の良さ**（増収増益、利益率、好材料の判定）と **株価の位置**（下落・割安）の両方が束にある / `review` = 判断材料が足りない、または株価の下落だけ / `pass` = 企業側の悪化がある、または割安に見えるが業績が悪化している |
 | `title` | 1 行。状況の要約と「次に確認すること」を含める |
 | `body` | `## 状況`（事実だけ、数値と日付）→ `## 論点`（判断を分ける問い 1〜3 個）→ `## 選択肢`（それぞれ、どういう前提なら妥当か）→ `## 確認すること`（次に見る情報と見方） |
 | `references` | 使った事実を列挙する。`type` は `news` / `disclosure` / `signal` / `financials` / `quote` / `score` / `action`。`id` と `url` は束にあるものを使う。**1 件以上必須** |
@@ -52,6 +52,7 @@ trading-tools の `advise` ツールが出す「助言がまだ無いアクシ�
 
 - 事実の束に無い情報を根拠にしない。一般論、記憶にある企業・業界の情報、相場観、指数の動きは使わない。必要なら「束に無いので確認が要る」と書く
 - 目標株価、期待リターン、「買い」「売り」の断定を書かない
-- 株価の下落だけで `reduce` にしない
+- 株価の下落だけで `reduce` にしない。株価の下落だけで `candidate` にしない
+- ウォッチ銘柄では「買い」の断定をしない。`candidate` は「候補として調べる価値がある」の意味
 - 免責の定型文を書かない（ダッシュボードが表示する）
 - SQLite を直接読み書きしない

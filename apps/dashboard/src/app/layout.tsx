@@ -10,6 +10,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
           アクション
         </Link>
         <Link to="/holdings">保有</Link>
+        <Link to="/watch">ウォッチ</Link>
+        <Link to="/screener">スクリーナー</Link>
       </nav>
       <main>{children}</main>
     </>

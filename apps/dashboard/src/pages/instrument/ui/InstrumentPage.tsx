@@ -11,7 +11,18 @@ import type { InstrumentPageData } from '../api/get-instrument-page.ts'
 
 /** 銘柄詳細。スコアと内訳、口座別の保有、アクションとシグナルの履歴、適時開示とニュース（判定つき）、直近 30 件の株価 */
 export function InstrumentPage({ data }: { data: InstrumentPageData }) {
-  const { instrument, position, quotes, signals, actions, advice, news, disclosures, score } = data
+  const {
+    instrument,
+    position,
+    quotes,
+    signals,
+    actions,
+    advice,
+    news,
+    disclosures,
+    score,
+    watch,
+  } = data
   const latest = quotes[0]
   const costChange = position && latest ? pctOf(latest.price, position.averageCost) : null
   return (
@@ -66,7 +77,11 @@ export function InstrumentPage({ data }: { data: InstrumentPageData }) {
           </tbody>
         </table>
       ) : (
-        <p className="empty">最新スナップショットに保有がない。</p>
+        <p className="empty">
+          {watch
+            ? `ウォッチ中（${watch.addedAt.slice(0, 10)} に追加${watch.note ? `、メモ: ${watch.note}` : ''}）。保有はない。`
+            : '最新スナップショットに保有がない。'}
+        </p>
       )}
 
       <h2>アクション</h2>

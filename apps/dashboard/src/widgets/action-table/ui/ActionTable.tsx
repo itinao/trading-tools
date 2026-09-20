@@ -1,6 +1,7 @@
 import {
   ActionBody,
   type ActionView,
+  isOffenseKind,
   kindLabel,
   SeverityBadge,
   statusLabel,
@@ -52,7 +53,11 @@ export function ActionTable({
           <tr key={a.id}>
             {showStatus && <td>{statusLabel(a.status)}</td>}
             <td>
-              <SeverityBadge severity={a.severity} fallback={a.origin} />
+              <SeverityBadge
+                severity={a.severity}
+                fallback={a.origin}
+                offense={isOffenseKind(a.kind)}
+              />
             </td>
             {showInstrument && (
               <td>

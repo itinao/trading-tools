@@ -11,7 +11,7 @@ export const getInstrumentPage = createServerFn({ method: 'GET' })
       effectiveAssessments,
       latestScores,
       listActions,
-      positions,
+      monitoredInstruments,
       quoteHistory,
       recentDisclosures,
       recentNews,
@@ -23,7 +23,8 @@ export const getInstrumentPage = createServerFn({ method: 'GET' })
       .where(eq(schema.instruments.id, id))
       .get()
     if (!instrument) return null
-    const position = positions(d).find((p) => p.instrumentId === id) ?? null
+    const monitored = monitoredInstruments(d).find((m) => m.instrumentId === id) ?? null
+    const position = monitored?.position ?? null
     const quotes = quoteHistory(d, id, { limit: 30 })
     const signals = d
       .select()
@@ -65,6 +66,7 @@ export const getInstrumentPage = createServerFn({ method: 'GET' })
           : null,
       })),
       score: latestScores(d).get(id) ?? null,
+      watch: monitored?.watch ?? null,
     }
   })
 

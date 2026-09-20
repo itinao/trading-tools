@@ -17,6 +17,15 @@ export const KIND_LABEL: Record<string, string> = {
   margin_deterioration: '営業利益率の悪化',
   equity_ratio_drop: '自己資本比率の低下',
   score_low: 'スコア低下',
+  valuation_cheap: '割安の候補',
+  growth_streak: '増収増益',
+  oversold_quality: '売られすぎの候補',
+}
+
+/** 攻めのシグナル（買い検討）。守りと区別して表示する（Design Doc 0013 §3.3） */
+export const OFFENSE_KINDS = ['valuation_cheap', 'growth_streak', 'oversold_quality'] as const
+export function isOffenseKind(kind: string | null): boolean {
+  return kind !== null && (OFFENSE_KINDS as readonly string[]).includes(kind)
 }
 
 export function isActionStatus(value: unknown): value is ActionStatus {
