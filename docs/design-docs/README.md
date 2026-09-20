@@ -10,13 +10,13 @@
 | 0003 | [保有の取り込みと株価の収集（M1 入力側）](./0003-holdings-and-quotes.md) — 楽天証券 CSV、instruments / holdings / quotes、モック Provider | 実装済み |
 | 0004 | [スキーマ図の自動生成](./0004-schema-doc.md) — `docs/schema.md` を Drizzle スキーマから生成し、テストで鮮度を担保 | 実装済み |
 | 0009 | [データソースの選定（S1）](./0009-data-sources.md) — Yahoo Finance / Google News RSS / TDnet の検証結果と採用、J-Quants の扱い | 承認 |
-| 0010 | [実データの収集（M2 前半）](./0010-real-data-collection.md) — yahoo / google-news / tdnet Provider、fundamentals / financials / news_items / disclosures | 承認 |
+| 0010 | [実データの収集（M2 前半）](./0010-real-data-collection.md) — yahoo / google-news / tdnet Provider、fundamentals / financials / news_items / disclosures | 実装済み |
 | 0005 | [下落の検知とダッシュボード（M1 出力側）](./0005-detect-and-dashboard.md) — signals / actions、detect・actions ツール、TanStack Start | 実装済み |
 | 0006 | [ダッシュボードを FSD で構成する](./0006-dashboard-fsd.md) — 層と依存方向、routes の扱い、steiger による検査 | 実装済み |
 | 0007 | [デザインシステム（DESIGN.md）の導入](./0007-design-system.md) — Stitch フォーマットの DESIGN.md を正本にし、トークンから CSS 変数を生成 | 実装済み |
 | 0008 | [画面遷移図の自動生成](./0008-screen-map.md) — `docs/screens.md` をルートと `<Link to>` から生成し、テストで鮮度を担保 | 実装済み |
 | 0009 | [データソースの選定（S1）](./0009-data-sources.md) — Yahoo Finance / Google News RSS / TDnet の検証結果と採用、J-Quants の扱い | 承認 |
-| 0010 | [実データの収集（M2 前半）](./0010-real-data-collection.md) — yahoo / google-news / tdnet Provider、fundamentals / financials / news_items / disclosures | 承認 |
+| 0010 | [実データの収集（M2 前半）](./0010-real-data-collection.md) — yahoo / google-news / tdnet Provider、fundamentals / financials / news_items / disclosures | 実装済み |
 
 状態: 草案 → 承認 → 実装済み → supersede（後続の番号を記す）
 

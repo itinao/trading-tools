@@ -146,6 +146,9 @@ th.num {
 }
 
 /* ---------- semantic text colors ---------- */
+.nowrap {
+  white-space: nowrap;
+}
 .muted {
   color: var(--color-on-surface-variant);
   font-size: var(--font-label-sm-size);
@@ -181,6 +184,10 @@ th.num {
 .badge-neutral {
   background: var(--color-surface-container);
   color: var(--color-on-surface-variant);
+}
+.badge-primary {
+  background: var(--color-primary-container);
+  color: var(--color-on-primary-container);
 }
 
 /* ---------- button ---------- */

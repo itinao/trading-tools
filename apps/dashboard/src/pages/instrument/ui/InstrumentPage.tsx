@@ -2,13 +2,15 @@ import { Link } from '@tanstack/react-router'
 import { pctClass, pctOf, pctText, price } from '../../../shared/lib'
 import { YenCell } from '../../../shared/ui'
 import { ActionTable } from '../../../widgets/action-table/index.ts'
+import { DisclosureList } from '../../../widgets/disclosure-list/index.ts'
+import { NewsList } from '../../../widgets/news-list/index.ts'
 import { QuoteHistoryTable } from '../../../widgets/quote-history-table/index.ts'
 import { SignalTable } from '../../../widgets/signal-table/index.ts'
 import type { InstrumentPageData } from '../api/get-instrument-page.ts'
 
-/** 銘柄詳細。口座別の保有、この銘柄のアクションとシグナルの履歴、直近 30 件の株価 */
+/** 銘柄詳細。口座別の保有、この銘柄のアクションとシグナルの履歴、適時開示、ニュース、直近 30 件の株価 */
 export function InstrumentPage({ data }: { data: InstrumentPageData }) {
-  const { instrument, position, quotes, signals, actions } = data
+  const { instrument, position, quotes, signals, actions, news, disclosures } = data
   const latest = quotes[0]
   const costChange = position && latest ? pctOf(latest.price, position.averageCost) : null
   return (
@@ -68,6 +70,12 @@ export function InstrumentPage({ data }: { data: InstrumentPageData }) {
 
       <h2>シグナル</h2>
       <SignalTable signals={signals} />
+
+      <h2>適時開示（直近 20 件）</h2>
+      <DisclosureList items={disclosures} />
+
+      <h2>ニュース（直近 20 件）</h2>
+      <NewsList items={news} />
 
       <h2>株価（直近 30 件）</h2>
       <QuoteHistoryTable quotes={quotes} />

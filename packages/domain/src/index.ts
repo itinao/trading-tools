@@ -13,4 +13,10 @@ export {
   positions,
   type Target,
 } from './holdings.ts'
+export {
+  financialHistory,
+  latestFundamentals,
+  recentDisclosures,
+  recentNews,
+} from './market-data.ts'
 export { latestQuoteDate, latestQuotes, quoteHistory } from './quotes.ts'

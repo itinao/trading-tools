@@ -148,6 +148,12 @@ components:
     typography: "{typography.label-sm}"
     rounded: "{rounded.full}"
     padding: 1px 8px
+  badge-primary:
+    backgroundColor: "{colors.primary-container}"
+    textColor: "{colors.on-primary-container}"
+    typography: "{typography.label-sm}"
+    rounded: "{rounded.full}"
+    padding: 1px 8px
   banner-stale:
     backgroundColor: "{colors.warn-container}"
     textColor: "{colors.on-surface}"
@@ -242,8 +248,8 @@ trading-tools のダッシュボードは、毎朝数分だけ開いて「何が
 ### ボタン（`button-secondary` / `button-primary`）
 高さ 28px の小さなボタン。既定は白地に `outline` の枠線（secondary）。1画面で最も重要な操作だけ `primary` の塗り（M1 では該当なし。将来の「取り込む」等）。ホバーは背景を一段濃く。押下中は `outline` を `primary` に。フォーカスリングは `primary` の 2px。
 
-### バッジ（`badge-warn` / `badge-critical` / `badge-neutral`）
-重大度の表示。`critical` は文字を `600` にする。シグナル由来でないアクション（`ai` / `manual`）は `badge-neutral`。
+### バッジ（`badge-warn` / `badge-critical` / `badge-neutral` / `badge-primary`）
+重大度の表示。`critical` は文字を `600` にする。シグナル由来でないアクション（`ai` / `manual`）は `badge-neutral`。重大度ではない分類（開示の種別など）は `badge-primary`（紺の薄い面）で、警告色と混同させない。
 
 ### バナー（`banner-stale`）
 株価が今日の分でないときだけ表示。黄色の面に本文色の文字。閉じるボタンは付けない（原因を解消すれば消える）。

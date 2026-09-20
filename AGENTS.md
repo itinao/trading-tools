@@ -9,7 +9,7 @@
 
 ## 現在のフェーズ
 
-**M2（ニュース・開示とスコア）実装中。** 前半 [Design Doc 0010](docs/design-docs/0010-real-data-collection.md)（実データの収集）は承認済み。後半 0011（判定とスコア）は未着手。
+**M2（ニュース・開示とスコア）実装中。** 前半 [Design Doc 0010](docs/design-docs/0010-real-data-collection.md)（実データの収集）は実装済み。次は後半 0011（判定とスコア、日次実行の環境）の Design Doc を書いて承認を得る。
 進捗は [実行計画 0001](docs/execution-plans/0001-initial.md)。
 
 ## 作業を始める前に
@@ -36,11 +36,11 @@ pnpm ワークスペース。Node 22（`.node-version`）。ビルドせず `tsx
 | --- | --- | --- |
 | `packages/cli` | `@trading/cli` | CLI 共通規約の実装（`defineTool`） |
 | `packages/db` | `@trading/db` | SQLite 接続、Drizzle スキーマ、マイグレーション |
-| `packages/market-data` | `@trading/market-data` | `QuoteProvider` と各 Provider（M1 は mock のみ） |
+| `packages/market-data` | `@trading/market-data` | Provider（yahoo / google-news / tdnet / mock）。外部アクセスは注入可能でテストはフィクスチャ |
 | `tools/db` | `@trading/tool-db` | `pnpm db migrate` / `pnpm db status` |
 | `tools/import-holdings` | `@trading/tool-import-holdings` | `pnpm import-holdings run <csv>` / `list` |
 | `packages/domain` | `@trading/domain` | ツールとダッシュボードが共有する読み書き（保有、株価、アクション） |
-| `tools/collect` | `@trading/tool-collect` | `pnpm collect quotes`。M2 で `news` / `disclosures` |
+| `tools/collect` | `@trading/tool-collect` | `pnpm collect all`（quotes / fundamentals / financials / news / disclosures） |
 | `tools/detect` | `@trading/tool-detect` | `pnpm detect run`。シグナルとアクションを作る。閾値は `config/detect.json` |
 | `tools/actions` | `@trading/tool-actions` | `pnpm actions list` / `show` / `resolve` |
 | `apps/dashboard` | `@trading/dashboard` | `pnpm dashboard` で http://127.0.0.1:3000。見た目は `apps/dashboard/DESIGN.md` |
@@ -60,22 +60,24 @@ pnpm test                # 全パッケージのテスト
 pnpm lint && pnpm typecheck
 ```
 
-## 日次の手順（M1 時点、手動）
+## 日次の手順（M2 時点、手動）
 
 ```bash
 # 楽天証券の CSV を data/source/ に置いたとき
 pnpm import-holdings run "data/source/assetbalance(all)_YYYYMMDD_HHMMSS.csv"
 
 # 毎日（引け後）
-pnpm collect quotes      # 株価の取得（M1 はモック。data/source/mock-quotes.json を編集して値を変えられる）
-pnpm detect run          # 下落の検知 → シグナルとアクション
+pnpm collect all         # 株価・指標・財務・ニュース・開示（Yahoo Finance / Google News / TDnet）
+pnpm detect run          # 下落の検知 → シグナルとアクション（既定は株価の最新日）
 pnpm actions list        # 未対応のアクション（ダッシュボードでも見られる）
 
 # 確認
 pnpm dashboard           # http://127.0.0.1:3000
 ```
 
-`mock-quotes.json` は初回の `collect quotes` で最新スナップショットの現在値から生成される。過去日の株価を入れるには `pnpm collect quotes --as-of YYYY-MM-DD`。
+- 株価が 1 件もない銘柄（新規保有）は `collect quotes` が自動で 1 年分の日足を遡る。全銘柄を遡り直すなら `pnpm collect quotes --backfill`
+- 手元の検証でモックを使うなら `pnpm collect quotes --provider mock`（`data/source/mock-quotes.json` を編集）。実データと混ざらないよう、検証後は `quotes` の `source = 'mock'` を消す
+- 外部ソースは非公式（Yahoo / Google News）を含む。止まったら `failed` に出て、ダッシュボードの「株価が古い」バナーで気づく（Design Doc 0009）
 
 ## ツールの作り方（CLI 規約）
 
