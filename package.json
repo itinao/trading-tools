@@ -25,7 +25,8 @@
     "schedule": "tsx tools/schedule/src/main.ts",
     "advise": "tsx tools/advise/src/main.ts",
     "watch": "tsx tools/watch/src/main.ts",
-    "screen": "tsx tools/screen/src/main.ts"
+    "screen": "tsx tools/screen/src/main.ts",
+    "review": "tsx tools/review/src/main.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",

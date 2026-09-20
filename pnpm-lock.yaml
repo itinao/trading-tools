@@ -218,6 +218,21 @@ importers:
         specifier: ^0.45.2
         version: 0.45.2(@types/better-sqlite3@7.6.13)(better-sqlite3@12.11.1)
 
+  tools/review:
+    dependencies:
+      '@trading/cli':
+        specifier: workspace:*
+        version: link:../../packages/cli
+      '@trading/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@trading/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+      drizzle-orm:
+        specifier: ^0.45.2
+        version: 0.45.2(@types/better-sqlite3@7.6.13)(better-sqlite3@12.11.1)
+
   tools/schedule:
     dependencies:
       '@trading/cli':
