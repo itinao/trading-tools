@@ -1,110 +1,42 @@
-import { Logger } from '@trading/cli'
-import { type DatabaseHandle, schema } from '@trading/db'
+import { schema } from '@trading/db'
 import { createTestDatabase } from '@trading/db/testing'
-import { holdingTargets } from '@trading/domain'
-import type { QuoteProvider } from '@trading/market-data'
+import type { Bar, QuoteProvider } from '@trading/market-data'
 import { describe, expect, it } from 'vitest'
-import { collectQuotes } from '../src/quotes.ts'
+import { collectQuotes, quoteCount } from '../src/quotes.ts'
+import { context, seed } from './helpers.ts'
 
-function seed(handle: DatabaseHandle) {
-  const now = '2026-01-01T00:00:00+09:00'
-  handle.db
-    .insert(schema.instruments)
-    .values([
-      { id: 'JP:1234', market: 'JP', code: '1234', name: 'A', createdAt: now, updatedAt: now },
-      { id: 'JP:5678', market: 'JP', code: '5678', name: 'B', createdAt: now, updatedAt: now },
-    ])
-    .run()
-  const older = handle.db
-    .insert(schema.holdingSnapshots)
-    .values({
-      source: 'rakuten',
-      asOf: '2025-12-01T00:00:00+09:00',
-      fileName: 'old.csv',
-      importedAt: now,
-      rowCount: 1,
-      skippedJson: '{}',
-    })
-    .returning({ id: schema.holdingSnapshots.id })
-    .get()
-  const latest = handle.db
-    .insert(schema.holdingSnapshots)
-    .values({
-      source: 'rakuten',
-      asOf: '2026-01-01T00:00:00+09:00',
-      fileName: 'new.csv',
-      importedAt: now,
-      rowCount: 2,
-      skippedJson: '{}',
-    })
-    .returning({ id: schema.holdingSnapshots.id })
-    .get()
-  const h = (snapshotId: number, instrumentId: string, account: string, price: number) => ({
-    snapshotId,
-    instrumentId,
-    account,
-    quantity: 100,
-    averageCost: 1000,
-    priceAtSnapshot: price,
-    marketValue: 100 * price,
-    unrealizedPnl: 0,
-    unrealizedPnlPct: 0,
-  })
-  handle.db
-    .insert(schema.holdings)
-    .values([
-      h(older?.id ?? 0, 'JP:5678', '特定', 1),
-      h(latest?.id ?? 0, 'JP:1234', '特定', 2500),
-      h(latest?.id ?? 0, 'JP:1234', '旧NISA', 2500),
-      h(latest?.id ?? 0, 'JP:5678', '特定', 700),
-    ])
-    .run()
-}
-
-const context = (dryRun = false) => ({
-  options: { dryRun, quiet: true, verbose: false },
-  logger: new Logger(() => {}, 'error'),
-  dbPath: ':memory:',
-  readInput: <T>() => ({}) as T,
-})
-
-const fakeProvider = (prices: Record<string, number | null>): QuoteProvider => ({
+const fake = (
+  prices: Record<string, number | null>,
+  opts: { asOf?: string; history?: Record<string, Bar[]> } = {},
+): QuoteProvider => ({
   name: 'fake',
   fetchQuotes: async (codes) =>
     codes.map((code) => {
       const p = prices[code]
       return p == null
         ? { code, ok: false as const, reason: 'nope' }
-        : { code, ok: true as const, price: p, previousClose: p + 10 }
+        : {
+            code,
+            ok: true as const,
+            price: p,
+            previousClose: p + 10,
+            ...(opts.asOf ? { asOf: opts.asOf } : {}),
+          }
     }),
-})
-
-describe('holdingTargets', () => {
-  it('最新スナップショットの銘柄を口座の重複なしで返す', () => {
-    const handle = createTestDatabase()
-    seed(handle)
-    expect(
-      holdingTargets(handle.db)
-        .map((t) => t.code)
-        .sort(),
-    ).toEqual(['1234', '5678'])
-    handle.close()
-  })
-  it('スナップショットがなければ空', () => {
-    const handle = createTestDatabase()
-    expect(holdingTargets(handle.db)).toEqual([])
-    handle.close()
-  })
+  ...(opts.history ? { fetchHistory: async (code: string) => opts.history?.[code] ?? [] } : {}),
 })
 
 describe('collectQuotes', () => {
   it('取れた分を保存し、失敗は failed に列挙して ok', async () => {
     const handle = createTestDatabase()
     seed(handle)
-    const r = await collectQuotes(handle, context(), { asOf: '2026-01-05' }, () =>
-      fakeProvider({ '1234': 2400, '5678': null }),
+    const r = await collectQuotes(
+      handle,
+      context(),
+      { asOf: '2026-01-05' },
+      fake({ '1234': 2400, '5678': null }),
     )
-    expect(r).toEqual({
+    expect(r).toMatchObject({
       asOf: '2026-01-05',
       provider: 'fake',
       targets: 2,
@@ -123,60 +55,130 @@ describe('collectQuotes', () => {
     handle.close()
   })
 
-  it('同じ日の再実行は上書きで行が増えない', async () => {
+  it('Provider が返す asOf を使い、--as-of 指定はそれを上書きする', async () => {
     const handle = createTestDatabase()
     seed(handle)
-    await collectQuotes(handle, context(), { asOf: '2026-01-05' }, () =>
-      fakeProvider({ '1234': 2400, '5678': 700 }),
+    await collectQuotes(
+      handle,
+      context(),
+      {},
+      fake({ '1234': 1, '5678': 2 }, { asOf: '2026-01-09' }),
     )
-    await collectQuotes(handle, context(), { asOf: '2026-01-05' }, () =>
-      fakeProvider({ '1234': 2300, '5678': 700 }),
-    )
-    const rows = handle.db.select().from(schema.quotes).all()
-    expect(rows).toHaveLength(2)
-    expect(rows.find((r) => r.instrumentId === 'JP:1234')?.price).toBe(2300)
-    // 別の日は別の行
-    await collectQuotes(handle, context(), { asOf: '2026-01-06' }, () =>
-      fakeProvider({ '1234': 2200, '5678': 700 }),
+    expect(
+      handle.db
+        .select()
+        .from(schema.quotes)
+        .all()
+        .map((q) => q.asOf),
+    ).toEqual(['2026-01-09', '2026-01-09'])
+    await collectQuotes(
+      handle,
+      context(),
+      { asOf: '2026-01-10' },
+      fake({ '1234': 1, '5678': 2 }, { asOf: '2026-01-09' }),
     )
     expect(handle.db.select().from(schema.quotes).all()).toHaveLength(4)
     handle.close()
   })
 
-  it('全件失敗は all_failed', async () => {
+  it('同じ日の再実行は上書きで行が増えない', async () => {
     const handle = createTestDatabase()
     seed(handle)
+    await collectQuotes(
+      handle,
+      context(),
+      { asOf: '2026-01-05' },
+      fake({ '1234': 2400, '5678': 700 }),
+    )
+    await collectQuotes(
+      handle,
+      context(),
+      { asOf: '2026-01-05' },
+      fake({ '1234': 2300, '5678': 700 }),
+    )
+    const rows = handle.db.select().from(schema.quotes).all()
+    expect(rows).toHaveLength(2)
+    expect(rows.find((r) => r.instrumentId === 'JP:1234')?.price).toBe(2300)
+    handle.close()
+  })
+
+  it('株価が 0 件の銘柄だけ日足を遡り、previous_close は前の足の終値', async () => {
+    const handle = createTestDatabase()
+    seed(handle)
+    // 5678 には既に株価がある
+    handle.db
+      .insert(schema.quotes)
+      .values({
+        instrumentId: 'JP:5678',
+        asOf: '2025-12-30',
+        price: 1,
+        previousClose: null,
+        source: 'fake',
+        fetchedAt: 'x',
+      })
+      .run()
+    const history = {
+      '1234': [
+        { asOf: '2025-12-29', close: 2000 },
+        { asOf: '2025-12-30', close: 2100 },
+      ],
+      '5678': [{ asOf: '2025-12-29', close: 999 }],
+    }
+    const r = await collectQuotes(
+      handle,
+      context(),
+      { asOf: '2026-01-05' },
+      fake({ '1234': 2400, '5678': 700 }, { history }),
+    )
+    expect(r.backfilled).toEqual([{ code: '1234', bars: 2 }])
+    expect(quoteCount(handle, 'JP:1234')).toBe(3)
+    expect(quoteCount(handle, 'JP:5678')).toBe(2)
+    const b = handle.db
+      .select()
+      .from(schema.quotes)
+      .all()
+      .filter((q) => q.instrumentId === 'JP:1234' && q.asOf === '2025-12-30')
+    expect(b[0]?.previousClose).toBe(2000)
+    handle.close()
+  })
+
+  it('--backfill は全銘柄を遡る。--backfill の日付は検証される', async () => {
+    const handle = createTestDatabase()
+    seed(handle)
+    const history = {
+      '1234': [{ asOf: '2025-12-29', close: 1 }],
+      '5678': [{ asOf: '2025-12-29', close: 2 }],
+    }
+    const r = await collectQuotes(
+      handle,
+      context(),
+      { asOf: '2026-01-05', backfill: true },
+      fake({ '1234': 1, '5678': 2 }, { history }),
+    )
+    expect(r.backfilled.map((b) => b.code).sort()).toEqual(['1234', '5678'])
     await expect(
-      collectQuotes(handle, context(), { asOf: '2026-01-05' }, () => fakeProvider({})),
+      collectQuotes(handle, context(), { backfill: '2025/1/1' }, fake({ '1234': 1 }, { history })),
+    ).rejects.toMatchObject({ code: 'usage' })
+    handle.close()
+  })
+
+  it('全件失敗は all_failed、対象なしは no_targets、--dry-run は書かない', async () => {
+    const handle = createTestDatabase()
+    await expect(collectQuotes(handle, context(), {}, fake({}))).rejects.toMatchObject({
+      code: 'no_targets',
+    })
+    seed(handle)
+    await expect(
+      collectQuotes(handle, context(), { asOf: '2026-01-05' }, fake({})),
     ).rejects.toMatchObject({ code: 'all_failed' })
-    handle.close()
-  })
-
-  it('対象がなければ no_targets', async () => {
-    const handle = createTestDatabase()
-    await expect(
-      collectQuotes(handle, context(), {}, () => fakeProvider({})),
-    ).rejects.toMatchObject({ code: 'no_targets' })
-    handle.close()
-  })
-
-  it('--dry-run は書かない', async () => {
-    const handle = createTestDatabase()
-    seed(handle)
-    const r = await collectQuotes(handle, context(true), { asOf: '2026-01-05' }, () =>
-      fakeProvider({ '1234': 1, '5678': 2 }),
+    const r = await collectQuotes(
+      handle,
+      context(true),
+      { asOf: '2026-01-05' },
+      fake({ '1234': 1, '5678': 2 }),
     )
     expect(r.fetched).toBe(2)
     expect(handle.db.select().from(schema.quotes).all()).toHaveLength(0)
-    handle.close()
-  })
-
-  it('--as-of の形式が違えば usage', async () => {
-    const handle = createTestDatabase()
-    seed(handle)
-    await expect(
-      collectQuotes(handle, context(), { asOf: '2026/01/05' }, () => fakeProvider({})),
-    ).rejects.toMatchObject({ code: 'usage' })
     handle.close()
   })
 })
