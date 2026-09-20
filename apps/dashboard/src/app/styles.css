@@ -64,27 +64,45 @@ h3 {
   position: sticky;
   top: 0;
   height: 100vh;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   background: var(--color-surface);
   border-right: 1px solid var(--color-outline-variant);
   padding: var(--spacing-lg) 0;
 }
-.sidebar-brand {
+.sidebar-logo {
+  display: flex;
+  align-items: center;
   padding: 0 var(--spacing-lg) var(--spacing-lg);
   border-bottom: 1px solid var(--color-outline-variant);
 }
-.sidebar-title {
-  font-weight: 600;
+.logo-link,
+.logo-link:hover {
+  color: inherit;
+  text-decoration: none;
 }
-.sidebar-fresh {
-  font-size: var(--font-label-sm-size);
-  line-height: var(--font-label-sm-line-height);
-  color: var(--color-on-surface-variant);
-  font-feature-settings: var(--font-numeric-md-feature);
+/* ロゴ（DESIGN.md「ロゴ」）。マークが T、続けて "rading"。大きさは font-size だけで決まる */
+.logo {
+  --logo-accent: var(--color-gain);
+  display: inline-block;
+  color: var(--color-primary);
+  font-family: var(--font-logo-family);
+  font-size: var(--font-logo-size);
+  font-weight: var(--font-logo-weight);
+  font-style: oblique 8deg;
+  line-height: 1;
+  letter-spacing: var(--font-logo-letter-spacing);
+  white-space: nowrap;
 }
-.sidebar-fresh.stale {
-  color: var(--color-warn);
+/* マークの viewBox は 32 単位。横棒の上端 (y≈3) が大文字の高さ、幹の下端 (y=29) がベースライン。
+   高さ 0.9em で 26 単位 ≒ 大文字の高さになり、下の 3 単位ぶん (0.085em) を下げてベースラインに乗せる */
+.logo-mark {
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  vertical-align: -0.085em;
+  margin-right: 0.04em;
 }
 .sidebar-nav {
   display: flex;
@@ -121,10 +139,24 @@ h3 {
   line-height: var(--font-label-sm-line-height);
   color: var(--color-on-surface-variant);
 }
-.sidebar-foot {
+/* サイト全体の更新情報（株価の鮮度、最終収集）。画面固有の更新情報はページのヘッダ帯の右 */
+.sidebar-status {
   padding: var(--spacing-md) var(--spacing-lg) 0;
   border-top: 1px solid var(--color-outline-variant);
+  font-size: var(--font-label-sm-size);
+  line-height: var(--font-label-sm-line-height);
+  color: var(--color-on-surface-variant);
   font-feature-settings: var(--font-numeric-md-feature);
+}
+.sidebar-status > div {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  white-space: nowrap;
+  padding: 1px 0;
+}
+.sidebar-status .stale {
+  color: var(--color-warn);
 }
 .content {
   flex: 1;
@@ -153,7 +185,7 @@ h3 {
     flex-wrap: wrap;
   }
   .sidebar-hint,
-  .sidebar-foot {
+  .sidebar-status {
     display: none;
   }
   .content {

@@ -57,6 +57,12 @@ typography:
     lineHeight: 22px
     letterSpacing: 0em
     fontFeature: '"tnum" 1, "lnum" 1'
+  logo:
+    fontFamily: '"Google Sans Flex Variable", system-ui, sans-serif'
+    fontSize: 20px
+    fontWeight: "800"
+    lineHeight: 20px
+    letterSpacing: -0.02em
 rounded:
   sm: 4px
   DEFAULT: 6px
@@ -82,6 +88,10 @@ components:
   section-title:
     textColor: "{colors.on-background}"
     typography: "{typography.title-sm}"
+  logo:
+    textColor: "{colors.primary}"
+    accentColor: "{colors.gain}"
+    typography: "{typography.logo}"
   nav:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.on-surface-variant}"
@@ -218,7 +228,17 @@ trading-tools のダッシュボードは、毎朝数分だけ開いて「何が
 - `body-md`（14px / 400）: 本文、表のセル、タブ
 - `label-sm`（12px / 500）: 表のヘッダ、バッジ、証券コード、日付などの補助情報
 - `numeric-md`（14px / 500、tabular figures）: 数値セル。`font-feature-settings: "tnum" 1, "lnum" 1` を必ず付け、右揃えにする
+- `logo`（20px / 800、oblique 8°、-0.02em）: ロゴのワードマークだけ。本文や見出しに斜体・極太は使わない
 - 銘柄名は全角英数が混じる（証券会社由来）。そのまま表示し、無理に半角化しない
+
+## Logo
+
+ワードマーク **"Trading"**。先頭の T が **マーク** で、その右に "rading" を `logo` の書体で続ける（T を重ねて "TTrading" にしない）。マークは 32 単位の正方形に描いた、右上へ伸びる横棒（弓なり）と、右に傾いた幹、幹の右下から右上へ抜ける赤の一片。上昇の勢いを表す。
+
+- 色: 幹と横棒は `primary`、赤の一片は `gain`（上昇の色と同じ）。暗い面では白と `#E06A5C`
+- 大きさは文字サイズだけで決める。マークの高さは 0.9em、幹の下端を文字のベースラインに揃える（`logo-mark` の `vertical-align: -0.085em`）
+- 置き場所はサイドバーの左上だけ。ページの中、見出し、ボタンには置かない。マーク単体を使うのはファビコン（`public/favicon.svg`、色は固定値）など文字を置けない場所に限る
+- 斜体は Google Sans Flex の `slnt` 軸（8°）。合成斜体にしないため、フォントは `slnt.css` を読む
 
 ## Icons
 
@@ -256,8 +276,11 @@ trading-tools のダッシュボードは、毎朝数分だけ開いて「何が
 
 ## Components
 
-### サイドバー（`sidebar` / `sidebar-item` / `sidebar-item-active`）
-白地、右に 1px の罫線。上にアプリ名と株価の鮮度（古ければ `warn` の文字色）、中に 4 項目（ラベル + 1 行の説明 `label-sm`）、下に最終収集。アクティブは左に 3px の `primary` の縦線と `primary-container` の面。未対応の件数は `badge-critical`。
+### ロゴ（`logo` / `logo-mark`）
+サイドバーの左上に置くワードマーク（Logo 節）。`primary` の文字色と `gain` の赤の一片。トップ（アクション）へのリンクにするが、下線やホバーの色変化は付けない。
+
+### サイドバー（`sidebar` / `sidebar-item` / `sidebar-item-active` / `sidebar-status`）
+白地、右に 1px の罫線。上にロゴ、中に 4 項目（ラベル + 1 行の説明 `label-sm`）、下に **サイト全体の更新情報**（`sidebar-status`: 株価の鮮度と最終収集、`label-sm`、アイコン付き、古い・失敗は `warn` の文字色）。アクティブは左に 3px の `primary` の縦線と `primary-container` の面。未対応の件数は `badge-critical`。画面固有の更新情報はサイドバーではなくヘッダ帯の右に置く。
 
 ### 状態の帯（`status-strip` / `status-cell`）
 アクション画面の先頭。4 つの面（株価の鮮度 / 最終収集 / 未判定 / 未対応）を横に並べる。値は 20px の等幅数字。注意が要る面は `warn-container`（古い・失敗）か `primary-container`（未判定あり）で塗る。

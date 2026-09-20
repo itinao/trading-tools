@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { Icon } from '../../../shared/ui'
+import { Icon, Logo } from '../../../shared/ui'
 
 export interface SidebarData {
   today: string
@@ -37,18 +37,21 @@ const ITEMS = [
   { to: '/history', label: '履歴', hint: '判断の記録（全銘柄）', exact: false, icon: 'history' },
 ] as const
 
-/** 左固定のナビ。4 項目 + 1 行の説明、未対応の件数、株価の鮮度、最終収集（Design Doc 0015 §3.1） */
+/** 月日だけ（YYYY-MM-DD → MM-DD）。サイドバーの幅に収めるため */
+const monthDay = (date: string) => date.slice(5)
+
+/**
+ * 左固定のナビ。上にロゴ、中に 4 項目 + 1 行の説明と未対応の件数、下にサイト全体の更新情報
+ * （株価の鮮度、最終収集）。画面固有の更新情報はここではなくページのヘッダ帯の右に置く（Design Doc 0015 §3.1 / 補足）
+ */
 export function Sidebar({ data }: { data: SidebarData }) {
   const stale = data.status.latestQuoteDate == null || data.status.latestQuoteDate < data.today
   return (
     <aside className="sidebar">
-      <div className="sidebar-brand">
-        <div className="sidebar-title">trading-tools</div>
-        <div className={`sidebar-fresh ${stale ? 'stale' : ''}`}>
-          <Icon name={stale ? 'schedule' : 'check_circle'} className="icon-sm" /> 株価:{' '}
-          {data.status.latestQuoteDate ?? 'なし'}
-          {stale ? `（今日は ${data.today}）` : '（今日）'}
-        </div>
+      <div className="sidebar-logo">
+        <Link to="/" className="logo-link">
+          <Logo />
+        </Link>
       </div>
       <nav className="sidebar-nav">
         {ITEMS.map((item) => (
@@ -69,22 +72,38 @@ export function Sidebar({ data }: { data: SidebarData }) {
           </Link>
         ))}
       </nav>
-      <div className="sidebar-foot muted">
-        {data.lastCollect ? (
-          <>
-            最終収集 {data.lastCollect.date}
-            {data.lastCollect.finishedAt ? ` ${data.lastCollect.finishedAt.slice(11, 16)}` : ''}{' '}
-            {data.lastCollect.status === 0
-              ? '✓'
-              : data.lastCollect.status == null
-                ? '（実行中）'
-                : `✗ status=${data.lastCollect.status}`}
-          </>
-        ) : (
-          <>
-            自動収集は未登録（<code>pnpm schedule install</code>）
-          </>
-        )}
+      <div className="sidebar-status">
+        <div
+          className={stale ? 'stale' : ''}
+          title={`株価の最新日 ${data.status.latestQuoteDate ?? 'なし'}`}
+        >
+          <Icon name={stale ? 'schedule' : 'check_circle'} className="icon-sm" />
+          株価 {data.status.latestQuoteDate ? monthDay(data.status.latestQuoteDate) : 'なし'}
+          {stale ? `（今日は ${monthDay(data.today)}）` : '（今日）'}
+        </div>
+        <div
+          className={data.lastCollect?.status ? 'stale' : ''}
+          title={
+            data.lastCollect
+              ? `最終収集 ${data.lastCollect.date}`
+              : '自動収集は未登録（pnpm schedule install）'
+          }
+        >
+          <Icon name="cloud_download" className="icon-sm" />
+          {data.lastCollect ? (
+            <>
+              収集 {monthDay(data.lastCollect.date)}
+              {data.lastCollect.finishedAt ? ` ${data.lastCollect.finishedAt.slice(11, 16)}` : ''}
+              {data.lastCollect.status === 0
+                ? ''
+                : data.lastCollect.status == null
+                  ? '（実行中）'
+                  : `（失敗 ${data.lastCollect.status}）`}
+            </>
+          ) : (
+            '収集 未登録'
+          )}
+        </div>
       </div>
     </aside>
   )
