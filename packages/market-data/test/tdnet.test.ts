@@ -27,6 +27,11 @@ describe('parseTdnetList', () => {
     expect(items[1]).toMatchObject({ code: '5678', hasXbrl: false })
     expect(items[2]).toMatchObject({ code: '264A' })
   })
+  it('開示が 0 件の日（休日）は空を返す', () => {
+    const html =
+      '<html><body><table><tr><td>2026年09月20日<br>に開示された情報はありません。</td></tr></table></body></html>'
+    expect(parseTdnetList(html, '2026-09-20')).toEqual({ items: [], pages: [] })
+  })
   it('ヘッダが違えば TdnetFormatError', () => {
     expect(() =>
       parseTdnetList(page(1).replace('<th>表題</th>', '<th>件名</th>'), '2026-09-18'),

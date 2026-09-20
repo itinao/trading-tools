@@ -48,6 +48,8 @@ export function parseTdnetList(
       [...r.matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/g)].map((c) => strip(c[1] as string)),
     )
     .find((cells) => cells[0] === '時刻')
+  // 休日など開示が 0 件の日は一覧の表自体が無く「ありません」と出る
+  if (!header && /ありません/.test(html)) return { items: [], pages: [] }
   if (!header || EXPECTED_HEADER.some((h, i) => header[i] !== h)) {
     throw new TdnetFormatError('TDnet の一覧のヘッダが想定と違います', {
       expected: EXPECTED_HEADER,
