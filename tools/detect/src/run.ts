@@ -1,6 +1,6 @@
-import { isIsoDate, nowJst, type ToolContext, todayJst, UsageError } from '@trading/cli'
+import { isIsoDate, nowJst, type ToolContext, ToolError, UsageError } from '@trading/cli'
 import { type DatabaseHandle, schema } from '@trading/db'
-import { type Position, positions, quoteHistory } from '@trading/domain'
+import { latestQuoteDate, type Position, positions, quoteHistory } from '@trading/domain'
 import { and, desc, eq } from 'drizzle-orm'
 import { actionText } from './actions-text.ts'
 import type { DetectConfig } from './config.ts'
@@ -22,9 +22,12 @@ export function runDetect(
   options: { asOf?: string },
   config: DetectConfig,
 ): RunResult {
-  const asOf = options.asOf ?? todayJst()
-  if (!isIsoDate(asOf)) throw new UsageError(`--as-of は YYYY-MM-DD: ${asOf}`)
   const { db } = handle
+  // 既定は株価の最新日（休日に実行しても直近の営業日を評価する。Design Doc 0010 §3.4）
+  const asOf = options.asOf ?? latestQuoteDate(db)
+  if (asOf === undefined)
+    throw new ToolError('no_quotes', '株価がありません。先に collect quotes を実行してください')
+  if (!isIsoDate(asOf)) throw new UsageError(`--as-of は YYYY-MM-DD: ${asOf}`)
   const result: RunResult = {
     asOf,
     evaluated: 0,

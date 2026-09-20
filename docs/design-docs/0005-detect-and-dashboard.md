@@ -2,7 +2,7 @@
 
 | | |
 | --- | --- |
-| 状態 | 実装済み（2026-09-20） |
+| 状態 | 実装済み（2026-09-20）。§3.1 の `as_of` の既定は [0010](./0010-real-data-collection.md) §3.4 で supersede |
 | 作成日 | 2026-09-19 |
 | 元になる Design Doc | [0001](./0001-repository.md) §8 ツール群・§9 主要な概念、[0003](./0003-holdings-and-quotes.md)（入力側） |
 | 対応するマイルストーン | [実行計画 0001](../execution-plans/0001-initial.md) M1 |

@@ -78,6 +78,19 @@ const signals = (h: DatabaseHandle) => h.db.select().from(schema.signals).all()
 const actions = (h: DatabaseHandle) => h.db.select().from(schema.actions).all()
 
 describe('runDetect', () => {
+  it('--as-of 省略時は株価の最新日を評価し、株価が無ければ no_quotes', () => {
+    const handle = createTestDatabase()
+    seed(handle)
+    expect(() => runDetect(handle, context(), {}, DEFAULT_CONFIG)).toThrow(
+      expect.objectContaining({ code: 'no_quotes' }),
+    )
+    quote(handle, 'JP:1234', '2026-01-05', 850)
+    quote(handle, 'JP:1234', '2026-01-09', 850)
+    const r = runDetect(handle, context(), {}, DEFAULT_CONFIG)
+    expect(r.asOf).toBe('2026-01-09')
+    handle.close()
+  })
+
   it('当日の quote がない銘柄は skipped、あれば評価してシグナルとアクションを作る', () => {
     const handle = createTestDatabase()
     seed(handle)

@@ -19,7 +19,7 @@ export const tool = defineTool({
     {
       name: 'run',
       description: '保有銘柄を評価する',
-      configure: (c) => c.option('--as-of <date>', 'YYYY-MM-DD。省略時は今日（Asia/Tokyo）'),
+      configure: (c) => c.option('--as-of <date>', 'YYYY-MM-DD。省略時は株価の最新日'),
       handler: (options: { asOf?: string }, context) => {
         const config = loadConfig()
         return withDatabase(context, (handle) => {
