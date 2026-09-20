@@ -29,3 +29,7 @@ dist
 
 # TanStack Router が生成する
 apps/*/src/routeTree.gen.ts
+
+# launchd 用に生成する日次スクリプトとログ
+data/daily.sh
+data/logs/

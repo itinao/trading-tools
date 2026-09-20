@@ -200,6 +200,12 @@ importers:
         specifier: ^0.45.2
         version: 0.45.2(@types/better-sqlite3@7.6.13)(better-sqlite3@12.11.1)
 
+  tools/schedule:
+    dependencies:
+      '@trading/cli':
+        specifier: workspace:*
+        version: link:../../packages/cli
+
 packages:
 
   '@babel/code-frame@7.29.7':
