@@ -1,18 +1,71 @@
 {
-  "price_drop_cost": { "warn": -10, "critical": -20 },
-  "drawdown_60d": { "warn": -15, "critical": -25, "window": 60, "minHistory": 20 },
-  "below_ma200": { "window": 200 },
-  "price_drop_day": { "warn": -7 },
-  "news_negative": { "windowDays": 7, "minImpact": 2, "maxSentiment": -1 },
-  "forecast_down": { "windowDays": 30 },
-  "dividend_cut": { "windowDays": 30 },
-  "margin_deterioration": { "warn": -3, "critical": -6 },
-  "equity_ratio_drop": { "warn": -5, "critical": -10 },
-  "score_low": { "warn": -40, "critical": -60 },
+  "price_drop_cost": {
+    "warn": -10,
+    "critical": -20
+  },
+  "drawdown_60d": {
+    "warn": -15,
+    "critical": -25,
+    "window": 60,
+    "minHistory": 20
+  },
+  "below_ma200": {
+    "window": 200
+  },
+  "price_drop_day": {
+    "warn": -7
+  },
+  "news_negative": {
+    "windowDays": 7,
+    "minImpact": 2,
+    "maxSentiment": -1
+  },
+  "forecast_down": {
+    "windowDays": 30
+  },
+  "dividend_cut": {
+    "windowDays": 30
+  },
+  "margin_deterioration": {
+    "warn": -3,
+    "critical": -6
+  },
+  "equity_ratio_drop": {
+    "warn": -5,
+    "critical": -10
+  },
+  "score_low": {
+    "warn": -40,
+    "critical": -60
+  },
+  "valuation_cheap": {
+    "perMax": 12,
+    "pbrMax": 1.0,
+    "dividendMin": 3.0
+  },
+  "growth_streak": {
+    "years": 3
+  },
+  "oversold_quality": {
+    "drawdownMax": -15
+  },
   "score": {
-    "assessment": { "windowDays": 30, "halfLifeDays": 14, "scale": 5, "cap": 50 },
-    "price": { "drawdownFactor": 0.5, "belowMaPenalty": -10, "floor": -40 },
-    "financials": { "marginFactor": 2, "equityFactor": 1, "cap": 20 }
+    "assessment": {
+      "windowDays": 30,
+      "halfLifeDays": 14,
+      "scale": 5,
+      "cap": 50
+    },
+    "price": {
+      "drawdownFactor": 0.5,
+      "belowMaPenalty": -10,
+      "floor": -40
+    },
+    "financials": {
+      "marginFactor": 2,
+      "equityFactor": 1,
+      "cap": 20
+    }
   },
   "reissue_after_days": 30
 }

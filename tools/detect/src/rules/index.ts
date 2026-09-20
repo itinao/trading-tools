@@ -6,6 +6,13 @@ export {
   marginDeterioration,
 } from './financials.ts'
 export {
+  growthStreak,
+  growthYears,
+  type LatestFundamentals,
+  oversoldQuality,
+  valuationCheap,
+} from './offense.ts'
+export {
   belowMa200,
   drawdown60d,
   evaluatePriceRules,
@@ -16,6 +23,7 @@ export {
   priceDropDay,
 } from './price.ts'
 export {
+  OFFENSE_KINDS,
   type RuleHit,
   type RuleOutcome,
   round2,

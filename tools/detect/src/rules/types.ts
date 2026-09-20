@@ -10,6 +10,9 @@ export type SignalKind =
   | 'margin_deterioration'
   | 'equity_ratio_drop'
   | 'score_low'
+  | 'valuation_cheap'
+  | 'growth_streak'
+  | 'oversold_quality'
 
 export const SIGNAL_KINDS: readonly SignalKind[] = [
   'price_drop_cost',
@@ -22,6 +25,16 @@ export const SIGNAL_KINDS: readonly SignalKind[] = [
   'margin_deterioration',
   'equity_ratio_drop',
   'score_low',
+  'valuation_cheap',
+  'growth_streak',
+  'oversold_quality',
+]
+
+/** 攻めのルール（ウォッチ銘柄のみ） */
+export const OFFENSE_KINDS: readonly SignalKind[] = [
+  'valuation_cheap',
+  'growth_streak',
+  'oversold_quality',
 ]
 
 export interface RuleHit {

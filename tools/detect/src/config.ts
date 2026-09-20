@@ -14,6 +14,9 @@ export interface DetectConfig {
   margin_deterioration: { warn: number; critical: number }
   equity_ratio_drop: { warn: number; critical: number }
   score_low: { warn: number; critical: number }
+  valuation_cheap: { perMax: number; pbrMax: number; dividendMin: number }
+  growth_streak: { years: number }
+  oversold_quality: { drawdownMax: number }
   score: {
     assessment: { windowDays: number; halfLifeDays: number; scale: number; cap: number }
     price: { drawdownFactor: number; belowMaPenalty: number; floor: number }
@@ -33,6 +36,9 @@ export const DEFAULT_CONFIG: DetectConfig = {
   margin_deterioration: { warn: -3, critical: -6 },
   equity_ratio_drop: { warn: -5, critical: -10 },
   score_low: { warn: -40, critical: -60 },
+  valuation_cheap: { perMax: 12, pbrMax: 1.0, dividendMin: 3.0 },
+  growth_streak: { years: 3 },
+  oversold_quality: { drawdownMax: -15 },
   score: {
     assessment: { windowDays: 30, halfLifeDays: 14, scale: 5, cap: 50 },
     price: { drawdownFactor: 0.5, belowMaPenalty: -10, floor: -40 },

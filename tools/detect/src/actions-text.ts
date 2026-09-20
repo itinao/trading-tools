@@ -1,4 +1,4 @@
-import type { Position } from '@trading/domain'
+import type { MonitoredInstrument } from '@trading/domain'
 import type { RuleHit } from './rules/index.ts'
 
 const yen = (n: number | null | undefined) =>
@@ -12,11 +12,13 @@ const FOOTER = '\n\n売る / 持つの判断は人が行う。これは事実の
 /** ルール生成アクションの文面（Design Doc 0005 §3.3、0011 §3.5）。判断は含めない */
 export function actionText(
   hit: RuleHit,
-  position: Position,
+  subject: MonitoredInstrument,
   asOf: string,
 ): { title: string; body: string } {
   const d = hit.details
-  const n = position.name
+  const n = subject.name
+  const quantity = subject.position?.quantity ?? 0
+  const averageCost = subject.position?.averageCost ?? 0
   const num = (k: string) => Number(d[k])
   switch (hit.kind) {
     case 'price_drop_cost':
@@ -24,7 +26,7 @@ export function actionText(
         title: `${n}: 取得単価比 ${hit.value}%`,
         body:
           `- 日付: ${asOf}\n- 平均取得単価: ${price(num('averageCost'))}\n- 当日の株価: ${price(num('price'))}\n` +
-          `- 保有数量: ${position.quantity.toLocaleString('ja-JP')} 株\n- 含み損益: ${yen((num('price') - position.averageCost) * position.quantity)}` +
+          `- 保有数量: ${quantity.toLocaleString('ja-JP')} 株\n- 含み損益: ${yen((num('price') - averageCost) * quantity)}` +
           FOOTER,
       }
     case 'drawdown_60d':
@@ -32,7 +34,7 @@ export function actionText(
         title: `${n}: 直近高値から ${hit.value}%`,
         body:
           `- 日付: ${asOf}\n- 直近 ${d.window} 営業日の高値: ${price(num('high'))}（${d.highAsOf}）\n- 当日の株価: ${price(num('price'))}\n` +
-          `- 取得単価比: ${pctText(num('price'), position.averageCost)}` +
+          `- 取得単価比: ${pctText(num('price'), averageCost)}` +
           FOOTER,
       }
     case 'below_ma200':
@@ -48,7 +50,7 @@ export function actionText(
         title: `${n}: 前日比 ${hit.value}%`,
         body:
           `- 日付: ${asOf}\n- 前日（${d.previousAsOf}）: ${price(num('previous'))}\n- 当日の株価: ${price(num('price'))}\n` +
-          `- 評価額の変化: ${yen((num('price') - num('previous')) * position.quantity)}\n- ニュース・開示を確認する` +
+          `- 評価額の変化: ${yen((num('price') - num('previous')) * quantity)}\n- ニュース・開示を確認する` +
           FOOTER,
       }
     case 'news_negative':
@@ -86,6 +88,27 @@ export function actionText(
         body:
           `- ${d.previousPeriod}: 総資産 ${oku(num('previousAssets'))}、自己資本 ${oku(num('previousEquity'))}、比率 ${d.previousRatio}%\n` +
           `- ${d.currentPeriod}: 総資産 ${oku(num('currentAssets'))}、自己資本 ${oku(num('currentEquity'))}、比率 ${d.currentRatio}%` +
+          FOOTER,
+      }
+    case 'valuation_cheap':
+      return {
+        title: `${n}: 割安の候補（PER ${d.per} / PBR ${d.pbr} / 配当利回り ${d.dividendYield}%）`,
+        body:
+          `- 日付: ${asOf}（指標は ${d.asOf}）\n- PER ${d.per}、PBR ${d.pbr}、配当利回り ${d.dividendYield}%\n- 買い検討の候補。業績・開示を確認する` +
+          FOOTER,
+      }
+    case 'growth_streak':
+      return {
+        title: `${n}: 増収増益 ${d.years} 年連続`,
+        body:
+          `- 日付: ${asOf}\n- ${d.periods}\n- 買い検討の候補。株価の位置と評価（PER）を確認する` +
+          FOOTER,
+      }
+    case 'oversold_quality':
+      return {
+        title: `${n}: 売られすぎの候補（高値から ${hit.value}%、${d.quality === 'valuation_cheap' ? '割安' : '成長'}）`,
+        body:
+          `- 日付: ${asOf}\n- 当日の株価: ${price(num('price'))}、200 日線 ${price(num('ma200'))}、60 日高値 ${price(num('high60'))}（${d.drawdown}%）\n- 企業側: ${d.quality === 'valuation_cheap' ? '割安（valuation_cheap）' : '増収増益（growth_streak）'}\n- 最も強い買い検討の候補。下落の理由（ニュース・開示）を確認する` +
           FOOTER,
       }
     case 'score_low':

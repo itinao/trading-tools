@@ -3,9 +3,10 @@ import { type DatabaseHandle, schema } from '@trading/db'
 import {
   effectiveAssessments,
   financialHistory,
+  latestFundamentals,
   latestQuoteDate,
-  type Position,
-  positions,
+  type MonitoredInstrument,
+  monitoredInstruments,
   quoteHistory,
   upsertScore,
 } from '@trading/domain'
@@ -18,12 +19,16 @@ import {
   equityRatioDrop,
   evaluatePriceRules,
   forecastDown,
+  growthStreak,
   marginDeterioration,
   newsNegative,
+  OFFENSE_KINDS,
+  oversoldQuality,
   type RuleHit,
   type RuleOutcome,
   SIGNAL_KINDS,
   type SignalKind,
+  valuationCheap,
 } from './rules/index.ts'
 import { computeScore, scoreLow } from './score.ts'
 
@@ -113,13 +118,14 @@ export function runDetect(
     if (!context.options.dryRun) fn()
   }
 
-  const held = positions(db)
+  // 監視対象 = 保有 ∪ ウォッチ（Design Doc 0013）。攻めのルールはウォッチにだけ適用する
+  const monitored = monitoredInstruments(db)
   const assessmentsByInstrument = datedAssessments(
     handle,
-    held.map((p) => p.instrumentId),
+    monitored.map((m) => m.instrumentId),
   )
 
-  for (const position of held) {
+  for (const position of monitored) {
     const history = quoteHistory(db, position.instrumentId, {
       upTo: asOf,
       limit: config.below_ma200.window + 1,
@@ -146,16 +152,34 @@ export function runDetect(
       }
     }
 
+    const isWatch = position.position === null
+    const f = latestFundamentals(db, position.instrumentId)
+    const cheap = isWatch
+      ? valuationCheap(
+          f ? { per: f.per, pbr: f.pbr, dividendYield: f.dividendYield, asOf: f.asOf } : null,
+          config.valuation_cheap,
+        )
+      : null
+    const growth = isWatch ? growthStreak(annual, config.growth_streak) : null
     const outcomes: Record<SignalKind, RuleOutcome> = {
-      ...evaluatePriceRules(history, position.averageCost, config),
+      ...evaluatePriceRules(history, position.position?.averageCost ?? 0, config),
       news_negative: newsNegative(assessments, asOf, config.news_negative),
       forecast_down: forecastDown(assessments, asOf, config.forecast_down),
       dividend_cut: dividendCut(assessments, asOf, config.dividend_cut),
       margin_deterioration: marginDeterioration(annual, config.margin_deterioration),
       equity_ratio_drop: equityRatioDrop(annual, config.equity_ratio_drop),
       score_low: scoreHit,
+      valuation_cheap: cheap,
+      growth_streak: growth,
+      oversold_quality: isWatch
+        ? oversoldQuality(history, cheap, growth, config.oversold_quality, {
+            ma: config.below_ma200.window,
+            drawdown: config.drawdown_60d.window,
+          })
+        : null,
     }
     for (const kind of SIGNAL_KINDS) {
+      if (!isWatch && OFFENSE_KINDS.includes(kind)) continue
       const outcome = outcomes[kind]
       if (outcome === null) continue
       if ('skipped' in outcome) {
@@ -222,7 +246,7 @@ function upsertSignal(
 /** Design Doc 0005 §3.1「アクションの生成（重複の抑制）」 */
 function createActionIfNeeded(
   tx: Tx,
-  position: Position,
+  position: MonitoredInstrument,
   asOf: string,
   signalId: number | undefined,
   hit: RuleHit,
