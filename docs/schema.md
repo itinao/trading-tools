@@ -6,6 +6,7 @@
 | テーブル | 定義した Design Doc |
 | --- | --- |
 | `actions` | [0005](design-docs/0005-detect-and-dashboard.md) |
+| `assessments` | [0011](design-docs/0011-assessment-and-score.md) |
 | `disclosures` | [0010](design-docs/0010-real-data-collection.md) |
 | `financials` | [0010](design-docs/0010-real-data-collection.md) |
 | `fundamentals` | [0010](design-docs/0010-real-data-collection.md) |
@@ -14,6 +15,7 @@
 | `instruments` | [0003](design-docs/0003-holdings-and-quotes.md) |
 | `news_items` | [0010](design-docs/0010-real-data-collection.md) |
 | `quotes` | [0003](design-docs/0003-holdings-and-quotes.md) |
+| `scores` | [0011](design-docs/0011-assessment-and-score.md) |
 | `signals` | [0005](design-docs/0005-detect-and-dashboard.md) |
 
 ```mermaid
@@ -29,6 +31,22 @@ erDiagram
         text note "nullable"
         text created_at
         text resolved_at "nullable"
+    }
+    assessments {
+        integer id PK
+        text subject_type "unique(subject_type, subject_id, author)"
+        integer subject_id "unique(subject_type, subject_id, author)"
+        text instrument_id FK "-> instruments"
+        text relevance
+        integer sentiment
+        integer impact
+        text direction "nullable"
+        text summary
+        text rationale
+        text author "unique(subject_type, subject_id, author)"
+        text model "nullable"
+        text note "nullable"
+        text created_at
     }
     disclosures {
         integer id PK
@@ -119,6 +137,13 @@ erDiagram
         text source "unique(instrument_id, as_of, source)"
         text fetched_at
     }
+    scores {
+        text instrument_id PK,FK "-> instruments"
+        text as_of PK
+        real score
+        text components_json
+        text created_at
+    }
     signals {
         integer id PK
         text instrument_id FK "-> instruments; unique(instrument_id, kind, as_of)"
@@ -132,12 +157,14 @@ erDiagram
     }
     holding_snapshots ||--o{ holdings : ""
     instruments ||--o{ actions : ""
+    instruments ||--o{ assessments : ""
     instruments ||--o{ disclosures : ""
     instruments ||--o{ financials : ""
     instruments ||--o{ fundamentals : ""
     instruments ||--o{ holdings : ""
     instruments ||--o{ news_items : ""
     instruments ||--o{ quotes : ""
+    instruments ||--o{ scores : ""
     instruments ||--o{ signals : ""
     signals ||--o{ actions : ""
 ```

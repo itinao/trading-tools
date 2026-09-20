@@ -10,6 +10,7 @@ export {
   type MockQuote,
   type MockQuoteFile,
 } from './mock.ts'
+export { extractPdfText, fetchPdfText, type PdfTextOptions } from './pdf.ts'
 export type {
   Bar,
   DisclosureItem,
