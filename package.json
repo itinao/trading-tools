@@ -26,7 +26,9 @@
     "advise": "tsx tools/advise/src/main.ts",
     "watch": "tsx tools/watch/src/main.ts",
     "screen": "tsx tools/screen/src/main.ts",
-    "review": "tsx tools/review/src/main.ts"
+    "review": "tsx tools/review/src/main.ts",
+    "dashboard:build": "pnpm --filter @trading/dashboard build",
+    "dashboard:start": "pnpm --filter @trading/dashboard start"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",

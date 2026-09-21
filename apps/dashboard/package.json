@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit",
     "fsd": "steiger ./src",
     "design:tokens": "tsx scripts/design-tokens.ts",
-    "screens": "tsx scripts/screens.ts"
+    "screens": "tsx scripts/screens.ts",
+    "start": "srvx serve --prod --dir=. --entry=dist/server/server.js --static=dist/client"
   },
   "dependencies": {
     "@fontsource-variable/google-sans-flex": "^5.3.1",
@@ -19,10 +20,12 @@
     "@trading/cli": "workspace:*",
     "@trading/db": "workspace:*",
     "@trading/domain": "workspace:*",
+    "better-sqlite3": "^12.11.1",
     "drizzle-orm": "^0.45.2",
     "material-symbols": "^0.47.4",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "srvx": "^0.11.22"
   },
   "devDependencies": {
     "@feature-sliced/steiger-plugin": "^0.7.0",

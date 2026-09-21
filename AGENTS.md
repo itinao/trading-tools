@@ -85,7 +85,8 @@ pnpm advise record --input <file>   # 助言を書き込む
 
 # 確認
 pnpm actions list        # 未対応のアクション
-pnpm dashboard           # http://localhost:3000（0.0.0.0 で待つ。認証なし）
+pnpm dashboard           # 開発サーバー http://localhost:3000（0.0.0.0 で待つ。認証なし）
+pnpm dashboard:build && pnpm dashboard:start   # 本番ビルド（apps/dashboard/dist）を srvx で配信。PORT / HOST で変更可
 
 # 振り返り（月 1 回）。「振り返りをして」と言うと .agents/skills/retrospect が履歴を読んで傾向と閾値の調整案を出す（設定は変えない）
 pnpm review history --since YYYY-MM-DD

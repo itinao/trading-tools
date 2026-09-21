@@ -23,6 +23,8 @@ export default defineConfig(({ mode }) => {
       host: env.HOST ?? '0.0.0.0',
       allowedHosts,
     },
+    // better-sqlite3 はネイティブ拡張（bindings が __filename を使う）。@trading/db 経由で届くのでバンドルせず外部参照にする
+    ssr: { external: ['better-sqlite3'] },
     plugins: [tanstackStart({ router: { entry: 'app/router.tsx' } }), viteReact()],
   }
 })

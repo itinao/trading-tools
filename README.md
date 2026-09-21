@@ -35,7 +35,8 @@ pnpm test
 pnpm import-holdings run "data/source/assetbalance(all)_YYYYMMDD_HHMMSS.csv"
 pnpm collect all
 pnpm detect run
-pnpm dashboard   # http://localhost:3000（0.0.0.0 で待つので同じネットワークの端末からも開ける。認証は無い）
+pnpm dashboard   # 開発サーバー http://localhost:3000（0.0.0.0 で待つので同じネットワークの端末からも開ける。認証は無い）
+pnpm dashboard:build && pnpm dashboard:start   # 本番ビルドを配信（同じく :3000。常時動かすならこちら）
 ```
 
 朝はエージェント（Claude Code / codex）に「朝の確認をして」と言うと、ニュース・開示の判定 → 検知 → 各アクションへの助言まで行い、要約を報告する。週末は `pnpm screen run --preset value` で候補を探し、ダッシュボードのスクリーナーからウォッチに追加する。月に 1 回「振り返りをして」と言うと、判断の履歴から傾向と閾値の調整案が出る。アクションを「対応した」にするときは、何をしたか（売った / 買った / 確認した）をメモに書く。日次実行の自動化は `pnpm schedule install`。
