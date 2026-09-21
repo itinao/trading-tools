@@ -49,6 +49,7 @@ pnpm dashboard:build && pnpm dashboard:start   # 本番ビルドを配信（同�
 | [docs/execution-plans/](docs/execution-plans/) | 実行計画。マイルストーンと完了の定義 |
 | [docs/schema.md](docs/schema.md) | 現在の全テーブルの ER 図（自動生成、常に最新） |
 | [docs/screens.md](docs/screens.md) | 現在の画面遷移図（自動生成、常に最新） |
+| [docs/operations.md](docs/operations.md) | 運用: いつ・何を動かすか（スケジューラに登録するもの、手動のもの） |
 | [apps/dashboard/DESIGN.md](apps/dashboard/DESIGN.md) | ダッシュボードのデザインシステム（Stitch DESIGN.md 形式） |
 | [AGENTS.md](AGENTS.md) | エージェント（codex / Claude Code）向けの指示 |
 

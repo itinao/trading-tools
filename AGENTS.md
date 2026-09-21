@@ -56,6 +56,7 @@ pnpm ワークスペース。Node 22（`.node-version`）。ビルドせず `tsx
 | `docs/design-docs/` | | Design Doc（連番、変更ごとに1本） |
 | `docs/schema.md` | | **現在の全テーブルの ER 図（自動生成）** |
 | `docs/screens.md` | | **現在の画面遷移図（自動生成）** |
+| `docs/operations.md` | | 運用: いつ・何を動かすか（launchd に登録するもの、手動のもの、ダッシュボードの常時起動） |
 | `docs/execution-plans/` | | 実行計画（進捗に合わせて更新する） |
 | `data/source/` | | 個人データ（gitignore） |
 | `data/trading.db` | | SQLite（gitignore）。`TRADING_DB_PATH` で変更可 |
@@ -68,6 +69,8 @@ pnpm lint && pnpm typecheck
 ```
 
 ## 日次の手順
+
+何をいつ動かすかの一覧は [docs/operations.md](docs/operations.md)。
 
 ```bash
 # 楽天証券の CSV を data/source/ に置いたとき
