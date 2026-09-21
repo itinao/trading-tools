@@ -10,7 +10,7 @@
     "fsd": "steiger ./src",
     "design:tokens": "tsx scripts/design-tokens.ts",
     "screens": "tsx scripts/screens.ts",
-    "start": "srvx serve --prod --dir=. --entry=dist/server/server.js --static=dist/client"
+    "start": "node server.mjs"
   },
   "dependencies": {
     "@fontsource-variable/google-sans-flex": "^5.3.1",

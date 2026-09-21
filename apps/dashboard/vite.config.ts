@@ -1,7 +1,21 @@
 import { hostname } from 'node:os'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig, loadEnv, type Plugin } from 'vite'
+
+// 開発サーバーは node_modules のフォントを Cache-Control: no-cache で返すので、リロードのたびに 130 ファイルを再検証し、
+// その間フォールバックの書体で描かれてチラつく。フォントは中身が変わらないので長くキャッシュさせる
+const cacheFonts = (): Plugin => ({
+  name: 'trading:cache-fonts',
+  configureServer(server) {
+    server.middlewares.use((req, res, next) => {
+      if (req.url?.split('?')[0]?.endsWith('.woff2')) {
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+      }
+      next()
+    })
+  },
+})
 
 export default defineConfig(({ mode }) => {
   // apps/dashboard/.env.local（gitignore）も読む。Tailscale の MagicDNS 名のようにマシン名から導けない名前はそこに書く
@@ -25,6 +39,6 @@ export default defineConfig(({ mode }) => {
     },
     // better-sqlite3 はネイティブ拡張（bindings が __filename を使う）。@trading/db 経由で届くのでバンドルせず外部参照にする
     ssr: { external: ['better-sqlite3'] },
-    plugins: [tanstackStart({ router: { entry: 'app/router.tsx' } }), viteReact()],
+    plugins: [cacheFonts(), tanstackStart({ router: { entry: 'app/router.tsx' } }), viteReact()],
   }
 })
