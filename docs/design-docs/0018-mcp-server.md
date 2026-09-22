@@ -2,10 +2,10 @@
 
 | | |
 | --- | --- |
-| 状態 | **草案**（壁打ち中） |
+| 状態 | **承認**（2026-09-23） |
 | 作成日 | 2026-09-23 |
 | 元になる Design Doc | [0001](./0001-repository.md)（エージェントの入口は CLI）、[0002](./0002-foundation.md) §3.3（CLI 規約）、[0017](./0017-dashboard-serving.md)（配信と公開範囲） |
-| supersede | なし |
+| supersede | [0001](./0001-repository.md)「データストアは CLI 経由でのみ触る」→「SQLite を直接触らない。読み書きは `@trading/domain` を通す。エージェントの入口は CLI と MCP」 |
 | 対応する実行計画 | [0002](../execution-plans/0002-operations.md) O9（本書で追加） |
 
 ## 1. 背景と目的
@@ -19,9 +19,9 @@ Claude Code は Bash で `pnpm actions list` を叩けるが、それ以外の A
 - 外部（インターネット）への公開。0017 と同じく同じネットワーク / Tailscale の中まで
 - 投資判断そのもの。MCP は事実と評価を渡すだけで、判断は人が行う（0001 §9）
 
-## 2. 決定（案）
+## 2. 決定
 
-| 項目 | 案 | 理由 |
+| 項目 | 決定 | 理由 |
 | --- | --- | --- |
 | データへの触り方 | **`@trading/domain` を直接呼ぶ**（ダッシュボードと同じ） | 画面が使っている読み取りはすべて domain にある。読み取り系の CLI は domain を呼ぶだけの薄い皮で、そこを経由しても同じ関数に `tsx` の起動（数百 ms）を足すだけ |
 | 位置づけ | `apps/mcp`（`@trading/mcp`）。**ツールではなくアプリ** | ダッシュボードと同じ「domain を使う表示層」。CLI 規約（stdout は JSON 1 つ）に従えないものを `tools/` に置かない |
@@ -42,7 +42,7 @@ Claude Code は Bash で `pnpm actions list` を叩けるが、それ以外の A
 | `screen_result` | `listScreenRuns` / `getScreenRun` | スクリーニングの実行と結果 |
 | `assess_pending` / `advise_pending` | `pendingSubjects` / `pendingAdvice` + `factBundle` | 未判定のニュース・開示、助言待ちのアクションと事実の束 |
 
-## 3. 実装（案）
+## 3. 実装
 
 ### 3.1 構成
 
@@ -97,8 +97,13 @@ tools/*（CLI）  ─┘
 - **U2 粒度**: まとめて返す 6〜7 個で始める。足りなければ足す。細かい読み取りが要るなら domain に関数を足す
 - **U3 書き込み**: 既定は読み取り専用。朝の確認を MCP 越しに行いたくなったら `assess record` / `advise record` を足すか検討する
 
-## 6. 決めてほしいこと（壁打ち）
+## 6. 壁打ちの結果（2026-09-23）
 
-1. 誰が使うか（codex / Claude Desktop / スマホ）。stdio で足りるか
-2. 書き込みを出すか。出すなら最初から `--write` を用意するか、読み取りだけで始めるか
-3. 0001 の「データストアは CLI 経由でのみ触る」を「SQLite を直接触らない。読み書きは `@trading/domain` を通す」に改めてよいか（ダッシュボードの実態に合わせる）
+| 論点 | 決定 |
+| --- | --- |
+| データの取り方 | `@trading/domain` を直接呼ぶ（当初案の「CLI を子プロセスで呼ぶ」は、読み取り系の CLI が domain の薄い皮だと分かったので取り下げ） |
+| 置き場所 | `apps/mcp`。ダッシュボードと横並びの「domain を使うアプリ」 |
+| 粒度 | 画面と同じ「まとめて返す」単位（§2 の表） |
+| transport | stdio。別の端末から使いたくなったら HTTP を足す（U1） |
+| 書き込み | 既定は読み取り専用。`--write` のときだけ出す |
+| 0001 の文言 | 「SQLite を直接触らない。読み書きは `@trading/domain` を通す。エージェントの入口は CLI と MCP」に改める（本書で supersede。AGENTS.md は実装時に更新する） |
