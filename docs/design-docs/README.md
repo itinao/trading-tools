@@ -17,18 +17,11 @@
 | 0014 | [振り返り（M5）](./0014-review.md) — タイムライン、判断の履歴、review ツール、retrospect スキル | 実装済み |
 | 0015 | [ダッシュボードの情報設計と画面構成](./0015-dashboard-ia.md) — サイドバー、中央寄せ、銘柄カード、銘柄画面の統合、銘柄詳細のタブ | 実装済み |
 | 0016 | [フォントとアイコン](./0016-typography-icons.md) — Google Sans Flex + Noto Sans JP、Material Symbols、自己ホスト | 実装済み |
+| 0017 | [ダッシュボードの配信](./0017-dashboard-serving.md) — 同じネットワーク / Tailscale から見る、0.0.0.0、allowedHosts、本番ビルドの起動、フォントのキャッシュ | 実装済み（事後） |
 | 0005 | [下落の検知とダッシュボード（M1 出力側）](./0005-detect-and-dashboard.md) — signals / actions、detect・actions ツール、TanStack Start | 実装済み |
 | 0006 | [ダッシュボードを FSD で構成する](./0006-dashboard-fsd.md) — 層と依存方向、routes の扱い、steiger による検査 | 実装済み |
 | 0007 | [デザインシステム（DESIGN.md）の導入](./0007-design-system.md) — Stitch フォーマットの DESIGN.md を正本にし、トークンから CSS 変数を生成 | 実装済み |
 | 0008 | [画面遷移図の自動生成](./0008-screen-map.md) — `docs/screens.md` をルートと `<Link to>` から生成し、テストで鮮度を担保 | 実装済み |
-| 0009 | [データソースの選定（S1）](./0009-data-sources.md) — Yahoo Finance / Google News RSS / TDnet の検証結果と採用、J-Quants の扱い | 承認 |
-| 0010 | [実データの収集（M2 前半）](./0010-real-data-collection.md) — yahoo / google-news / tdnet Provider、fundamentals / financials / news_items / disclosures | 実装済み |
-| 0011 | [判定とスコア（M2 後半）](./0011-assessment-and-score.md) — assess ツールとスキル、assessments / scores、ファンダ系シグナル、launchd | 実装済み |
-| 0012 | [AI 助言（M3）](./0012-advise.md) — advise ツールとスキル、事実の束、stance、一覧での表示 | 実装済み |
-| 0013 | [攻め — ウォッチ銘柄とスクリーニング（M4）](./0013-watch-and-screen.md) — universe / watches / screen、攻めのルール、watch・screen ツール | 実装済み |
-| 0014 | [振り返り（M5）](./0014-review.md) — タイムライン、判断の履歴、review ツール、retrospect スキル | 実装済み |
-| 0015 | [ダッシュボードの情報設計と画面構成](./0015-dashboard-ia.md) — サイドバー、中央寄せ、銘柄カード、銘柄画面の統合、銘柄詳細のタブ | 実装済み |
-| 0016 | [フォントとアイコン](./0016-typography-icons.md) — Google Sans Flex + Noto Sans JP、Material Symbols、自己ホスト | 実装済み |
 
 状態: 草案 → 承認 → 実装済み → supersede（後続の番号を記す）
 
