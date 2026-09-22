@@ -52,6 +52,7 @@ pnpm dashboard:build && pnpm dashboard:start   # 本番ビルドを配信（同�
 | [docs/operations.md](docs/operations.md) | 運用: いつ・何を動かすか（スケジューラに登録するもの、手動のもの） |
 | [apps/dashboard/DESIGN.md](apps/dashboard/DESIGN.md) | ダッシュボードのデザインシステム（Stitch DESIGN.md 形式） |
 | [AGENTS.md](AGENTS.md) | エージェント（codex / Claude Code）向けの指示 |
+| [.mcp.json](.mcp.json) | MCP サーバーの登録（`pnpm mcp`、既定は読み取り専用） |
 
 ## 進め方
 

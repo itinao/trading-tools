@@ -25,7 +25,7 @@
 - **個人データをコミットしない。** `data/source/` と `*.csv` は `.gitignore` 済み。ツールは `data/source/` を参照するだけで、編集・移動・削除しない
 - **事実と評価を分ける。** 外部由来のデータ（株価、ニュース、開示）は取得時点付きで保存し、編集しない。評価（スコア、シグナル、助言）は事実から作り直せるようにする
 - **AI に関わる処理はツールの外に置く。** ツールは AI なしで決定的に動く。判定・助言はエージェントのスキルで行い、結果はツールの CLI 経由で書き戻す
-- **データストアは CLI 経由でのみ触る。** SQLite を直接読み書きしない
+- **SQLite を直接読み書きしない。** 読み書きは `@trading/domain` を通す（生 SQL をそこに集める）。エージェントの入口は **CLI と MCP**（Design Doc 0018）
 - **Design Doc の書き換えルール。** 草案は自由、承認後は漏れの補足のみ可、実装済みは不可（新しい Design Doc で supersede）
 - コミットは依頼があったときだけ。コミット前に `pnpm lint && pnpm typecheck && pnpm test` を通す
 
@@ -50,6 +50,7 @@ pnpm ワークスペース。Node 22（`.node-version`）。ビルドせず `tsx
 | `tools/screen` | `@trading/tool-screen` | `pnpm screen run --preset value`。母集団は `pnpm collect universe`（JPX、月 1 回） |
 | `tools/review` | `@trading/tool-review` | `pnpm review timeline <code>` / `history`。振り返り |
 | `tools/schedule` | `@trading/tool-schedule` | `pnpm schedule install` で launchd に日次実行を登録 |
+| `apps/mcp` | `@trading/mcp` | `pnpm mcp` で MCP サーバー（stdio）。AI クライアントから読む。既定は読み取り専用、`--write` で書き込みも。`.mcp.json` に登録済み |
 | `apps/dashboard` | `@trading/dashboard` | `pnpm dashboard` で http://localhost:3000（`0.0.0.0` で待つ。`HOST` / `PORT` で変更可。マシン名・`.local`・`.ts.net` を Host として許可し、ほかは `apps/dashboard/.env.local` の `ALLOWED_HOSTS=a,b` で足す（`.env.example` 参照）。認証は無いので LAN / Tailscale の外に出さない）。画面は アクション（`/`）/ 銘柄（`/instruments`）/ スクリーナー / 履歴 と銘柄詳細。見た目は `apps/dashboard/DESIGN.md` |
 | `tools/<name>` | `@trading/tool-<name>` | 各ツール（M1 以降） |
 | `.agents/skills/` | | エージェントのスキル。`morning`（朝の確認: assess → detect → advise）、`assess`、`advise`、`retrospect`（月次の振り返り、提案のみ）。`.claude/skills` はシンボリックリンク |
@@ -156,6 +157,15 @@ pnpm watch add <code> --note "..."  # ダッシュボードのスクリーナー
 - 新しい UI 部品を作るときは、先に DESIGN.md の `components` と本文の Components に定義を足し、`styles.css` にそのコンポーネント名のクラスを書く
 - フォントは Google Sans Flex + Noto Sans JP、アイコンは Material Symbols Outlined（`shared/ui` の `Icon`）。どちらも自己ホスト。アイコンの使いどころは DESIGN.md の Icons に従う（ボタン・バッジ・セルには置かない）
 - 損益・変化率の色は楽天証券に合わせて **赤 = 上昇（`gain`）、緑 = 下落（`loss`）**。重大度（`warn` / `critical`）は必ずバッジ（面つき）で示し、損益の文字色と混同させない
+
+## MCP サーバー（`apps/mcp`）
+
+codex や Claude Desktop など、Bash で CLI を叩けないクライアント向けの入口（Design Doc 0018）。ダッシュボードと同じく `@trading/domain` を呼ぶ。
+
+- ツールは画面と同じ「まとめて返す」単位（`actions_today` / `instruments_list` / `instrument_overview` / `review_history` / `screen_result` / `assess_pending` / `advise_pending`）。細かい読み取りを足すより、domain に関数を足してツールを太らせる
+- 書き込み（`action_resolve` / `watch_add` / `watch_remove`）は `--write` のときだけ出る。`.mcp.json` の既定は読み取り専用
+- **stdout は MCP のプロトコルが使う。** ログは `console.error`（stderr）へ
+- 同じ「未対応のアクション」を CLI・画面・MCP が組み立てるので、読み取りは必ず domain の関数を通す。束ねる処理が増えたら domain に寄せる
 
 ## スキーマの変え方
 

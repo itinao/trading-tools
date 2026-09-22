@@ -28,7 +28,8 @@
     "screen": "tsx tools/screen/src/main.ts",
     "review": "tsx tools/review/src/main.ts",
     "dashboard:build": "pnpm --filter @trading/dashboard build",
-    "dashboard:start": "pnpm --filter @trading/dashboard start"
+    "dashboard:start": "pnpm --filter @trading/dashboard start",
+    "mcp": "tsx apps/mcp/src/main.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",

@@ -88,6 +88,27 @@ importers:
         specifier: ^2.9.1
         version: 2.9.1
 
+  apps/mcp:
+    dependencies:
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.30.0
+        version: 1.30.0(zod@4.6.5)
+      '@trading/cli':
+        specifier: workspace:*
+        version: link:../../packages/cli
+      '@trading/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@trading/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+      drizzle-orm:
+        specifier: ^0.45.2
+        version: 0.45.2(@types/better-sqlite3@7.6.13)(better-sqlite3@12.11.1)
+      zod:
+        specifier: ^4.6.5
+        version: 4.6.5
+
   packages/cli:
     dependencies:
       commander:
