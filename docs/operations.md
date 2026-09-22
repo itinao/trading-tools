@@ -33,6 +33,26 @@
 
 共通: 出力は JSON、`--dry-run` で予定だけ、`--db <path>` で別の DB。
 
+## AI クライアントから使う（MCP）
+
+`pnpm mcp` が MCP サーバー（stdio）。Claude Code / codex / Claude Desktop から、このデータを読める。
+
+| 聞けること | ツール |
+| --- | --- |
+| 今日のアクションと助言 | `actions_today` |
+| 監視している銘柄（保有 / ウォッチ） | `instruments_list` |
+| 1 銘柄の今どうか（株価・アクション・ニュース・財務・出来事） | `instrument_overview` |
+| 判断の履歴 | `review_history` |
+| スクリーニングの結果 | `screen_result` |
+| 未判定のニュース・開示 / 助言待ち | `assess_pending` / `advise_pending` |
+
+- **Claude Code**: このリポジトリの [.mcp.json](../.mcp.json) を読むので、起動時に許可すれば繋がる
+- **codex / Claude Desktop**: 設定に `command: pnpm`、`args: ["--silent", "mcp"]`、`cwd: <このリポジトリのパス>` を登録する
+- **既定は読み取り専用**。対応した / 見送り やウォッチの追加もさせるなら `args` に `--write` を足す（`action_resolve` / `watch_add` / `watch_remove` が増える）
+- 別の DB を見るなら `--db <path>`
+
+聞き方の例: 「今日のアクションを見て、優先度の高い順に説明して」「7203 の状況を教えて」「先月の判断を振り返って」
+
 ## 自動実行（launchd）の中身
 
 - `pnpm schedule install` → `~/Library/LaunchAgents/com.trading-tools.daily.plist` と `data/daily.sh`（`collect all` → `detect run`）
