@@ -23,22 +23,24 @@ Claude Code は Bash で `pnpm actions list` を叩けるが、それ以外の A
 
 | 項目 | 案 | 理由 |
 | --- | --- | --- |
-| データへの触り方 | **既存の CLI を子プロセスで呼び、stdout の JSON をそのまま返す** | 「データストアは CLI 経由でのみ触る」（0001）に乗る。MCP 用のクエリを書かないので、CLI とダッシュボードと答えがズレない |
-| ツールの定義 | 各ツールの `defineTool` から **自動生成** する | コマンド名・説明・引数がすでにある。CLI が増えれば MCP も増える。手で二重に書かない |
-| 書き込み | **既定は読み取り専用**。`--write` を付けたときだけ `actions resolve` / `assess override` / `watch add|remove` を出す | 事故の範囲を限る。`assess record` / `advise record`（AI の書き戻し）は「朝の確認」が CLI で行うので当面出さない |
+| データへの触り方 | **`@trading/domain` を直接呼ぶ**（ダッシュボードと同じ） | 画面が使っている読み取りはすべて domain にある。読み取り系の CLI は domain を呼ぶだけの薄い皮で、そこを経由しても同じ関数に `tsx` の起動（数百 ms）を足すだけ |
+| 位置づけ | `apps/mcp`（`@trading/mcp`）。**ツールではなくアプリ** | ダッシュボードと同じ「domain を使う表示層」。CLI 規約（stdout は JSON 1 つ）に従えないものを `tools/` に置かない |
+| 0001 の決まり | 「データストアは CLI 経由でのみ触る」を **「SQLite を直接触らない。読み書きは `@trading/domain` を通す。エージェントの入口は CLI と MCP」** に改める | ダッシュボードは既に domain を直接使っており、決まりの実態と文言がズレていた。守りたいのは「生 SQL を散らさない」こと |
+| 書き込み | **既定は読み取り専用**。`--write` のときだけ 対応した / 見送り、判定の上書き、ウォッチの追加削除 を出す | 事故の範囲を限る。domain 側に検証（`WatchError` など）があるので、CLI を通さなくても不正な書き込みは弾かれる |
+| ツールの粒度 | **画面と同じ「まとめて返す」単位**。`actions_today`（アクション画面の中身）、`instrument_overview`（銘柄詳細）、`instruments_list`、`review_history`、`screen_result`、`assess_pending` / `advise_pending` | 1 回の呼び出しで判断に足りる情報が返る。LLM が何度も往復しない。ダッシュボードの `pages/*/api` と同じ形なので、共通化できるものは domain に寄せる |
 | transport | **stdio**（ローカルでプロセス起動） | 設定が 1 行で済み、認証が要らない。HTTP は使う人が出てから（§5 U1） |
-| 粒度 | まず CLI のコマンドと 1:1 | まとめツール（「今日の状況」）は使ってみてから足す（§5 U2） |
-| 置き場所 | `tools/mcp`（`@trading/tool-mcp`）、`pnpm mcp` で起動 | 他のツールと同じ並び。ただし stdout は MCP のプロトコルが占有するので、**CLI 規約（stdout は JSON 1 つ）の例外**になる（§3.3） |
+| 接続 | プロセスに 1 本の SQLite 接続を使い回す（`openDatabase` を 1 回） | ダッシュボードと同じ。読み取りだけなら他のツールの書き込みと衝突しない（WAL） |
 
 ### 出すツール（読み取り）
 
-| MCP ツール | 呼ぶ CLI | 何が返るか |
+| MCP ツール | 中身（domain の関数） | 何が返るか |
 | --- | --- | --- |
-| `actions_list` / `actions_show` | `actions list` / `show` | 未対応のアクションと本文・助言 |
-| `instruments_list` | `watch list` ＋ 保有 | 監視している銘柄と株価・スコア |
-| `review_timeline` / `review_history` | `review timeline` / `history` | 1 銘柄の時系列、判断の履歴 |
-| `screen_runs` / `screen_result` | `screen runs` / `result` | スクリーニングの実行と結果 |
-| `assess_pending` / `advise_pending` | `assess pending` / `advise pending` | 未判定のニュース・開示、助言待ちのアクションと事実の束 |
+| `actions_today` | `listActions` + `adviceForActions` + `dashboardStatus` | 未対応のアクション、助言、株価の鮮度・未判定の件数 |
+| `instruments_list` | `positions` / `listWatches` + `latestQuotes` + `latestScores` | 監視している銘柄と株価・スコア・損益 |
+| `instrument_overview` | `timeline` / `recentNews` / `latestFundamentals` / `financialHistory` / `quoteHistory` | 1 銘柄の「今どうか」と出来事 |
+| `review_history` | `history` | 判断の履歴と stance × 判断の集計 |
+| `screen_result` | `listScreenRuns` / `getScreenRun` | スクリーニングの実行と結果 |
+| `assess_pending` / `advise_pending` | `pendingSubjects` / `pendingAdvice` + `factBundle` | 未判定のニュース・開示、助言待ちのアクションと事実の束 |
 
 ## 3. 実装（案）
 
@@ -47,24 +49,24 @@ Claude Code は Bash で `pnpm actions list` を叩けるが、それ以外の A
 ```
 MCP クライアント（Claude Desktop / codex / Claude Code）
    ↓ stdio（JSON-RPC）
-tools/mcp        … ツール定義を defineTool から生成し、引数を argv に組み立てる
-   ↓ 子プロセス（tsx tools/<name>/src/main.ts …）
-既存の CLI → @trading/domain → @trading/db → data/trading.db
+apps/mcp          … ツール定義（入力スキーマ）と、domain を呼んで整える処理
+   ↓
+@trading/domain → @trading/db → data/trading.db
 ```
 
-### 3.2 CLI の呼び出し
+ダッシュボードと横並びの関係になる:
 
-- `execFile` で `tsx tools/<name>/src/main.ts <command> [args]` を実行し、stdout の JSON をパースして `{ ok, data }` の `data` を返す
-- `ok: false` のときは MCP のエラーにして `code` と `message` を渡す
-- タイムアウトを設ける（既定 60 秒。`screen run` のような長いものは出さない）
-- `--db` は MCP サーバーの起動時の設定を引き継ぐ
+```
+apps/dashboard  ─┐
+apps/mcp        ─┼→ @trading/domain → @trading/db
+tools/*（CLI）  ─┘
+```
 
-### 3.3 CLI 規約の例外
+### 3.2 ダッシュボードとの共通化
 
-`tools/mcp` は stdout を MCP のプロトコルに使うため、「stdout は JSON 1 つ」の規約に従えない。ログは stderr。
-`defineTool` は使わず、`tools/mcp/src/main.ts` を直接書く。**規約の例外はこのツールだけ**とし、理由を `AGENTS.md` に一文で書く。
+`apps/mcp` のツールと `apps/dashboard` の `pages/*/api` は、ほぼ同じものを組み立てる。二重に書かないため、**画面用に整える処理のうち表示に依らない部分は `@trading/domain` に寄せる**（例: アクション + 助言 + 状態を束ねる関数）。表示の都合（列の並び、丸め）はそれぞれに残す。
 
-### 3.4 設定
+### 3.3 設定
 
 `.mcp.json`（リポジトリ直下、コミットする）:
 
@@ -76,27 +78,27 @@ tools/mcp        … ツール定義を defineTool から生成し、引数を a
 }
 ```
 
-書き込みを許すときは `args` に `--write` を足す。
+書き込みを許すときは `args` に `--write` を足す。`--db` で DB の場所を変えられる。
 
 ## 4. 検討した選択肢
 
 | 選択肢 | 採否 | 理由 |
 | --- | --- | --- |
-| **A. CLI を子プロセスで呼ぶ**（本案） | 採用 | 既存の決まりに乗る。実装が薄い。CLI が育てば自動で育つ |
-| B. `@trading/domain` を直接呼ぶ（ダッシュボードと同じ） | 不採用（将来の選択肢） | 速く、まとめツールを自由に作れるが、**CLI 以外の 2 つ目の入口**になり 0001 の決まりを変える必要がある。速度が問題になってから |
-| C. SQL をそのまま実行できるツールを出す | 不採用 | 生 SQL は事故が大きい。読みたいものが増えたら読み取り CLI を足す方が、ダッシュボードとも共有できる |
+| **A. `@trading/domain` を直接呼ぶ**（本案） | 採用 | 画面と同じ経路。プロセス起動が無く、まとめて返すツールを自由に作れる |
+| B. 既存の CLI を子プロセスで呼び、stdout の JSON を返す | 不採用 | 「入口は CLI」の文言には合うが、読み取り系の CLI は domain の薄い皮なので、同じ関数に `tsx` の起動を足すだけになる。引数の組み立ても増える |
+| C. SQL をそのまま実行できるツールを出す | 不採用 | 生 SQL は事故が大きい。読みたいものが増えたら domain に関数を足す方が、画面とも共有できる |
 | D. MCP を作らず Bash で CLI を叩く（現状） | 部分採用 | Claude Code ではこれで足りている。**codex・Claude Desktop など Bash が無いクライアント**のために MCP を作る |
 
 ## 5. リスク・未決事項
 
-- **R1 プロセス起動が毎回かかる**（`tsx` の起動で数百 ms）。まとめツールで 1 回の呼び出しに複数の CLI を束ねると効く。遅ければ B に寄せる
-- **R2 stdout を汚すツールがあると壊れる**。CLI 規約を守っている限り起きないが、テストで 1 本担保する
+- **R1 入口が増える**。同じ「未対応のアクション」を CLI・画面・MCP の 3 か所が組み立てるので、答えがズレうる。読み取りは必ず `@trading/domain` の関数を通し、束ねる処理も domain に置くことで防ぐ（§3.2）。テストで 1 本担保する
+- **R2 書き込みの経路も増える**。検証は domain にあるので不正な値は弾かれるが、`--dry-run` のような CLI の安全装置は無い。既定を読み取り専用にして、`--write` を明示したときだけ出す
 - **U1 transport**: stdio で始める。別の端末やスマホから使いたくなったら Streamable HTTP を 0017 と同じ範囲（Tailscale の中）で足す。認証はそのとき決める
-- **U2 粒度**: 1:1 で始める。「今日の状況」「銘柄 X の要約」のようなまとめツールは、欲しくなったら `@trading/domain` に関数を足してダッシュボードと共有する
+- **U2 粒度**: まとめて返す 6〜7 個で始める。足りなければ足す。細かい読み取りが要るなら domain に関数を足す
 - **U3 書き込み**: 既定は読み取り専用。朝の確認を MCP 越しに行いたくなったら `assess record` / `advise record` を足すか検討する
 
 ## 6. 決めてほしいこと（壁打ち）
 
 1. 誰が使うか（codex / Claude Desktop / スマホ）。stdio で足りるか
 2. 書き込みを出すか。出すなら最初から `--write` を用意するか、読み取りだけで始めるか
-3. 粒度は CLI と 1:1 でよいか、最初からまとめツールが要るか
+3. 0001 の「データストアは CLI 経由でのみ触る」を「SQLite を直接触らない。読み書きは `@trading/domain` を通す」に改めてよいか（ダッシュボードの実態に合わせる）
