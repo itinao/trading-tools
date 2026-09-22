@@ -18,6 +18,7 @@
 | 0015 | [ダッシュボードの情報設計と画面構成](./0015-dashboard-ia.md) — サイドバー、中央寄せ、銘柄カード、銘柄画面の統合、銘柄詳細のタブ | 実装済み |
 | 0016 | [フォントとアイコン](./0016-typography-icons.md) — Google Sans Flex + Noto Sans JP、Material Symbols、自己ホスト | 実装済み |
 | 0017 | [ダッシュボードの配信](./0017-dashboard-serving.md) — 同じネットワーク / Tailscale から見る、0.0.0.0、allowedHosts、本番ビルドの起動、フォントのキャッシュ | 実装済み（事後） |
+| 0018 | [MCP サーバー](./0018-mcp-server.md) — AI クライアントからデータを読む。CLI を子プロセスで呼ぶ、stdio、既定は読み取り専用 | 草案 |
 | 0005 | [下落の検知とダッシュボード（M1 出力側）](./0005-detect-and-dashboard.md) — signals / actions、detect・actions ツール、TanStack Start | 実装済み |
 | 0006 | [ダッシュボードを FSD で構成する](./0006-dashboard-fsd.md) — 層と依存方向、routes の扱い、steiger による検査 | 実装済み |
 | 0007 | [デザインシステム（DESIGN.md）の導入](./0007-design-system.md) — Stitch フォーマットの DESIGN.md を正本にし、トークンから CSS 変数を生成 | 実装済み |
