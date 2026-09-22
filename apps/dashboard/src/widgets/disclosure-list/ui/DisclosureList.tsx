@@ -18,13 +18,13 @@ export interface DisclosureRow {
 
 /** 適時開示の一覧（PDF への外部リンク）。判定があれば要約・向き・上書きフォームを出す */
 export function DisclosureList({ items }: { items: DisclosureRow[] }) {
-  if (items.length === 0) return <p className="empty">なし</p>
+  if (items.length === 0) return <p className="empty">ありません。</p>
   return (
     <table>
       <thead>
         <tr>
           <th>日時</th>
-          <th>種別</th>
+          <th className="col-wide">種別</th>
           <th>表題</th>
           <th>判定</th>
         </tr>
@@ -33,7 +33,7 @@ export function DisclosureList({ items }: { items: DisclosureRow[] }) {
         {items.map((d) => (
           <tr key={d.id}>
             <td className="muted nowrap">{d.disclosedAt.slice(0, 16).replace('T', ' ')}</td>
-            <td>
+            <td className="col-wide">
               <CategoryBadge category={d.category} />
               {d.assessment?.direction && d.assessment.direction !== 'none' && (
                 <div className="muted">{DIRECTION_LABEL[d.assessment.direction]}</div>

@@ -13,14 +13,14 @@ export interface NewsRow {
 
 /** ニュースの見出し一覧（外部リンク）。判定があれば要約と上書きフォームを出す */
 export function NewsList({ items }: { items: NewsRow[] }) {
-  if (items.length === 0) return <p className="empty">なし</p>
+  if (items.length === 0) return <p className="empty">ありません。</p>
   return (
     <table>
       <thead>
         <tr>
           <th>日時</th>
           <th>見出し</th>
-          <th>媒体</th>
+          <th className="col-wide">媒体</th>
           <th>判定</th>
         </tr>
       </thead>
@@ -34,7 +34,7 @@ export function NewsList({ items }: { items: NewsRow[] }) {
               </a>
               {n.assessment && <div className="muted">{n.assessment.summary}</div>}
             </td>
-            <td className="muted">{n.publisher ?? '-'}</td>
+            <td className="muted col-wide">{n.publisher ?? '-'}</td>
             <td>
               {n.assessment ? (
                 <>

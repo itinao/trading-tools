@@ -30,7 +30,7 @@ export function ActionTable({
   showInstrument = true,
   showStatus = false,
   resolvable = true,
-  emptyText = 'なし',
+  emptyText = 'ありません。',
 }: Props) {
   if (actions.length === 0) return <p className="muted">{emptyText}</p>
   return (
@@ -41,9 +41,9 @@ export function ActionTable({
           <th>重大度</th>
           {showInstrument && <th>銘柄</th>}
           <th>内容</th>
-          <th className="num">値</th>
-          <th>助言</th>
-          <th>作成</th>
+          <th className="num col-wide">値</th>
+          <th className="col-wide">助言</th>
+          <th className="col-wide">作成</th>
           {showStatus && <th>対応</th>}
           {resolvable && <th>操作</th>}
         </tr>
@@ -67,11 +67,13 @@ export function ActionTable({
             <td>
               <ActionBody title={a.title} body={a.body} note={a.note} />
             </td>
-            <td className="num">{a.kind ? `${kindLabel(a.kind)} ${pctText(a.value)}` : '-'}</td>
-            <td>
+            <td className="num col-wide">
+              {a.kind ? `${kindLabel(a.kind)} ${pctText(a.value)}` : '-'}
+            </td>
+            <td className="col-wide">
               <AdvicePanel advice={advice[a.id] ?? null} />
             </td>
-            <td className="muted">{dateOnly(a.createdAt)}</td>
+            <td className="muted col-wide">{dateOnly(a.createdAt)}</td>
             {showStatus && <td className="muted">{dateOnly(a.resolvedAt)}</td>}
             {resolvable && (
               <td>

@@ -10,7 +10,7 @@ export interface SignalRow {
 }
 
 export function SignalTable({ signals }: { signals: SignalRow[] }) {
-  if (signals.length === 0) return <p className="empty">なし</p>
+  if (signals.length === 0) return <p className="empty">ありません。</p>
   return (
     <table>
       <thead>

@@ -87,11 +87,11 @@ export function FinancialsTable({
               <th className="num">売上</th>
               <th className="num">営業利益</th>
               <th className="num">利益率</th>
-              <th className="num">純利益</th>
-              <th className="num">総資産</th>
-              <th className="num">自己資本</th>
+              <th className="num col-wide">純利益</th>
+              <th className="num col-wide">総資産</th>
+              <th className="num col-wide">自己資本</th>
               <th className="num">自己資本比率</th>
-              <th className="num">EPS</th>
+              <th className="num col-wide">EPS</th>
             </tr>
           </thead>
           <tbody>
@@ -101,11 +101,11 @@ export function FinancialsTable({
                 <td className="num">{oku(r.revenue)}</td>
                 <td className={`num ${pctClass(r.operatingIncome)}`}>{oku(r.operatingIncome)}</td>
                 <td className="num">{pctText(ratio(r.operatingIncome, r.revenue))}</td>
-                <td className={`num ${pctClass(r.netIncome)}`}>{oku(r.netIncome)}</td>
-                <td className="num">{oku(r.totalAssets)}</td>
-                <td className="num">{oku(r.equity)}</td>
+                <td className={`num col-wide ${pctClass(r.netIncome)}`}>{oku(r.netIncome)}</td>
+                <td className="num col-wide">{oku(r.totalAssets)}</td>
+                <td className="num col-wide">{oku(r.equity)}</td>
                 <td className="num">{pctText(ratio(r.equity, r.totalAssets))}</td>
-                <td className="num">{f1(r.eps)}</td>
+                <td className="num col-wide">{f1(r.eps)}</td>
               </tr>
             ))}
           </tbody>

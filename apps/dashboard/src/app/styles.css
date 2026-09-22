@@ -192,9 +192,6 @@ main.content > * {
   .content {
     padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-2xl);
   }
-  .table-wrap {
-    overflow-x: auto;
-  }
 }
 
 /* ---------- tab / tab-active ---------- */
@@ -703,4 +700,139 @@ table.compact {
     "wght" 400,
     "GRAD" 0,
     "opsz" 20;
+}
+
+/* ---------- スマホ幅（< 640px）。Design Doc 0015 補足。横スクロールは使わず、表は主要な列だけ ---------- */
+@media (max-width: 639px) {
+  .sidebar {
+    padding: var(--spacing-sm) 0 0;
+  }
+  .sidebar-logo {
+    padding: 0 var(--spacing-lg) var(--spacing-sm);
+    border-bottom: none;
+  }
+  .sidebar-nav {
+    flex-wrap: nowrap;
+    padding: 0;
+  }
+  /* 4 項目を横に並べる。アイコンの下に小さくラベル（スマホのタブバー） */
+  .sidebar-item {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-sm);
+    border-left: none;
+    border-bottom: 3px solid transparent;
+    text-align: center;
+  }
+  .sidebar-item.active {
+    border-left-color: transparent;
+    border-bottom-color: var(--color-primary);
+    background: none;
+  }
+  .sidebar-label {
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    font-size: var(--font-label-sm-size);
+    line-height: var(--font-label-sm-line-height);
+    white-space: nowrap;
+  }
+  .sidebar-label .badge {
+    position: absolute;
+    margin-left: 28px;
+    margin-top: -6px;
+  }
+  .content {
+    padding: var(--spacing-lg) var(--spacing-md) var(--spacing-2xl);
+  }
+  h1 {
+    font-size: 18px;
+  }
+  .page-header {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  .page-actions {
+    padding-top: 0;
+  }
+  .status-strip {
+    gap: var(--spacing-sm);
+  }
+  .status-cell {
+    min-width: 0;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  .status-cell code {
+    white-space: normal;
+  }
+  .tabs {
+    flex-wrap: wrap;
+    gap: var(--spacing-xs) var(--spacing-md);
+  }
+  .tabs a {
+    white-space: nowrap;
+  }
+  .run-meta {
+    gap: var(--spacing-xs) var(--spacing-md);
+  }
+  .criteria {
+    display: none;
+  }
+  /* アクションのカード: 見出しは 銘柄名 → バッジとスコア → まとめて対応 の 3 行、各項目は タイトル → 数値と日付 + ボタン */
+  .card-header {
+    flex-wrap: wrap;
+    gap: var(--spacing-sm) var(--spacing-md);
+  }
+  .card-title,
+  .card-actions {
+    flex: 1 1 100%;
+  }
+  .card-meta {
+    flex: 1 1 auto;
+  }
+  .card-item-head {
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+  .card-item-title {
+    flex: 1 1 100%;
+    order: 1;
+  }
+  .card-item-head > .muted {
+    order: 2;
+    flex: 1 1 auto;
+  }
+  .card-item-ops {
+    order: 3;
+  }
+  .card-item-advice {
+    padding-left: var(--spacing-sm);
+  }
+  /* 表: 主要な列だけ。銘柄名の列に余った幅を渡し、操作列は中身の幅だけ */
+  .col-wide,
+  .hide-phone {
+    display: none;
+  }
+  th.col-name {
+    width: 45%;
+  }
+  /* 先頭列（日付・期末・口座など）は折り返さない。銘柄名の列（col-name）だけ折り返す */
+  th:first-child:not(.col-name),
+  td:first-child:not(.col-name) {
+    white-space: nowrap;
+  }
+  th.ops,
+  td.ops {
+    width: 1%;
+  }
+  td.ops .actions {
+    flex-wrap: wrap;
+  }
+  th {
+    padding-left: var(--spacing-sm);
+    padding-right: var(--spacing-sm);
+  }
+  td {
+    padding: var(--spacing-sm) var(--spacing-sm);
+  }
 }

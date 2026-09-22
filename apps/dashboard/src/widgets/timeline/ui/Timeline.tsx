@@ -66,7 +66,7 @@ function Badge({ e }: { e: TimelineRow }) {
 
 /** 銘柄の出来事を新しい順に。その日の株価と今との差（Design Doc 0014 §3.1） */
 export function Timeline({ events }: { events: TimelineRow[] }) {
-  if (events.length === 0) return <p className="empty">出来事はまだない</p>
+  if (events.length === 0) return <p className="empty">出来事はまだありません。</p>
   return (
     <table>
       <thead>
@@ -74,8 +74,8 @@ export function Timeline({ events }: { events: TimelineRow[] }) {
           <th>日付</th>
           <th>種類</th>
           <th>内容</th>
-          <th className="num">その日の株価</th>
-          <th className="num">今との差</th>
+          <th className="num col-wide">その日の株価</th>
+          <th className="num col-wide">今との差</th>
         </tr>
       </thead>
       <tbody>
@@ -98,8 +98,8 @@ export function Timeline({ events }: { events: TimelineRow[] }) {
                 <div className="muted">メモ: {e.meta.note}</div>
               )}
             </td>
-            <td className="num">{price(e.priceAt)}</td>
-            <td className={`num ${pctClass(e.changeSince)}`}>{pctText(e.changeSince)}</td>
+            <td className="num col-wide">{price(e.priceAt)}</td>
+            <td className={`num col-wide ${pctClass(e.changeSince)}`}>{pctText(e.changeSince)}</td>
           </tr>
         ))}
       </tbody>

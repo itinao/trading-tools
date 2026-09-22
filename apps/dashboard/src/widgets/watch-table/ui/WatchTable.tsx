@@ -30,30 +30,30 @@ export function WatchTable({ rows }: { rows: WatchRow[] }) {
     <table>
       <thead>
         <tr>
-          <th>銘柄</th>
-          <th>追加</th>
-          <th>メモ</th>
+          <th className="col-name">銘柄</th>
+          <th className="col-wide">追加</th>
+          <th className="col-wide">メモ</th>
           <th className="num">株価</th>
-          <th className="num">60 日高値比</th>
-          <th className="num">200 日線比</th>
+          <th className="num col-wide">60 日高値比</th>
+          <th className="num col-wide">200 日線比</th>
           <th className="num">スコア</th>
-          <th className="num">未対応</th>
+          <th className="num col-wide">未対応</th>
           <th className="ops">操作</th>
         </tr>
       </thead>
       <tbody>
         {rows.map((r) => (
           <tr key={r.instrumentId}>
-            <td>
+            <td className="col-name">
               <InstrumentLink id={r.instrumentId} name={r.name} code={r.code} />
             </td>
-            <td className="muted">{dateOnly(r.addedAt)}</td>
-            <td className="muted">{r.note ?? '-'}</td>
+            <td className="muted col-wide">{dateOnly(r.addedAt)}</td>
+            <td className="muted col-wide">{r.note ?? '-'}</td>
             <td className="num">{price(r.price)}</td>
-            <PctCell value={r.drawdownFromHigh60} />
-            <PctCell value={r.vsMa200} />
+            <PctCell value={r.drawdownFromHigh60} className="col-wide" />
+            <PctCell value={r.vsMa200} className="col-wide" />
             <td className={`num ${scoreClass(r.score)}`}>{scoreText(r.score)}</td>
-            <td className="num">{r.openActions}</td>
+            <td className="num col-wide">{r.openActions}</td>
             <td className="ops">
               <RemoveWatchButton code={r.code} />
             </td>

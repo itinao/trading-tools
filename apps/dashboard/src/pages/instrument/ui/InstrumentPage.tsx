@@ -101,7 +101,7 @@ export function InstrumentPage({ data, tab }: { data: InstrumentPageData; tab: I
         <>
           <h2>未対応のアクション</h2>
           {openCards.length === 0 ? (
-            <p className="empty">未対応のアクションはない</p>
+            <p className="empty">未対応のアクションはありません。</p>
           ) : (
             openCards.map((c) => <ActionCard key={c.instrumentId} card={c} />)
           )}
@@ -176,7 +176,7 @@ export function InstrumentPage({ data, tab }: { data: InstrumentPageData; tab: I
       )}
       <h2>すべてのアクション</h2>
       {cards.length === 0 ? (
-        <p className="empty">なし</p>
+        <p className="empty">ありません。</p>
       ) : (
         cards.map((c) => <ActionCard key={`all-${c.instrumentId}`} card={c} resolvable={false} />)
       )}

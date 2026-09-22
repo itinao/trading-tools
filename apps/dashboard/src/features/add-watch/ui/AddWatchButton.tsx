@@ -36,7 +36,7 @@ export function AddWatchButton({
           }
         }}
       >
-        ウォッチに追加
+        <span className="hide-phone">ウォッチに</span>追加
       </button>
       {message && <span className="muted">{message}</span>}
     </span>

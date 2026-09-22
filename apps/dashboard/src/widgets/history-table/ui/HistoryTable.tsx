@@ -51,7 +51,7 @@ export function HistorySummary({ summary }: { summary: HistorySummaryView[] }) {
                 </span>
               )}
             </td>
-            <td>{statusLabel(s.status)}</td>
+            <td className="nowrap">{statusLabel(s.status)}</td>
             <td className="num">{s.count}</td>
             <td className={`num ${pctClass(s.medianChange)}`}>{pctText(s.medianChange)}</td>
           </tr>
@@ -75,12 +75,12 @@ export function HistoryTable({ rows }: { rows: HistoryRowView[] }) {
       <thead>
         <tr>
           <th>判断日</th>
-          <th>銘柄</th>
-          <th>種類</th>
-          <th>助言</th>
+          <th className="col-name">銘柄</th>
+          <th className="col-wide">種類</th>
+          <th className="col-wide">助言</th>
           <th>判断</th>
-          <th className="num">判断時の株価</th>
-          <th className="num">今の株価</th>
+          <th className="num col-wide">判断時の株価</th>
+          <th className="num col-wide">今の株価</th>
           <th className="num">その後</th>
         </tr>
       </thead>
@@ -88,14 +88,14 @@ export function HistoryTable({ rows }: { rows: HistoryRowView[] }) {
         {rows.map((r) => (
           <tr key={r.actionId}>
             <td className="muted nowrap">{dateOnly(r.resolvedAt)}</td>
-            <td>
+            <td className="col-name">
               <InstrumentLink id={r.instrumentId} name={r.name} code={r.code} />
             </td>
-            <td>
+            <td className="col-wide">
               {r.kind ? kindLabel(r.kind) : '-'}
               {r.offense && <div className="muted">攻め</div>}
             </td>
-            <td>
+            <td className="col-wide">
               {r.stance ? (
                 <span className={`badge badge-${stanceBadgeKind(r.stance)}`}>
                   {stanceLabel(r.stance)}
@@ -104,12 +104,12 @@ export function HistoryTable({ rows }: { rows: HistoryRowView[] }) {
                 <span className="muted">—</span>
               )}
             </td>
-            <td>
+            <td className="nowrap">
               {statusLabel(r.status)}
               {r.note && <div className="muted">{r.note}</div>}
             </td>
-            <td className="num">{price(r.priceAtDecision)}</td>
-            <td className="num">{price(r.priceNow)}</td>
+            <td className="num col-wide">{price(r.priceAtDecision)}</td>
+            <td className="num col-wide">{price(r.priceNow)}</td>
             <td className={`num ${pctClass(r.changeSince)}`}>{pctText(r.changeSince)}</td>
           </tr>
         ))}

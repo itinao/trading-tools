@@ -44,37 +44,37 @@ export function ScreenResultTable({
     <table>
       <thead>
         <tr>
-          <th className="num">#</th>
-          <th>銘柄</th>
-          <th>市場</th>
-          <th>業種</th>
+          <th className="num col-wide">#</th>
+          <th className="col-name">銘柄</th>
+          <th className="col-wide">市場</th>
+          <th className="col-wide">業種</th>
           <th className="num">株価</th>
-          <th className="num">PER</th>
-          <th className="num">予想 PER</th>
-          <th className="num">PBR</th>
+          <th className="num col-wide">PER</th>
+          <th className="num col-wide">予想 PER</th>
+          <th className="num col-wide">PBR</th>
           <th className="num">配当利回り</th>
-          <th className="num">時価総額</th>
-          <th className="num">増収増益</th>
+          <th className="num col-wide">時価総額</th>
+          <th className="num col-wide">増収増益</th>
           <th className="ops">操作</th>
         </tr>
       </thead>
       <tbody>
         {rows.map((r) => (
           <tr key={r.code}>
-            <td className="num">{r.rank}</td>
-            <td>
+            <td className="num col-wide">{r.rank}</td>
+            <td className="col-name">
               {r.name}
               <div className="muted">{r.code}</div>
             </td>
-            <td className="muted">{SEGMENT_LABEL[r.segment] ?? r.segment}</td>
-            <td className="muted">{r.sector33 ?? '-'}</td>
+            <td className="muted col-wide">{SEGMENT_LABEL[r.segment] ?? r.segment}</td>
+            <td className="muted col-wide">{r.sector33 ?? '-'}</td>
             <td className="num">{price(r.price)}</td>
-            <td className="num">{f1(r.per)}</td>
-            <td className="num">{f1(r.forwardPer)}</td>
-            <td className="num">{f2(r.pbr)}</td>
+            <td className="num col-wide">{f1(r.per)}</td>
+            <td className="num col-wide">{f1(r.forwardPer)}</td>
+            <td className="num col-wide">{f2(r.pbr)}</td>
             <td className="num">{r.dividendYield == null ? '-' : `${f2(r.dividendYield)}%`}</td>
-            <td className="num">{oku(r.marketCap)}</td>
-            <td className="num">{r.growthYears == null ? '-' : `${r.growthYears} 年`}</td>
+            <td className="num col-wide">{oku(r.marketCap)}</td>
+            <td className="num col-wide">{r.growthYears == null ? '-' : `${r.growthYears} 年`}</td>
             <td className="ops">
               {r.status === 'holding' ? (
                 <span className="badge badge-neutral">保有中</span>
